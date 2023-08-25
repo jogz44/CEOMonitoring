@@ -1,7 +1,7 @@
 <template>
   <q-layout view="lHh Lpr lFf">
     <q-header elevated>
-      <q-toolbar>
+      <q-toolbar class="q-pa-md">
         <q-btn
           flat
           dense
@@ -13,7 +13,7 @@
 
         <q-toolbar-title> Engineering System </q-toolbar-title>
 
-        <div>Quasar v{{ $q.version }}</div>
+         <q-btn flat icon="logout" size="md" style="color: white;" label="Logout" />
       </q-toolbar>
     </q-header>
 
@@ -45,7 +45,17 @@
                   <q-icon
                     name="settings"
                     class="q-ml-md q-mr-md"
-                  />Machine</q-item-label
+                  />Machine Equipment</q-item-label
+                >
+              </q-item-section>
+            </q-item>
+            <q-item clickable v-ripple @click="toggleSection('it')">
+              <q-item-section class="q-ml-sm">
+                <q-item-label>
+                  <q-icon
+                    name="computer"
+                    class="q-ml-md q-mr-md"
+                  />IT Equipment</q-item-label
                 >
               </q-item-section>
             </q-item>
@@ -89,6 +99,9 @@
       <!-- <router-view /> -->
       <CenterTable />
     </q-page-container>
+    <q-page-container v-if="showIt">
+      <ItTable />
+    </q-page-container>
     <q-page-container v-if="showMachine">
       <MachineTable />
     </q-page-container>
@@ -106,6 +119,7 @@ import { defineComponent, ref } from "vue";
 // import EssentialLink from "components/EssentialLink.vue";
 import CenterTable from "components/CenterTable.vue";
 import MachineTable from "components/MachineTable.vue";
+import ItTable from "components/ItTable.vue";
 import ProjectTable from "components/ProjectTable.vue";
 import UserTable from "components/UserTable.vue";
 
@@ -134,6 +148,7 @@ export default defineComponent({
     MachineTable,
     ProjectTable,
     UserTable,
+    ItTable
   },
 
   setup() {
@@ -154,6 +169,7 @@ export default defineComponent({
       showMachine: false,
       showProject: false,
       showUser: false,
+      showIt: false,
     };
   },
   methods: {
@@ -166,6 +182,7 @@ export default defineComponent({
     },
     toggleSection(section) {
       this.showEmployee = section === "employee";
+      this.showIt = section === "it";
       this.showMachine = section === "machine";
       this.showProject = section === "project";
       this.showUser = section === "user";

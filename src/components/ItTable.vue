@@ -6,7 +6,7 @@
       class="my-sticky-header-table"
       flat
       bordered
-      title="Machine List"
+      title="IT Equipment List"
       dense
       :rows="rows"
       :columns="columns"
@@ -52,7 +52,7 @@
     <q-dialog v-model="dialogVisible" persistent>
       <q-card>
         <q-card-section>
-          <div class="text-h6">Machine Details</div>
+          <div class="text-h6">IT Equipment Details</div>
         </q-card-section>
 
         <q-separator />
@@ -64,11 +64,23 @@
                 <q-input
                   filled
                   v-model="editedItem.name"
-                  label="Machine Name"
+                  label="Equipment Name"
                   dense
                   class="q-pa-sm"
                 />
               </div>
+              <div class="col">
+                <q-input
+                  filled
+                  v-model="editedItem.equipmentType"
+                  label="Equipment Type"
+                  dense
+                  class="q-pa-sm"
+                />
+              </div>
+
+            </div>
+            <div class="row">
               <div class="col">
                 <q-input
                   filled
@@ -85,17 +97,6 @@
               <div class="col">
                 <q-input
                   filled
-                  v-model="editedItem.equipmentType"
-                  label="Equipment Type"
-                  dense
-                  class="q-pa-sm"
-                />
-              </div>
-            </div>
-            <div class="row">
-              <div class="col">
-                <q-input
-                  filled
                   v-model="editedItem.propertyCustodian"
                   label="Property Custodian"
                   dense
@@ -105,7 +106,7 @@
               </div>
             </div>
             <div class="row">
-              <div class="col">
+              <!-- <div class="col">
                 <q-input
                   filled
                   v-model="editedItem.plateNumber"
@@ -113,7 +114,7 @@
                   dense
                   class="q-pa-sm"
                 />
-              </div>
+              </div> -->
               <div class="col">
                 <q-input
                   filled
@@ -165,7 +166,7 @@ export default {
         {
           name: "name",
           required: true,
-          label: "Machine Name",
+          label: "Equipment Name",
           align: "left",
           field: (row) => row.name,
           format: (val) => `${val}`,
@@ -184,7 +185,7 @@ export default {
           field: "equipmentType",
           sortable: true,
         },
-        { name: "plateNumber", label: "Plate Number", field: "plateNumber" },
+        // { name: "plateNumber", label: "Plate Number", field: "plateNumber" },
         { name: "propertyCustodian", label: "Property Custodian", field: "propertyCustodian" },
         { name: "remarks", label: "Remarks", field: "remarks" },
         {
@@ -197,9 +198,9 @@ export default {
       rows: [
         {
           id: 1,
-          name: "Machine 1",
+          name: "Equipment 1",
           maintenanceDate: "2023-02-12",
-          equipmentType: "Machine Type 1",
+          equipmentType: "Equipment Type 1",
           remarks: "Not Applicable",
         },
       ],
@@ -214,7 +215,7 @@ export default {
         equipmentType: "",
         remarks: "",
         propertyCustodian: "",
-        plateNumber: "",
+        // plateNumber: "",
       };
       this.dialogVisible = true;
     },
@@ -251,7 +252,7 @@ export default {
         equipmentType: "",
         remarks: "",
         propertyCustodian: "",
-        plateNumber: "",
+        // plateNumber: "",
       };
       this.dialogVisible = false;
     },

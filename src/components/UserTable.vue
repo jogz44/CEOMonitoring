@@ -29,8 +29,22 @@
 
       <template v-slot:body-cell-actions="{ row }">
         <div class="actionsbtn">
-          <q-btn icon="edit" flat round color="secondary" @click="editItem(row)"> </q-btn>
-          <q-btn icon="delete" flat round color="deep-orange" @click="deleteItem(row.id)"> </q-btn>
+          <q-btn
+            icon="edit"
+            flat
+            round
+            color="secondary"
+            @click="editItem(row)"
+          >
+          </q-btn>
+          <q-btn
+            icon="delete"
+            flat
+            round
+            color="deep-orange"
+            @click="deleteItem(row.id)"
+          >
+          </q-btn>
         </div>
       </template>
     </q-table>
@@ -69,21 +83,10 @@
               <div class="col">
                 <q-input
                   filled
-                  v-model="editedItem.ds"
-                  label="Date Started"
+                  v-model="editedItem.designation"
+                  label="Designation"
                   dense
                   class="q-pa-sm"
-                  type="date"
-                />
-              </div>
-              <div class="col">
-                <q-input
-                  filled
-                  v-model="editedItem.de"
-                  label="Date Ended"
-                  dense
-                  class="q-pa-sm"
-                  type="date"
                 />
               </div>
             </div>
@@ -91,11 +94,39 @@
               <div class="col">
                 <q-input
                   filled
-                  v-model="editedItem.designation"
-                  label="Designation"
+                  v-model="editedItem.username"
+                  label="Username"
                   dense
                   class="q-pa-sm"
                 />
+              </div>
+            </div>
+            <div class="row">
+              <div class="col">
+                <q-input
+                  filled
+                  v-model="editedItem.password"
+                  label="Password"
+                  dense
+                  type="password"
+                  class="q-pa-sm"
+                />
+              </div>
+              <div class="col">
+                <q-input
+                  filled
+                  v-model="editedItem.confirmPassword"
+                  label="Confirm Password"
+                  dense
+                  type="password"
+                  class="q-pa-sm"
+                />
+                <q-alert
+                  v-if="!passwordMatch && editedItem.confirmPassword"
+                  color="negative"
+                >
+                  Passwords do not match.
+                </q-alert>
               </div>
             </div>
           </q-form>
@@ -120,20 +151,23 @@ export default {
     return {
       sample: "hello world",
       filter: "",
+      passwordMatch: true,
       dialogVisible: false,
       editedIndex: -1,
       editedItem: {
         lastname: "",
         firstname: "",
-        ds: "",
-        de: "",
+        userName: "",
+        password: "",
+        confirmPassword: "",
         designation: "",
       },
       defaultItem: {
         lastname: "",
         firstname: "",
-        ds: "",
-        de: "",
+        userName: "",
+        password: "",
+        confirmPassword: "",
         designation: "",
       },
 
@@ -154,8 +188,8 @@ export default {
           field: "firstname",
           sortable: true,
         },
-        { name: "ds", label: "Date Started", field: "ds", sortable: true },
-        { name: "de", label: "Date Ended", field: "de" },
+        // { name: "ds", label: "Date Started", field: "ds", sortable: true },
+        { name: "username", label: "Username", field: "username" },
         { name: "designation", label: "Designation", field: "designation" },
         {
           name: "actions",
@@ -176,14 +210,23 @@ export default {
       ],
     };
   },
+  watch: {
+    "editedItem.password"(newValue) {
+      this.passwordMatch = newValue === this.editedItem.confirmPassword;
+    },
+    "editedItem.confirmPassword"(newValue) {
+      this.passwordMatch = newValue === this.editedItem.password;
+    },
+  },
   methods: {
     Rowclick() {
       this.editedItem = {
         id: null,
         lastname: "",
         firstname: "",
-        ds: "",
-        de: "",
+        userName: "",
+        password: "",
+        confirmPassword: "",
         designation: "",
       };
       this.dialogVisible = true;
@@ -213,13 +256,15 @@ export default {
       }
       this.closeDialog();
     },
+
     closeDialog() {
       this.editedItem = {
         id: null,
         lastname: "",
         firstname: "",
-        ds: "",
-        de: "",
+        userName: "",
+        password: "",
+        confirmPassword: "",
         designation: "",
       };
       this.dialogVisible = false;
