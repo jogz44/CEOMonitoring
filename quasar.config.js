@@ -30,7 +30,7 @@ module.exports = configure(function (/* ctx */) {
     // --> boot files are part of "main.js"
     // https://v2.quasar.dev/quasar-cli/boot-files
     boot: [
-      
+
       'axios',
     ],
 
@@ -57,7 +57,10 @@ module.exports = configure(function (/* ctx */) {
     build: {
       target: {
         browser: [ 'es2019', 'edge88', 'firefox78', 'chrome87', 'safari13.1' ],
-        node: 'node16'
+        node: 'node16',
+        // env: {
+        //   API_URL: process.env.API_URL|| 'http://localhost:5000'
+        // }
       },
 
       vueRouterMode: 'hash', // available values: 'hash', 'history'
@@ -79,7 +82,7 @@ module.exports = configure(function (/* ctx */) {
       // extendViteConf (viteConf) {},
       // viteVuePluginOptions: {},
 
-      
+
       // vitePlugins: [
       //   [ 'package-name', { ..options.. } ]
       // ]

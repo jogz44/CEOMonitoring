@@ -8,7 +8,7 @@
       bordered
       title="Employee List"
       dense
-      :rows="rows"
+      :rows="store.personnels"
       :columns="columns"
       :filter="filter"
       row-key="id"
@@ -21,15 +21,49 @@
           v-model="filter"
           placeholder="Search"
         >
+
           <template v-slot:append>
             <q-icon name="search" />
           </template>
         </q-input>
       </template>
+
+      <template v-slot:body-cell-DteStarted="{ row }">
+        <q-td
+          >
+            {{ row.employmentDtl[0].DteStarted }}
+          </q-td
+        >
+      </template>
+
+      <template v-slot:body-cell-de="{ row }">
+        <q-td
+          >
+            {{ row.employmentDtl[0].DteEnded }}
+          </q-td
+        >
+      </template>
+
+      <template v-slot:body-cell-designation="{ row }">
+        <q-td
+          >
+            {{ row.employmentDtl[0].Designation }}
+          </q-td
+        >
+      </template>
+
+      <template v-slot:body-cell-charges="{ row }">
+        <q-td
+          >
+            {{ row.employmentDtl[0].Charges }}
+          </q-td
+        >
+      </template>
+
       <template v-slot:body-cell-status="{ row }">
         <q-td
-          ><q-chip :class="getStatusClass(row.status)">
-            {{ row.status }}
+          ><q-chip :class="getStatusClass(row.employmentDtl[0].DteEnded)">
+            {{ getStatusClass2(row.employmentDtl[0].DteEnded).status }}
           </q-chip></q-td
         >
       </template>
@@ -49,7 +83,7 @@
             flat
             round
             color="deep-orange"
-            @click="deleteItem(row.id)"
+            @click="deleteItem(row)"
           >
           </q-btn>
         </div>
@@ -70,7 +104,7 @@
               <div class="col">
                 <q-input
                   filled
-                  v-model="editedItem.lastname"
+                  v-model="editedItem.lastName"
                   label="Lastname"
                   dense
                   class="q-pa-sm"
@@ -79,7 +113,7 @@
               <div class="col">
                 <q-input
                   filled
-                  v-model="editedItem.middlename"
+                  v-model="editedItem.middleName"
                   label="Middlename"
                   class="q-pa-sm"
                   dense
@@ -90,7 +124,7 @@
               <div class="col">
                 <q-input
                   filled
-                  v-model="editedItem.firstname"
+                  v-model="editedItem.firstName"
                   label="Firstname"
                   class="q-pa-sm"
                   dense
@@ -101,17 +135,18 @@
               <div class="col">
                 <q-input
                   filled
-                  v-model="editedItem.ds"
+                  v-model="editedItem.employmentDtl[0].DteStarted"
                   label="Date Started"
                   dense
                   class="q-pa-sm"
                   type="date"
+
                 />
               </div>
               <div class="col">
                 <q-input
                   filled
-                  v-model="editedItem.de"
+                  v-model="editedItem.employmentDtl[0].DteEnded"
                   label="Date Ended"
                   dense
                   class="q-pa-sm"
@@ -123,7 +158,7 @@
               <div class="col">
                 <q-input
                   filled
-                  v-model="editedItem.designation"
+                  v-model="editedItem.employmentDtl[0].Designation"
                   label="Designation"
                   dense
                   class="q-pa-sm"
@@ -134,44 +169,21 @@
               <div class="col">
                 <q-input
                   filled
-                  v-model="editedItem.charges"
+                  v-model="editedItem.employmentDtl[0].Charges"
                   label="Charges"
                   dense
                   class="q-pa-sm"
                 />
               </div>
             </div>
-            <!-- <div class="row">
-              <div class="col-xs-12 col-md-12">
-                <q-select
-                  filled
-                  v-model="editedItem.status"
-                  use-input
-                  dense
-                  input-debounce="0"
-                  label="Simple filter"
-                  :options="options"
-                  @filter="filterFn"
-                  behavior="menu"
-                  class="q-ma-sm"
-                >
-                  <template v-slot:no-option>
-                    <q-item>
-                      <q-item-section class="text-grey">
-                        No results
-                      </q-item-section>
-                    </q-item>
-                  </template>
-                </q-select>
-              </div>
-            </div> -->
+
             <div class="row">
               <div class="col-xs-12 col-md-12">
                 <q-file
                   dense
                   filled
                   accept=".pdf"
-                  v-model="editedItem.resume"
+                  v-model="editedItem.resumeLink"
                   label="Resume"
                   class="q-ma-sm"
                   icon="file"
@@ -198,25 +210,37 @@
 
 <script>
 import { ref } from "vue";
+import {useStorePersonnelInfo} from '../stores/personnelStore'
+// import { Personnel } from '../models/Personnel'
+
 const stringOptions = ["Active", "End of Contract"];
+//const API_URL ='http://10.0.1.23:5000/api/Personnels/'
+const rawData='';
+const flattenedData=[];
+
+
 export default {
+
+
   data() {
+
     return {
+
       sample: "hello world",
       filter: "",
       dialogVisible: false,
       editedIndex: -1,
-      editedItem: {
-        lastname: "",
-        firstname: "",
-        middlename: "",
-        ds: "",
-        de: "",
-        designation: "",
-        // status: "",
-        charges: "",
-        resume: "",
-      },
+      // editedItem: {
+      //   lastname: "",
+      //   firstname: "",
+      //   middlename: "",
+      //   ds: "",
+      //   de: "",
+      //   designation: "",
+      //   // status: "",
+      //   charges: "",
+      //   resume: "",
+      // },
       defaultItem: {
         lastname: "",
         firstname: "",
@@ -234,7 +258,7 @@ export default {
           required: true,
           label: "Lastname",
           align: "left",
-          field: (row) => row.lastname,
+          field: row=> row.lastName,
           format: (val) => `${val}`,
           sortable: true,
         },
@@ -242,37 +266,47 @@ export default {
           name: "firstname",
           align: "center",
           label: "Firstname",
-          field: "firstname",
+          field: "firstName",
           sortable: true,
         },
         {
           name: "middlename",
           align: "center",
           label: "Middlename",
-          field: "middlename",
+          field: "middleName",
           sortable: true,
         },
         {
-          name: "ds",
+          name: "DteStarted",
           label: "Date Started",
-          field: "ds",
+          field: "row.employmentDtl.DteStarted[0]",
+
           sortable: true,
           align: "center",
         },
-        { name: "de", label: "Date Ended", field: "de", align: "center" },
+        {
+          name: "de",
+          label: "Date Ended",
+          field:  "row.employmentDtl.DteEnded[0]",
+          align: "center" },
         {
           name: "designation",
           label: "Designation",
-          field: "designation",
+          field: "row.employmentDtl.Designation",
           align: "center",
         },
         {
           name: "charges",
           label: "Charges",
-          field: "charges",
+          field: "row.employmentDtl.Charges",
           align: "center",
         },
-        { name: "status", label: "Status", field: "status", align: "left" },
+        {
+          name: "status",
+          label: "Status",
+          field: "status",
+          align: "left"
+        },
         {
           name: "actions",
           label: "Actions",
@@ -296,60 +330,134 @@ export default {
   },
   methods: {
     getStatusClass(status) {
-      return {
-        "text-red": status === "End of Contract", // Adjust the value as per your data
+      const mydate= new Date(status)
+      const currentdate= new Date();
+      // console.log("status=",currentdate)
+      // console.log("status=",status)
+      if(mydate >= currentdate){
+        console.log("active")
+        status="Active"
+       return {
+        "text-green": status === "Active", // Adjust the value as per your data
+
       };
+      }
+      else{
+        status="End of Contract"
+        return {
+        "text-red": status === "End of Contract", // Adjust the value as per your data
+
+      };
+      }
+
+
     },
+
+    getStatusClass2(status) {
+      const mydate= new Date(status)
+      const currentdate= new Date();
+      // console.log("status=",currentdate)
+      // console.log("status=",status)
+      if(mydate >= currentdate){
+        console.log("active")
+        status="Active"
+       return {
+        status
+      }
+      }
+      else{
+        status="End of Contract"
+        return {
+       status
+      };
+      }
+
+
+    },
+
+
     Rowclick() {
       this.editedItem = {
         id: null,
-        lastname: "",
-        firstname: "",
-        middlename: "",
-        ds: "",
-        de: "",
-        designation: "",
-        resume: "",
+        lastName: "",
+        firstName: "",
+        middleName: "",
+        DteStarted: "",
+        DteEnded: "",
+        Designation: "",
+        resumeLink: "",
       };
       this.dialogVisible = true;
+
+
+    },
+    formatDate(value) {
+      if (!value) return "";
+
+      const date = new Date(value);
+
+      const year = date.getFullYear();
+      const month = (date.getMonth() + 1).toString().padStart(2, '0');
+      const day = date.getDate().toString().padStart(2, '0');
+
+      return `${year}-${day}-${month}`;
     },
     editItem(item) {
-      this.editedItem = { ...item };
+
+      //usePersonnelInfoStore.UpdatePersonnel()
+      this.editedItem = {...item};
+      // console.log("item=",item)
+      // console.log("edited item=",this.editedItem.employmentDtl)
+      const datestarted =  new Date(item.employmentDtl[0].DteStarted)
+      const dateEnded = new Date(item.employmentDtl[0].DteEnded)
+
+      this.editedItem.employmentDtl[0].DteStarted=this.formatDate(datestarted)
+      this.editedItem.employmentDtl[0].DteEnded=this.formatDate(dateEnded)
+
+      console.log("this.editeditem=",this.editedItem)
+      // this.editItem=item
       this.dialogVisible = true;
+
     },
 
     deleteItem(id) {
-      const index = this.rows.findIndex((item) => item.id === id);
-      if (index > -1) {
-        this.rows.splice(index, 1);
-      }
+      // const index = this.rows.findIndex((item) => item.id === id);
+      // if (index > -1) {
+      //   this.rows.splice(index, 1);
+      // }
+      console.log("row click=",id)
     },
 
     save() {
-      if (this.editedItem.id !== null) {
-        const index = this.rows.findIndex(
-          (item) => item.id === this.editedItem.id
-        );
-        if (index > -1) {
-          this.rows[index] = { ...this.editedItem };
-        }
-      } else {
-        this.rows.push({ ...this.editedItem, id: this.getNextId() });
-      }
+      // if (this.editedItem.id !== null) {
+      //   const index = this.rows.findIndex(
+      //     (item) => item.id === this.editedItem.id
+      //   );
+      //   if (index > -1) {
+      //     this.rows[index] = { ...this.editedItem };
+      //   }
+      // } else {
+      //   this.rows.push({ ...this.editedItem, id: this.getNextId() });
+      // }
+
+      // useStorePersonnelInfo.AddPersonnel(this.editedItem)
+      console.log("save=",this.editedItem)
+
+
       this.closeDialog();
     },
     closeDialog() {
       this.editedItem = {
         id: null,
-        lastname: "",
-        firstname: "",
-        middlename: "",
-        ds: "",
-        de: "",
-        designation: "",
+        lastName: "",
+        firsName: "",
+        middleName: "",
+        DteStarted: "",
+        DteEnded: "",
+        Designation: "",
         // status: "",
-        charges: "",
-        resume: "",
+        Charges: "",
+        resumeLink: "",
       };
       this.dialogVisible = false;
     },
@@ -357,11 +465,42 @@ export default {
       const ids = this.rows.map((item) => item.id);
       return Math.max(...ids) + 1;
     },
+
+
+  },
+  created(){
+    // const store = useStorePersonnelInfo()
+
+    // // usePersonnelInfoStore.fetchPersonnel()
+    // store.fetchPersonnel().then(
+    //    this.rows = store.personnels
+    // )
+
+    this.rows=useStorePersonnelInfo.personnels
+     console.log('usePersonnelInfoStore.fetchPersonnel CREATED() ' ,this.rows);
+
   },
   setup() {
     const options = ref(stringOptions);
+    const store= useStorePersonnelInfo();
+    store.fetchPersonnel();
+
+    // const flattenedData =[];
+
+    // store.fetchPersonnel().forEach(employee =>{
+    //         employee.employmentDtl.forEach( employment => {
+    //           flattenedData.push({
+    //             firstName: employee.firstName,
+    //             middleName: employee.middleName,
+    //             lastName: employee.lastName,
+    //             employmentDtl :employment
+    //           });
+    //         });
+    //       });
 
     return {
+
+      store,
       model: ref(null),
       stringOptions,
       options,
@@ -397,6 +536,10 @@ export default {
 } */
 .text-red {
   background-color: red;
+  color: white !important;
+}
+.text-green {
+  background-color: rgb(103, 228, 72);
   color: white !important;
 }
 </style>
