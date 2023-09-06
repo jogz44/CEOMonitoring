@@ -8,7 +8,7 @@
       bordered
       title="Machine List"
       dense
-      :rows="rows"
+      :rows="store.equipments"
       :columns="columns"
       :filter="filter"
       row-key="id"
@@ -63,7 +63,7 @@
               <div class="col">
                 <q-input
                   filled
-                  v-model="editedItem.name"
+                  v-model="editedItem.EquipmentName"
                   label="Machine Name"
                   dense
                   class="q-pa-sm"
@@ -72,7 +72,59 @@
               <div class="col">
                 <q-input
                   filled
-                  v-model="editedItem.maintenanceDate"
+                  v-model="editedItem.EquipmentType"
+                  label="Equipment Type"
+                  dense
+                  class="q-pa-sm"
+                />
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col">
+                <q-input
+                  filled
+                  v-model="editedItem.PropertyCustodian"
+                  label="Property Custodian"
+                  dense
+                  class="q-pa-sm"
+                />
+              </div>
+            </div>
+            <div class="row">
+              <div class="col">
+                <q-input
+                  filled
+                  v-model="editedItem.PlateNo"
+                  label="Plate Number"
+                  dense
+                  class="q-pa-sm"
+                />
+              </div>
+              <div class="col">
+                <q-input
+                  filled
+                  v-model="editedItem.Remarks"
+                  label="Remarks"
+                  dense
+                  class="q-pa-sm"
+                />
+              </div>
+            </div>
+            <div class="row">
+              <div class="col">
+                <q-input
+                  filled
+                  v-model="editedItem.MaintenanceType"
+                  label="Maintenance Type"
+                  dense
+                  class="q-pa-sm"
+                />
+              </div>
+              <div class="col">
+                <q-input
+                  filled
+                  v-model="editedItem.MaintenanceDate"
                   label="Maintenance Date"
                   dense
                   class="q-pa-sm"
@@ -85,42 +137,11 @@
               <div class="col">
                 <q-input
                   filled
-                  v-model="editedItem.equipmentType"
-                  label="Equipment Type"
+                  v-model="editedItem.MaintenanceDesc"
+                  label="Maintenance Description"
                   dense
                   class="q-pa-sm"
-                />
-              </div>
-            </div>
-            <div class="row">
-              <div class="col">
-                <q-input
-                  filled
-                  v-model="editedItem.propertyCustodian"
-                  label="Property Custodian"
-                  dense
-                  class="q-pa-sm"
-                />
-
-              </div>
-            </div>
-            <div class="row">
-              <div class="col">
-                <q-input
-                  filled
-                  v-model="editedItem.plateNumber"
-                  label="Plate Number"
-                  dense
-                  class="q-pa-sm"
-                />
-              </div>
-              <div class="col">
-                <q-input
-                  filled
-                  v-model="editedItem.remarks"
-                  label="Remarks"
-                  dense
-                  class="q-pa-sm"
+                  type="textarea"
                 />
               </div>
             </div>
@@ -140,35 +161,57 @@
 
 <script>
 import { ref } from "vue";
+import { useEquipmentInfo } from "../stores/Equipments";
 
 export default {
   data() {
     return {
-      sample: "hello world",
       filter: "",
       dialogVisible: false,
       editedIndex: -1,
       editedItem: {
-        name: "",
-        maintenanceDate: "",
-        equipmentType: "",
-        remarks: "",
+        id: null,
+        EquipmentName: "",
+        EquipmentType: "",
+        PropertyCustodian: "",
+        PlateNumber: "",
+        MaintenanceDtls: {
+          0: {
+            MaintenanceType: "",
+            MaintenanceDate: "",
+            MaintenanceDesc: "",
+          },
+        },
+        Remarks: "",
       },
       defaultItem: {
-        name: "",
-        maintenanceDate: "",
-        equipmentType: "",
-        remarks: "",
+        id: null,
+        EquipmentName: "",
+        EquipmentType: "",
+        PropertyCustodian: "",
+        PlateNumber: "",
+        MaintenanceDtls: {
+          MaintenanceType: "",
+          MaintenanceDate: "",
+          MaintenanceDesc: "",
+        },
+        Remarks: "",
       },
-
       columns: [
         {
-          name: "name",
+          name: "EquipmentName",
           required: true,
-          label: "Machine Name",
+          label: "Equipment Name",
           align: "left",
-          field: (row) => row.name,
+          field: (row) => row.EquipmentName,
           format: (val) => `${val}`,
+          sortable: true,
+        },
+
+        {
+          name: "EquipmentType",
+          label: "Equipment Type",
+          field: "EquipmentType",
           sortable: true,
         },
         {
@@ -179,13 +222,11 @@ export default {
           sortable: true,
         },
         {
-          name: "equipmentType",
-          label: "Equipment Tyoe",
-          field: "equipmentType",
-          sortable: true,
+          name: "PropertyCustodian",
+          label: "Property Custodian",
+          field: "PropertyCustodian",
         },
-        { name: "plateNumber", label: "Plate Number", field: "plateNumber" },
-        { name: "propertyCustodian", label: "Property Custodian", field: "propertyCustodian" },
+        { name: "PlateNumber", label: "Plate Number", field: "PlateNumber" },
         { name: "remarks", label: "Remarks", field: "remarks" },
         {
           name: "actions",
@@ -194,27 +235,22 @@ export default {
           align: "left",
         },
       ],
-      rows: [
-        {
-          id: 1,
-          name: "Machine 1",
-          maintenanceDate: "2023-02-12",
-          equipmentType: "Machine Type 1",
-          remarks: "Not Applicable",
-        },
-      ],
     };
   },
   methods: {
     Rowclick() {
       this.editedItem = {
         id: null,
-        name: "",
-        maintenanceDate: "",
-        equipmentType: "",
-        remarks: "",
-        propertyCustodian: "",
-        plateNumber: "",
+        EquipmentName: "",
+        EquipmentType: "",
+        PropertyCustodian: "",
+        PlateNumber: "",
+        MaintenanceDtls: {
+          MaintenanceType: "",
+          MaintenanceDate: "",
+          MaintenanceDesc: "",
+        },
+        Remarks: "",
       };
       this.dialogVisible = true;
     },
@@ -231,27 +267,45 @@ export default {
     },
 
     save() {
-      if (this.editedItem.id !== null) {
-        const index = this.rows.findIndex(
-          (item) => item.id === this.editedItem.id
-        );
-        if (index > -1) {
-          this.rows[index] = { ...this.editedItem };
-        }
+      const store = useEquipmentInfo();
+      const editedItemCopy = { ...this.editedItem };
+      console.log("edited item =>", editedItemCopy);
+
+      if (editedItemCopy.id) {
+        store.UpdateEquipment(editedItemCopy);
+        console.log("Item Updated: ", editedItemCopy);
       } else {
-        this.rows.push({ ...this.editedItem, id: this.getNextId() });
+        store.AddEquipment(editedItemCopy);
+        console.log("save=", editedItemCopy);
       }
+
+
+
+      // if (this.editedItem.id !== null) {
+      //   const index = this.rows.findIndex(
+      //     (item) => item.id === this.editedItem.id
+      //   );
+      //   if (index > -1) {
+      //     this.rows[index] = { ...this.editedItem };
+      //   }
+      // } else {
+      //   this.rows.push({ ...this.editedItem, id: this.getNextId() });
+      // }
       this.closeDialog();
     },
     closeDialog() {
       this.editedItem = {
         id: null,
-        name: "",
-        maintenanceDate: "",
-        equipmentType: "",
-        remarks: "",
-        propertyCustodian: "",
-        plateNumber: "",
+        EquipmentName: "",
+        EquipmentType: "",
+        PropertyCustodian: "",
+        PlateNumber: "",
+        MaintenanceDtls: {
+          MaintenanceType: "",
+          MaintenanceDate: "",
+          MaintenanceDesc: "",
+        },
+        Remarks: "",
       };
       this.dialogVisible = false;
     },
@@ -259,6 +313,15 @@ export default {
       const ids = this.rows.map((item) => item.id);
       return Math.max(...ids) + 1;
     },
+  },
+
+  setup() {
+    const store = useEquipmentInfo();
+    store.fetchEquipment();
+    return {
+      store,
+      model: ref(null),
+    };
   },
 };
 </script>

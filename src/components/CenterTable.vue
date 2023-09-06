@@ -21,7 +21,6 @@
           v-model="filter"
           placeholder="Search"
         >
-
           <template v-slot:append>
             <q-icon name="search" />
           </template>
@@ -29,35 +28,27 @@
       </template>
 
       <template v-slot:body-cell-DteStarted="{ row }">
-        <q-td
-          >
-            {{ row.employmentDtl[0].DteStarted }}
-          </q-td
-        >
+        <q-td>
+          {{ row.employmentDtl[0].DteStarted }}
+        </q-td>
       </template>
 
       <template v-slot:body-cell-de="{ row }">
-        <q-td
-          >
-            {{ row.employmentDtl[0].DteEnded }}
-          </q-td
-        >
+        <q-td>
+          {{ row.employmentDtl[0].DteEnded }}
+        </q-td>
       </template>
 
       <template v-slot:body-cell-designation="{ row }">
-        <q-td
-          >
-            {{ row.employmentDtl[0].Designation }}
-          </q-td
-        >
+        <q-td>
+          {{ row.employmentDtl[0].Designation }}
+        </q-td>
       </template>
 
       <template v-slot:body-cell-charges="{ row }">
-        <q-td
-          >
-            {{ row.employmentDtl[0].Charges }}
-          </q-td
-        >
+        <q-td>
+          {{ row.employmentDtl[0].Charges }}
+        </q-td>
       </template>
 
       <template v-slot:body-cell-status="{ row }">
@@ -135,18 +126,17 @@
               <div class="col">
                 <q-input
                   filled
-                  v-model="editedItem.employmentDtl[0].DteStarted"
+                  v-model="editedItem.employmentDtl.DteStarted"
                   label="Date Started"
                   dense
                   class="q-pa-sm"
                   type="date"
-
                 />
               </div>
               <div class="col">
                 <q-input
                   filled
-                  v-model="editedItem.employmentDtl[0].DteEnded"
+                  v-model="editedItem.employmentDtl.DteEnded"
                   label="Date Ended"
                   dense
                   class="q-pa-sm"
@@ -158,7 +148,7 @@
               <div class="col">
                 <q-input
                   filled
-                  v-model="editedItem.employmentDtl[0].Designation"
+                  v-model="editedItem.employmentDtl.Designation"
                   label="Designation"
                   dense
                   class="q-pa-sm"
@@ -169,7 +159,7 @@
               <div class="col">
                 <q-input
                   filled
-                  v-model="editedItem.employmentDtl[0].Charges"
+                  v-model="editedItem.employmentDtl.Charges"
                   label="Charges"
                   dense
                   class="q-pa-sm"
@@ -210,47 +200,45 @@
 
 <script>
 import { ref } from "vue";
-import {useStorePersonnelInfo} from '../stores/personnelStore'
+import { useStorePersonnelInfo } from "../stores/personnelStore";
 // import { Personnel } from '../models/Personnel'
 
 const stringOptions = ["Active", "End of Contract"];
 //const API_URL ='http://10.0.1.23:5000/api/Personnels/'
-const rawData='';
-const flattenedData=[];
-
 
 export default {
-
-
   data() {
-
     return {
-
-      sample: "hello world",
       filter: "",
       dialogVisible: false,
       editedIndex: -1,
-      // editedItem: {
-      //   lastname: "",
-      //   firstname: "",
-      //   middlename: "",
-      //   ds: "",
-      //   de: "",
-      //   designation: "",
-      //   // status: "",
-      //   charges: "",
-      //   resume: "",
-      // },
       defaultItem: {
-        lastname: "",
-        firstname: "",
-        middlename: "",
-        ds: "",
-        de: "",
-        designation: "",
-        // status: "",
-        charges: "",
-        resume: "",
+        id: null,
+        lastName: "",
+        firstName: "",
+        middleName: "",
+        employmentDtl: {
+          DteStarted: "",
+          DteEnded: "",
+          Designation: "",
+          Charges: "",
+        },
+        resumeLink: "",
+      },
+      editedItem: {
+        id: null,
+        lastName: "",
+        firstName: "",
+        middleName: "",
+        employmentDtl: {
+          0: {
+            DteStarted: "",
+            DteEnded: "",
+            Designation: "",
+            Charges: "",
+          },
+        },
+        resumeLink: "",
       },
       columns: [
         {
@@ -258,7 +246,7 @@ export default {
           required: true,
           label: "Lastname",
           align: "left",
-          field: row=> row.lastName,
+          field: (row) => row.lastName,
           format: (val) => `${val}`,
           sortable: true,
         },
@@ -287,8 +275,9 @@ export default {
         {
           name: "de",
           label: "Date Ended",
-          field:  "row.employmentDtl.DteEnded[0]",
-          align: "center" },
+          field: "row.employmentDtl.DteEnded[0]",
+          align: "center",
+        },
         {
           name: "designation",
           label: "Designation",
@@ -305,7 +294,7 @@ export default {
           name: "status",
           label: "Status",
           field: "status",
-          align: "left"
+          align: "left",
         },
         {
           name: "actions",
@@ -314,67 +303,40 @@ export default {
           align: "left",
         },
       ],
-      rows: [
-        {
-          id: 1,
-          lastname: "Frozen Yogurt",
-          firstname: " Honey",
-          middlename: " Mejo",
-          ds: "2012-12-27",
-          de: "2023-12-27",
-          designation: "City",
-          status: "Active",
-        },
-      ],
     };
   },
   methods: {
     getStatusClass(status) {
-      const mydate= new Date(status)
-      const currentdate= new Date();
-      // console.log("status=",currentdate)
-      // console.log("status=",status)
-      if(mydate >= currentdate){
-        console.log("active")
-        status="Active"
-       return {
-        "text-green": status === "Active", // Adjust the value as per your data
-
-      };
-      }
-      else{
-        status="End of Contract"
+      const mydate = new Date(status);
+      const currentdate = new Date();
+      if (mydate >= currentdate) {
+        status = "Active";
         return {
-        "text-red": status === "End of Contract", // Adjust the value as per your data
-
-      };
+          "text-green": status === "Active",
+        };
+      } else {
+        status = "End of Contract";
+        return {
+          "text-red": status === "End of Contract",
+        };
       }
-
-
     },
 
     getStatusClass2(status) {
-      const mydate= new Date(status)
-      const currentdate= new Date();
-      // console.log("status=",currentdate)
-      // console.log("status=",status)
-      if(mydate >= currentdate){
-        console.log("active")
-        status="Active"
-       return {
-        status
-      }
-      }
-      else{
-        status="End of Contract"
+      const mydate = new Date(status);
+      const currentdate = new Date();
+      if (mydate >= currentdate) {
+        status = "Active";
         return {
-       status
-      };
+          status,
+        };
+      } else {
+        status = "End of Contract";
+        return {
+          status,
+        };
       }
-
-
     },
-
 
     Rowclick() {
       this.editedItem = {
@@ -382,14 +344,17 @@ export default {
         lastName: "",
         firstName: "",
         middleName: "",
-        DteStarted: "",
-        DteEnded: "",
-        Designation: "",
+        employmentDtl: {
+          DteStarted: "",
+          DteEnded: "",
+          Designation: "",
+          Charges: "",
+        },
         resumeLink: "",
       };
+      // console.log("edited_item=", this.defaultItem);
       this.dialogVisible = true;
-
-
+      // console.log("dialog=", this.dialogVisible);
     },
     formatDate(value) {
       if (!value) return "";
@@ -397,27 +362,41 @@ export default {
       const date = new Date(value);
 
       const year = date.getFullYear();
-      const month = (date.getMonth() + 1).toString().padStart(2, '0');
-      const day = date.getDate().toString().padStart(2, '0');
+      const month = (date.getMonth() + 1).toString().padStart(2, "0");
+      const day = date.getDate().toString().padStart(2, "0");
 
-      return `${year}-${day}-${month}`;
+      return `${year}-${month}-${day}`;
     },
+
     editItem(item) {
-
       //usePersonnelInfoStore.UpdatePersonnel()
-      this.editedItem = {...item};
-      // console.log("item=",item)
-      // console.log("edited item=",this.editedItem.employmentDtl)
-      const datestarted =  new Date(item.employmentDtl[0].DteStarted)
-      const dateEnded = new Date(item.employmentDtl[0].DteEnded)
+      this.editedItem = { ...item };
+      console.log("edited item=", this.editedItem);
+      const datestarted = new Date(item.employmentDtl[0].DteStarted);
+      const dateEnded = new Date(item.employmentDtl[0].DteEnded);
 
-      this.editedItem.employmentDtl[0].DteStarted=this.formatDate(datestarted)
-      this.editedItem.employmentDtl[0].DteEnded=this.formatDate(dateEnded)
+      // const resumeLink = new FormData(item.resumeLink);
+      // formData.append('pdfFile', item.resumeLink);
+      // this.editedItem.resumeLink = this.resumeLink
 
-      console.log("this.editeditem=",this.editedItem)
+      // const binaryPDF = atob(response.data);
+      // const blob = new Blob(
+      //   [new Uint8Array([...binaryPDF].map((char) => char.charCodeAt(0)))],
+      //   {
+      //     type: "application/pdf",
+      //   }
+      // );
+      // this.pdfData = URL.createObjectURL(blob);
+
+      this.editedItem.employmentDtl.DteStarted = this.formatDate(datestarted);
+      this.editedItem.employmentDtl.DteEnded = this.formatDate(dateEnded);
+      this.editedItem.employmentDtl.Charges = item.employmentDtl[0].Charges;
+      this.editedItem.employmentDtl.Designation =
+        item.employmentDtl[0].Designation;
+
+      console.log("this.editeditem=", this.editedItem);
       // this.editItem=item
       this.dialogVisible = true;
-
     },
 
     deleteItem(id) {
@@ -425,24 +404,22 @@ export default {
       // if (index > -1) {
       //   this.rows.splice(index, 1);
       // }
-      console.log("row click=",id)
+      useStorePersonnelInfo.DeletePersonnel();
+      console.log("row click=", id);
     },
 
     save() {
-      // if (this.editedItem.id !== null) {
-      //   const index = this.rows.findIndex(
-      //     (item) => item.id === this.editedItem.id
-      //   );
-      //   if (index > -1) {
-      //     this.rows[index] = { ...this.editedItem };
-      //   }
-      // } else {
-      //   this.rows.push({ ...this.editedItem, id: this.getNextId() });
-      // }
+      const store = useStorePersonnelInfo();
+      const editedItemCopy = { ...this.editedItem };
+      console.log("edited item =>", editedItemCopy);
 
-      // useStorePersonnelInfo.AddPersonnel(this.editedItem)
-      console.log("save=",this.editedItem)
-
+      if (editedItemCopy.id) {
+        store.UpdatePersonnel(editedItemCopy);
+        console.log("Item Updated: ", editedItemCopy);
+      } else {
+        store.AddPersonnel(editedItemCopy.resumeLink);
+        console.log("save=", editedItemCopy);
+      }
 
       this.closeDialog();
     },
@@ -450,13 +427,15 @@ export default {
       this.editedItem = {
         id: null,
         lastName: "",
-        firsName: "",
+        firstName: "",
         middleName: "",
-        DteStarted: "",
-        DteEnded: "",
-        Designation: "",
-        // status: "",
-        Charges: "",
+        employmentDtl: {
+          DteStarted: "",
+          DteEnded: "",
+          Designation: "",
+          Charges: "",
+        },
+
         resumeLink: "",
       };
       this.dialogVisible = false;
@@ -465,41 +444,23 @@ export default {
       const ids = this.rows.map((item) => item.id);
       return Math.max(...ids) + 1;
     },
-
-
   },
-  created(){
-    // const store = useStorePersonnelInfo()
+  // created() {
+  //   // const store = useStorePersonnelInfo()
 
-    // // usePersonnelInfoStore.fetchPersonnel()
-    // store.fetchPersonnel().then(
-    //    this.rows = store.personnels
-    // )
+  //   // // usePersonnelInfoStore.fetchPersonnel()
+  //   // store.fetchPersonnel().then(
+  //   //    this.rows = store.personnels
+  //   // )
 
-    this.rows=useStorePersonnelInfo.personnels
-     console.log('usePersonnelInfoStore.fetchPersonnel CREATED() ' ,this.rows);
-
-  },
+  //   this.rows = useStorePersonnelInfo.personnels;
+  //   console.log("usePersonnelInfoStore.fetchPersonnel CREATED() ", this.rows);
+  // },
   setup() {
     const options = ref(stringOptions);
-    const store= useStorePersonnelInfo();
+    const store = useStorePersonnelInfo();
     store.fetchPersonnel();
-
-    // const flattenedData =[];
-
-    // store.fetchPersonnel().forEach(employee =>{
-    //         employee.employmentDtl.forEach( employment => {
-    //           flattenedData.push({
-    //             firstName: employee.firstName,
-    //             middleName: employee.middleName,
-    //             lastName: employee.lastName,
-    //             employmentDtl :employment
-    //           });
-    //         });
-    //       });
-
     return {
-
       store,
       model: ref(null),
       stringOptions,
@@ -534,7 +495,7 @@ export default {
 /* .actionsbtn {
   margin-left: 90px;
 } */
-.text-red {
+  .text-red {
   background-color: red;
   color: white !important;
 }

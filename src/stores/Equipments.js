@@ -2,70 +2,70 @@ import { defineStore } from "pinia";
 import axios from "axios";
 
 
-export const useStorePersonnelInfo = defineStore("personnelinfo", {
+export const useEquipmentInfo = defineStore("equipmentinfo", {
   state: () => ({
-    personnels: [],
+    equipments: [],
   }),
 
   actions: {
-    async fetchPersonnel() {
+    async fetchEquipment() {
       try {
         const response = await axios.get(
-          "http://10.0.1.23:5000/api/Personnels/"
+          "http://10.0.1.23:5000/api/Equipments/"
         );
 
-        this.personnels = response.data;
-        console.log("res=", this.personnels);
+        this.equipments = response.data;
+        console.log("res=", this.equipments);
       } catch (error) {
         console.log(`Error fetching tasks: ${error}`);
       }
     },
 
-    async AddPersonnel(payload) {
+    async AddEquipment(payload) {
       try {
         const response = await axios.post(
-          "http://10.0.1.23:5000/api/Personnels/",
+          "http://10.0.1.23:5000/api/Equipments/",
           payload
         );
-        this.personnels.push(response.data);
+        this.equipments.push(response.data);
       } catch (error) {
         console.log(`Error fetching tasks: ${error}`);
       }
     },
 
-    async GetPersonnel(id) {
+    async GetEquipment(id) {
       try {
         const response = await axios.get(
-          `http://10.0.1.23:5000/api/Personnels/${id}`,
+          `http://10.0.1.23:5000/api/Equipments/${id}`,
           payload
         );
-        this.personnels = response.data;
+        this.equipments = response.data;
       } catch (error) {
         console.log(`Unable to Delete ${error}`);
       }
     },
 
-    async DeletePersonnel(id) {
+    async DeleteEquipment(id) {
       try {
         await axios.delete(
-          `http://10.0.1.23:5000/api/Personnels/${id}`,
+          `http://10.0.1.23:5000/api/Equipments/${id}`,
           payload
         );
-        this.personnels = this.personnels.filter((e) => e.id !== id);
+        this.equipments = this.equipments.filter((e) => e.id !== id);
       } catch (error) {
         console.log(`Unable to Delete ${error}`);
       }
     },
 
-    async UpdatePersonnel(payload) {
+    async UpdateEquipment(payload) {
       try {
         const response = await this.$axios.put(
-          `http://10.0.1.23:5000/api/Personnels/${payload._id}`,
+          `http://10.0.1.23:5000/api/Equipments/${payload._id}`,
           payload
         );
-        const index = this.personnels.findIndex((e) => e._id === payload._id);
+        const index = this.equipments.findIndex((e) => e._id === payload._id);
         if (index !== -1) {
-          this.personnels[index] = response.data;
+          this.equipments[index] = response.data;
         }
       } catch (error) {
         console.log(`Cannot Update ${error}`);

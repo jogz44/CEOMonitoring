@@ -165,8 +165,8 @@ export default defineComponent({
   data() {
     return {
       submenuOpen: false,
-      showEmployee: true,
-      showMachine: false,
+      showEmployee: false,
+      showMachine: true,
       showProject: false,
       showUser: false,
       showIt: false,
