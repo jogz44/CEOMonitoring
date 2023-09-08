@@ -188,7 +188,11 @@
         </q-card-section>
 
         <q-separator />
+     
 
+        <!-- <q-card-actions align="left">
+          <q-btn label="Save" color="secondary" v-close-popup @click="save" />
+        </q-card-actions> -->
         <q-card-actions align="right">
           <q-btn flat label="Cancel" color="primary" v-close-popup />
           <q-btn label="Save" color="secondary" v-close-popup @click="save" />
@@ -390,6 +394,7 @@ export default {
 
       this.editedItem.employmentDtl.DteStarted = this.formatDate(datestarted);
       this.editedItem.employmentDtl.DteEnded = this.formatDate(dateEnded);
+
       this.editedItem.employmentDtl.Charges = item.employmentDtl[0].Charges;
       this.editedItem.employmentDtl.Designation =
         item.employmentDtl[0].Designation;
@@ -417,7 +422,7 @@ export default {
         store.UpdatePersonnel(editedItemCopy);
         console.log("Item Updated: ", editedItemCopy);
       } else {
-        store.AddPersonnel(editedItemCopy.resumeLink);
+        store.AddPersonnel(editedItemCopy);
         console.log("save=", editedItemCopy);
       }
 
@@ -495,7 +500,7 @@ export default {
 /* .actionsbtn {
   margin-left: 90px;
 } */
-  .text-red {
+.text-red {
   background-color: red;
   color: white !important;
 }
