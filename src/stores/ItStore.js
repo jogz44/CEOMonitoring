@@ -1,55 +1,55 @@
 import { defineStore } from "pinia";
 import axios from "axios";
 
-export const useEquipmentInfo = defineStore("equipmentinfo", {
+export const useITEquipmentInfo = defineStore("itequipmentinfo", {
   state: () => ({
-    equipments: [],
-    equipment: [],
+    itequipments: [],
+    itequipment: [],
   }),
 
   actions: {
-    async fetchEquipment() {
+    async fetchITEquipment() {
       try {
         const response = await axios.get(
-          "http://10.0.1.23:5000/api/Equipments/"
+          "http://10.0.1.23:5000/api/ITEquipments/"
         );
 
-        this.equipments = response.data;
-        console.log("res=", this.equipments);
+        this.itequipments = response.data;
+        console.log("res=", this.itequipments);
       } catch (error) {
         console.log(`Error fetching tasks: ${error}`);
       }
     },
-    async AddEquipment(payload) {
+    async AddITEquipment(payload) {
       try {
         const response = await axios.post(
-          "http://10.0.1.23:5000/api/Equipments/",
+          "http://10.0.1.23:5000/api/ITEquipments/",
           payload
         );
-        this.equipments.push(response.data);
+        this.itequipments.push(response.data);
       } catch (error) {
         console.log(`Error fetching tasks: ${error}`);
       }
     },
-    async UpdateEquipment(id, payload) {
+    async UpdateITEquipment(id, payload) {
       try {
         const response = await axios.put(
-          `http://10.0.1.23:5000/api/Equipments/` + id,
+          `http://10.0.1.23:5000/api/ITEquipments/` + id,
           payload
         );
 
-        const index = this.equipment.findIndex((e) => e._id === payload._id);
+        const index = this.itequipment.findIndex((e) => e._id === payload._id);
         if (index !== -1) {
-          this.equipment[index] = response.data;
+          this.itequipment[index] = response.data;
         }
       } catch (error) {
         console.log(`Cannot Update ${error}`);
       }
     },
-    async DeleteEquipment(id) {
+    async DeleteITEquipment(id) {
       try {
-        await axios.delete(`http://10.0.1.23:5000/api/Equipments/` + id);
-        this.equipments = this.equipments.filter((e) => e.id !== id);
+        await axios.delete(`http://10.0.1.23:5000/api/ITEquipments/` + id);
+        this.itequipments = this.itequipments.filter((e) => e.id !== id);
       } catch (error) {
         console.log(`Unable to Delete ${error}`);
       }
@@ -57,21 +57,21 @@ export const useEquipmentInfo = defineStore("equipmentinfo", {
 
     // For the Machine Maintenance History
 
-    async GetEquipment(id) {
+    async GetITEquipment(id) {
       console.log("getequipment=", id);
       try {
         const response = await axios.get(
-          `http://10.0.1.23:5000/api/Equipments/` + id
+          `http://10.0.1.23:5000/api/ITEquipments/` + id
         );
-        this.equipment = response.data;
+        this.itequipment = response.data;
       } catch (error) {
         console.log("Unable to retrieve=", error);
       }
     },
-    async AddMaintenance(id, payload) {
+    async AddITMaintenance(id, payload) {
       try {
         const response = await axios.post(
-          "http://10.0.1.23:5000/api/Equipments/" + id + "/maintenance",
+          "http://10.0.1.23:5000/api/ITEquipments/" + id + "/maintenance",
           payload
         );
         // this.equipment.push(response.data);
@@ -79,10 +79,10 @@ export const useEquipmentInfo = defineStore("equipmentinfo", {
         console.log(`Error fetching tasks: ${error}`);
       }
     },
-    async DeleteMaintenance(id, maintenanceid) {
+    async DeleteITMaintenance(id, maintenanceid) {
       try {
         await axios.delete(
-          `http://10.0.1.23:5000/api/Equipments/` +
+          `http://10.0.1.23:5000/api/ITEquipments/` +
             id +
             `/maintenance/` +
             maintenanceid

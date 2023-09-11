@@ -189,19 +189,14 @@
             </q-td>
           </template>
 
-          <template v-slot:body-cell-actions>
+          <template v-slot:body-cell-actions="{ row }">
             <div class="actionsbtn">
               <q-btn
                 icon="delete"
                 flat
                 round
                 color="deep-orange"
-                @click="
-                  deleteMaintenance(
-                    editedItem._id,
-                    editedItem.MaintenanceDtls._id
-                  )
-                "
+                @click="deleteMaintenance(editedItem._id, row._id)"
               >
               </q-btn>
             </div>
@@ -303,6 +298,7 @@ import { useEquipmentInfo } from "../stores/EquipmentsStore";
 export default {
   data() {
     return {
+      myEquipments:[],
       filter: "",
       dialogVisible: false,
       secondDialog: false,
@@ -355,6 +351,18 @@ export default {
           sortable: true,
         },
         {
+          name: "PropertyCustodian",
+          label: "Property Custodian",
+          field: "PropertyCustodian",
+          align: "left",
+        },
+        {
+          name: "PlateNo",
+          align: "left",
+          label: "Plate/Serial Number",
+          field: "PlateNo",
+        },
+        {
           name: "MaintenanceDate",
           align: "left",
           label: "Maintenance Date",
@@ -368,26 +376,15 @@ export default {
           field: "row.MaintenanceDtls.MaintenanceType",
           sortable: true,
         },
-        {
-          name: "MaintenanceDesc",
-          align: "left",
-          label: "Maintenance Description",
-          field: "row.MaintenanceDtls.MaintenanceDesc",
-          sortable: true,
-        },
-        {
-          name: "PropertyCustodian",
-          label: "Property Custodian",
-          field: "PropertyCustodian",
-          align: "left",
-        },
-        {
-          name: "PlateNo",
-          align: "left",
-          label: "Plate Number",
-          field: "PlateNo",
-        },
-        { name: "Remarks", align: "left", label: "Remarks", field: "Remarks" },
+        // {
+        //   name: "MaintenanceDesc",
+        //   align: "left",
+        //   label: "Maintenance Description",
+        //   field: "row.MaintenanceDtls.MaintenanceDesc",
+        //   sortable: true,
+        // },
+
+        // { name: "Remarks", align: "left", label: "Remarks", field: "Remarks" },
         {
           name: "actions",
           label: "Actions",
@@ -480,19 +477,19 @@ export default {
     },
 
     deleteMaintenance(id, maintenanceid) {
-      console.log("Maintenance ID =>", id._id + "----" + this.editedItem._id);
+      console.log("Maintenance ID =>", id + "----" + maintenanceid);
 
       // const store = useEquipmentInfo();
       // store.DeleteMaintenance(id._id, maintenanceid).then((res) => {
       //   store.GetEquipment(id._id);
       // });
 
-
       const store = useEquipmentInfo();
-      const editedItemCopy = { ...this.editedItem.MaintenanceDtls };
-      store.DeleteMaintenance(id._id, editedItemCopy._id);
-      store.GetEquipment(id._id);
-
+      // const editedItemCopy = { ...this.editedItem.MaintenanceDtls };
+      store.DeleteMaintenance(id, maintenanceid).then(req=>{
+        store.fetchEquipment();
+          store.GetEquipment(id);
+      })
     },
 
     save() {
@@ -524,11 +521,11 @@ export default {
             EquipmentType: "",
             PropertyCustodian: "",
             PlateNo: "",
-            MaintenanceDtls: {
-              MaintenanceType: "",
-              MaintenanceDate: "",
-              MaintenanceDesc: "",
-            },
+            // MaintenanceDtls: {
+            //   MaintenanceType: "",
+            //   MaintenanceDate: "",
+            //   MaintenanceDesc: "",
+            // },
             Remarks: "",
           };
           store.fetchEquipment().then((res) => {
@@ -546,6 +543,7 @@ export default {
       store.fetchEquipment().then((res) => {
         store.GetEquipment(id._id).then((res1) => {
           this.editedItem = store.equipment;
+          store.fetchEquipment();
         });
       });
     },

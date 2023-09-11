@@ -82,7 +82,7 @@
     </q-table>
 
     <q-dialog v-model="dialogVisible" persistent>
-      <q-card>
+      <q-card style="width: 40%; height: 50%">
         <q-card-section>
           <div class="text-h6">Employee Details</div>
         </q-card-section>
@@ -92,7 +92,7 @@
         <q-card-section style="max-height: 50vh" class="scroll">
           <q-form>
             <div class="row">
-              <div class="col">
+              <div class="col-12">
                 <q-input
                   filled
                   v-model="editedItem.lastName"
@@ -101,7 +101,7 @@
                   class="q-pa-sm"
                 />
               </div>
-              <div class="col">
+              <div class="col-12">
                 <q-input
                   filled
                   v-model="editedItem.middleName"
@@ -122,7 +122,7 @@
                 />
               </div>
             </div>
-            <div class="row">
+            <!-- <div class="row">
               <div class="col">
                 <q-input
                   filled
@@ -165,7 +165,7 @@
                   class="q-pa-sm"
                 />
               </div>
-            </div>
+            </div> -->
 
             <div class="row">
               <div class="col-xs-12 col-md-12">
@@ -188,7 +188,6 @@
         </q-card-section>
 
         <q-separator />
-     
 
         <!-- <q-card-actions align="left">
           <q-btn label="Save" color="secondary" v-close-popup @click="save" />
@@ -198,6 +197,158 @@
           <q-btn label="Save" color="secondary" v-close-popup @click="save" />
         </q-card-actions>
       </q-card>
+      <q-card style="width: 50%; height: 50%">
+        <q-card-section style="max-height: 50vh" class="scroll">
+          <div class="text-h6">
+            Employment History
+            <q-btn
+              label="Add Employment Details"
+              @click="secondDialog = true"
+            ></q-btn>
+          </div>
+        </q-card-section>
+
+        <q-table
+          class="my-sticky-header-table"
+          flat
+          bordered
+          title=""
+          dense
+          :rows="store.personnel.employmentDtl"
+          :columns="history"
+          :filter="filter"
+          row-key="id"
+        >
+          <template v-slot:top-right>
+            <q-input
+              borderless
+              dense
+              debounce="300"
+              v-model="filter"
+              placeholder="Search"
+            >
+              <template v-slot:append>
+                <q-icon name="search" />
+              </template>
+            </q-input>
+          </template>
+
+          <template v-slot:body-cell-DteStarted="{ row }">
+            <q-td>
+              {{ row.DteStarted }}
+            </q-td>
+          </template>
+
+          <template v-slot:body-cell-de="{ row }">
+            <q-td>
+              {{ row.DteEnded }}
+            </q-td>
+          </template>
+
+          <template v-slot:body-cell-designation="{ row }">
+            <q-td>
+              {{ row.Designation }}
+            </q-td>
+          </template>
+
+          <template v-slot:body-cell-charges="{ row }">
+            <q-td>
+              {{ row.Charges }}
+            </q-td>
+          </template>
+
+          <template v-slot:body-cell-status="{ row }">
+            <q-td
+              ><q-chip :class="getStatusClass(row.employmentDtl[0].DteEnded)">
+                {{ getStatusClass2(row.employmentDtl[0].DteEnded).status }}
+              </q-chip></q-td
+            >
+          </template>
+          <template v-slot:body-cell-actions="{ row }">
+            <div class="actionsbtn">
+              <q-btn
+                icon="delete"
+                flat
+                round
+                color="deep-orange"
+                @click="deleteEmployment(editedItem._id, row._id)"
+              >
+              </q-btn>
+            </div>
+          </template>
+        </q-table>
+      </q-card>
+    </q-dialog>
+
+    <q-dialog
+      v-model="secondDialog"
+      persistent
+      transition-show="scale"
+      transition-hide="scale"
+    >
+      <q-card class="" style="width: 500px">
+        <q-card-section>
+          <div class="text-h6">Add Employment</div>
+        </q-card-section>
+        <q-separator />
+        <q-card-section>
+          <div class="row">
+            <div class="col">
+              <q-input
+                filled
+                v-model="editedItem.employmentDtl.DteStarted"
+                label="Date Started"
+                dense
+                class="q-pa-sm"
+                type="date"
+              />
+            </div>
+            <div class="col">
+              <q-input
+                filled
+                v-model="editedItem.employmentDtl.DteEnded"
+                label="Date Ended"
+                dense
+                class="q-pa-sm"
+                type="date"
+              />
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <q-input
+                filled
+                v-model="editedItem.employmentDtl.Designation"
+                label="Designation"
+                dense
+                class="q-pa-sm"
+              />
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <q-input
+                filled
+                v-model="editedItem.employmentDtl.Charges"
+                label="Charges"
+                dense
+                class="q-pa-sm"
+              />
+            </div>
+          </div>
+        </q-card-section>
+
+        <q-card-actions align="right">
+          <q-btn flat label="Cancel" color="primary" v-close-popup size="md" />
+          <q-btn
+            label="Save"
+            color="secondary"
+            size="md"
+            v-close-popup
+            @click="savehistory(editedItem)"
+          />
+        </q-card-actions>
+      </q-card>
     </q-dialog>
   </div>
 </template>
@@ -205,7 +356,6 @@
 <script>
 import { ref } from "vue";
 import { useStorePersonnelInfo } from "../stores/personnelStore";
-// import { Personnel } from '../models/Personnel'
 
 const stringOptions = ["Active", "End of Contract"];
 //const API_URL ='http://10.0.1.23:5000/api/Personnels/'
@@ -215,6 +365,7 @@ export default {
     return {
       filter: "",
       dialogVisible: false,
+      secondDialog: false,
       editedIndex: -1,
       defaultItem: {
         id: null,
@@ -272,7 +423,6 @@ export default {
           name: "DteStarted",
           label: "Date Started",
           field: "row.employmentDtl.DteStarted[0]",
-
           sortable: true,
           align: "center",
         },
@@ -305,6 +455,40 @@ export default {
           label: "Actions",
           field: "actions",
           align: "left",
+        },
+      ],
+      history: [
+        {
+          name: "DteStarted",
+          label: "Date Started",
+          field: "DteStarted",
+          sortable: true,
+          align: "left",
+        },
+        {
+          name: "de",
+          label: "Date Ended",
+          field: "DteEnded",
+          align: "left",
+        },
+        {
+          name: "designation",
+          label: "Designation",
+          field: "Designation",
+          align: "left",
+        },
+        {
+          name: "charges",
+          label: "Charges",
+          field: "Charges",
+          align: "left",
+        },
+        {
+          name: "actions",
+          align: "left",
+          label: "Action",
+          field: "actions",
+          sortable: true,
         },
       ],
     };
@@ -356,9 +540,7 @@ export default {
         },
         resumeLink: "",
       };
-      // console.log("edited_item=", this.defaultItem);
       this.dialogVisible = true;
-      // console.log("dialog=", this.dialogVisible);
     },
     formatDate(value) {
       if (!value) return "";
@@ -373,60 +555,106 @@ export default {
     },
 
     editItem(item) {
-      //usePersonnelInfoStore.UpdatePersonnel()
-      this.editedItem = { ...item };
-      console.log("edited item=", this.editedItem);
-      const datestarted = new Date(item.employmentDtl[0].DteStarted);
-      const dateEnded = new Date(item.employmentDtl[0].DteEnded);
+      const store = useStorePersonnelInfo();
+      store.GetPersonnel(item._id).then((res) => {
+        this.editedItem = store.personnel;
+        store.fetchPersonnel();
+        // console.log("edited item=", this.editedItem);
+        // const datestarted = new Date(item.employmentDtl[0].DteStarted);
+        // const dateEnded = new Date(item.employmentDtl[0].DteEnded);
 
-      // const resumeLink = new FormData(item.resumeLink);
-      // formData.append('pdfFile', item.resumeLink);
-      // this.editedItem.resumeLink = this.resumeLink
+        // this.editedItem.employmentDtl.DteStarted = this.formatDate(datestarted);
+        // this.editedItem.employmentDtl.DteEnded = this.formatDate(dateEnded);
 
-      // const binaryPDF = atob(response.data);
-      // const blob = new Blob(
-      //   [new Uint8Array([...binaryPDF].map((char) => char.charCodeAt(0)))],
-      //   {
-      //     type: "application/pdf",
-      //   }
-      // );
-      // this.pdfData = URL.createObjectURL(blob);
+        // this.editedItem.employmentDtl.Charges = item.employmentDtl[0].Charges;
+        // this.editedItem.employmentDtl.Designation =
+        //   item.employmentDtl[0].Designation;
 
-      this.editedItem.employmentDtl.DteStarted = this.formatDate(datestarted);
-      this.editedItem.employmentDtl.DteEnded = this.formatDate(dateEnded);
+        console.log("this.editeditem=", this.editedItem);
+      });
 
-      this.editedItem.employmentDtl.Charges = item.employmentDtl[0].Charges;
-      this.editedItem.employmentDtl.Designation =
-        item.employmentDtl[0].Designation;
-
-      console.log("this.editeditem=", this.editedItem);
       // this.editItem=item
       this.dialogVisible = true;
     },
 
     deleteItem(id) {
-      // const index = this.rows.findIndex((item) => item.id === id);
-      // if (index > -1) {
-      //   this.rows.splice(index, 1);
-      // }
-      useStorePersonnelInfo.DeletePersonnel();
+      console.log("Delete Item ID => ", id._id);
+      const store = useStorePersonnelInfo();
+      store.DeletePersonnel(id._id).then((res) => {
+        store.fetchPersonnel();
+      });
       console.log("row click=", id);
+    },
+
+    deleteEmployment(id, contractid) {
+      console.log("Contract ID =>", id + "----" + contractid);
+      const store = useStorePersonnelInfo();
+      store.DeleteEmployment(id, contractid).then(req=>{
+        store.fetchPersonnel();
+          store.GetPersonnel(id);
+      })
     },
 
     save() {
       const store = useStorePersonnelInfo();
       const editedItemCopy = { ...this.editedItem };
-      console.log("edited item =>", editedItemCopy);
+      console.log("edited item =>", editedItemCopy._id);
 
-      if (editedItemCopy.id) {
-        store.UpdatePersonnel(editedItemCopy);
+      if (editedItemCopy._id) {
+        store
+          .UpdatePersonnel(editedItemCopy._id, editedItemCopy)
+          .then((res) => {
+            this.editedItem = {
+              lastName: "",
+              firstName: "",
+              middleName: "",
+              employmentDtl: {
+                DteStarted: "",
+                DteEnded: "",
+                Designation: "",
+                Charges: "",
+              },
+              resumeLink: "",
+            };
+            store.fetchPersonnel().then((res) => {
+              this.closeDialog();
+            });
+          });
         console.log("Item Updated: ", editedItemCopy);
       } else {
-        store.AddPersonnel(editedItemCopy);
+        store.AddPersonnel(editedItemCopy).then((res) => {
+          this.editedItem = {
+            id: null,
+            lastName: "",
+            firstName: "",
+            middleName: "",
+            employmentDtl: {
+              DteStarted: "",
+              DteEnded: "",
+              Designation: "",
+              Charges: "",
+            },
+            resumeLink: "",
+          };
+          store.fetchPersonnel().then((res) => {
+            this.closeDialog();
+          });
+        });
+
         console.log("save=", editedItemCopy);
       }
-
-      this.closeDialog();
+    },
+    savehistory(id) {
+      const store  = useStorePersonnelInfo();
+      const editedItemCopy = {...this.editedItem.employmentDtl};
+      store.AddEmployment(id._id, editedItemCopy);
+      store.fetchPersonnel().then((res) => {
+        store.GetPersonnel(id._id).then((res1) => {
+          this.editedItem = store.personnel;
+          store.fetchPersonnel();
+          this.closeDialog
+        });
+      });
     },
     closeDialog() {
       this.editedItem = {
