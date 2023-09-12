@@ -5,6 +5,7 @@ export const useEquipmentInfo = defineStore("equipmentinfo", {
   state: () => ({
     equipments: [],
     equipment: [],
+    equipmentsCount: 0,
   }),
 
   actions: {
@@ -15,7 +16,9 @@ export const useEquipmentInfo = defineStore("equipmentinfo", {
         );
 
         this.equipments = response.data;
+        this.equipmentsCount = response.data.length;
         console.log("res=", this.equipments);
+        console.log("res=", this.equipmentsCount);
       } catch (error) {
         console.log(`Error fetching tasks: ${error}`);
       }

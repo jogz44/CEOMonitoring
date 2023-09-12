@@ -295,10 +295,11 @@
 import { ref } from "vue";
 import { useEquipmentInfo } from "../stores/EquipmentsStore";
 
+
 export default {
   data() {
     return {
-      myEquipments:[],
+      myEquipments: [],
       filter: "",
       dialogVisible: false,
       secondDialog: false,
@@ -486,10 +487,10 @@ export default {
 
       const store = useEquipmentInfo();
       // const editedItemCopy = { ...this.editedItem.MaintenanceDtls };
-      store.DeleteMaintenance(id, maintenanceid).then(req=>{
+      store.DeleteMaintenance(id, maintenanceid).then((req) => {
         store.fetchEquipment();
-          store.GetEquipment(id);
-      })
+        store.GetEquipment(id);
+      });
     },
 
     save() {

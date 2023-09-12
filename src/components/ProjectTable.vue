@@ -8,7 +8,7 @@
       bordered
       title="Project List"
       dense
-      :rows="rows"
+      :rows="store.projects"
       :columns="columns"
       :filter="filter"
       row-key="id"
@@ -42,7 +42,7 @@
             flat
             round
             color="deep-orange"
-            @click="deleteItem(row.id)"
+            @click="deleteItem(row)"
           >
           </q-btn>
         </div>
@@ -50,7 +50,7 @@
     </q-table>
 
     <q-dialog v-model="dialogVisible" persistent>
-      <q-card>
+      <q-card style="width: 50%; height: 50%">
         <q-card-section>
           <div class="text-h6">Project Details</div>
         </q-card-section>
@@ -60,23 +60,44 @@
         <q-card-section style="max-height: 50vh" class="scroll">
           <q-form>
             <div class="row">
-              <div class="col">
+              <div class="col-12">
                 <q-input
                   filled
-                  v-model="editedItem.name"
+                  v-model="editedItem.ProjectName"
                   label="Project Name"
                   dense
                   class="q-pa-sm"
                 />
               </div>
+              <div class="col-12">
+                <q-input
+                  filled
+                  v-model="editedItem.Location"
+                  label="Location"
+                  dense
+                  class="q-pa-sm"
+                />
+              </div>
+            </div>
+
+            <div class="row">
               <div class="col">
                 <q-input
                   filled
-                  v-model="editedItem.start"
-                  label="Project Start"
-                  class="q-pa-sm"
+                  v-model="editedItem.ReferenceNo"
+                  label="Reference Number"
                   dense
-                  type="date"
+                  class="q-pa-sm"
+                />
+              </div>
+
+              <div class="col">
+                <q-input
+                  filled
+                  v-model="editedItem.TotalProjectCost"
+                  label="Total Project Cost"
+                  dense
+                  class="q-pa-sm"
                 />
               </div>
             </div>
@@ -84,8 +105,8 @@
               <div class="col">
                 <q-input
                   filled
-                  v-model="editedItem.cost"
-                  label="Project Cost"
+                  v-model="editedItem.DateStarted"
+                  label="Date Started"
                   dense
                   class="q-pa-sm"
                 />
@@ -93,8 +114,19 @@
               <div class="col">
                 <q-input
                   filled
-                  v-model="editedItem.assignee"
-                  label="Assignee"
+                  v-model="editedItem.TargetAccomplished"
+                  label="Target Accomplished"
+                  dense
+                  class="q-pa-sm"
+                />
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-12">
+                <q-input
+                  filled
+                  v-model="editedItem.ProjectInCharge"
+                  label="Project in Charge"
                   dense
                   class="q-pa-sm"
                 />
@@ -102,74 +134,133 @@
             </div>
           </q-form>
         </q-card-section>
-
-        <q-separator />
-
         <q-card-actions align="right">
-          <q-btn flat label="Cancel" color="primary" v-close-popup />
-          <q-btn label="Save" color="secondary" v-close-popup @click="save" />
+          <q-btn flat label="Cancel" color="primary" v-close-popup size="md" />
+          <q-btn
+            label="Save"
+            color="secondary"
+            size="md"
+            v-close-popup
+            @click="save"
+          />
         </q-card-actions>
       </q-card>
     </q-dialog>
+
+    <!-- For the Delete of the Maintenance -->
+
+    <!-- <q-dialog
+      v-model="MaintenanceDelete"
+      persistent
+      transition-show="scale"
+      transition-hide="scale"
+    >
+      <q-card class="bg-teal text-white" style="width: 400px">
+        <q-card-section>
+          <div class="text-h6">Delete Maintenance</div>
+        </q-card-section>
+
+        <q-card-section class="q-pt-none">
+          Do you want to delete this Machine Maintenance History?
+        </q-card-section>
+
+        <q-card-actions align="right" class="bg-white text-teal">
+          <q-btn flat label="Cancel" color="red" v-close-popup />
+          <q-btn label="OK" color="secondary" v-close-popup @click="deleteMaintenance(editedItem._id,editedItem.MaintenanceDtls._id )" />
+        </q-card-actions>
+      </q-card>
+    </q-dialog> -->
   </div>
 </template>
 
 <script>
 import { ref } from "vue";
+import { useStoreProjectInfo } from "../stores/ProjectStore";
 
 export default {
   data() {
     return {
-      sample: "hello world",
+      myEquipments: [],
       filter: "",
       dialogVisible: false,
+      secondDialog: false,
+      MaintenanceDelete: false,
       editedIndex: -1,
       editedItem: {
-        name: "",
-        start: "",
-        cost: "",
-        assignee: "",
+        id: null,
+        ProjectName: "",
+        Location: "",
+        ReferenceNo: "",
+        TotalProjectCost: "",
+        DateStarted: "",
+        TargetAccomplished: "",
+        ProjectInCharge: "",
       },
       defaultItem: {
-        name: "",
-        start: "",
-        cost: "",
-        assignee: "",
+        id: null,
+        ProjectName: "",
+        Location: "",
+        ReferenceNo: "",
+        TotalProjectCost: "",
+        DateStarted: "",
+        TargetAccomplished: "",
+        ProjectInCharge: "",
       },
-
       columns: [
         {
-          name: "name",
+          name: "ProjectName",
           required: true,
           label: "Project Name",
           align: "left",
-          field: (row) => row.name,
+          field: (row) => row.ProjectName,
           format: (val) => `${val}`,
           sortable: true,
         },
+
         {
-          name: "start",
-          align: "center",
-          label: "Project Start",
-          field: "start",
+          name: "Location",
+          label: "Location",
+          field: "Location",
+          align: "left",
           sortable: true,
         },
-        { name: "cost", label: "project Cost", field: "cost", sortable: true },
-        { name: "assignee", label: "Project Assignee", field: "assignee" },
+        {
+          name: "ReferenceNo",
+          label: "Reference Number",
+          field: "ReferenceNo",
+          align: "left",
+        },
+        {
+          name: "TotalProjectCost",
+          align: "left",
+          label: "Total Project Cost",
+          field: "TotalProjectCost",
+        },
+        {
+          name: "DateStarted",
+          label: "Date Started",
+          field: "DateStarted",
+          align: "left",
+          sortable: true,
+        },
+        {
+          name: "TargetAccomplished",
+          label: "Target Accomplished",
+          field: "TargetAccomplished",
+          align: "left",
+        },
+        {
+          name: "ProjectInCharge",
+          align: "left",
+          label: "Project In Charge",
+          field: "ProjectInCharge",
+        },
+
         {
           name: "actions",
           label: "Actions",
           field: "actions",
           align: "left",
-        },
-      ],
-      rows: [
-        {
-          id: 1,
-          name: "Frozen Yogurt",
-          start: "2012-12-28",
-          cost: "200",
-          assignee: "Mr. Assignee",
         },
       ],
     };
@@ -178,65 +269,99 @@ export default {
     Rowclick() {
       this.editedItem = {
         id: null,
-        name: "",
-        start: "",
-        cost: "",
-        assignee: "",
+        ProjectName: "",
+        Location: "",
+        ReferenceNo: "",
+        TotalProjectCost: "",
+        DateStarted: "",
+        TargetAccomplished: "",
+        ProjectInCharge: "",
       };
       this.dialogVisible = true;
     },
+    formatDate(value) {
+      if (!value) return "";
+
+      const date = new Date(value);
+
+      const year = date.getFullYear();
+      const month = (date.getMonth() + 1).toString().padStart(2, "0");
+      const day = date.getDate().toString().padStart(2, "0");
+
+      return `${year}-${month}-${day}`;
+    },
     editItem(item) {
-      this.editedItem = { ...item };
+      const store = useStoreProjectInfo();
+
+      store.GetITEquipment(item._id).then((res) => {
+        this.editedItem = store.itequipment;
+        store.fetchITEquipment();
+        console.log("sdasda=", this.editedItem);
+      });
       this.dialogVisible = true;
     },
 
     deleteItem(id) {
-      const index = this.rows.findIndex((item) => item.id === id);
-      if (index > -1) {
-        this.rows.splice(index, 1);
-      }
+      console.log("Delete Item ID => ", id._id);
+      const store = useStoreProjectInfo();
+      store.DeleteITEquipment(id._id).then((res) => {
+        store.fetchITEquipment();
+      });
     },
-
-    // deleteItemConfirm() {
-    //   this.rows.splice(this.editedIndex, 1);
-    //   this.closeDelete();
-    // },
-    // close() {
-    //   this.dialogVisible = false;
-    //   this.$nextTick(() => {
-    //     this.editedItem = Object.assign({}, this.defaultItem);
-    //     this.editedIndex = -1;
-    //   });
-    // },
-
-    // closeDelete() {
-    //   this.dialogDelete = false;
-    //   this.$nextTick(() => {
-    //     this.editedItem = Object.assign({}, this.defaultItem);
-    //     this.editedIndex = -1;
-    //   });
-    // },
 
     save() {
-      if (this.editedItem.id !== null) {
-        const index = this.rows.findIndex(
-          (item) => item.id === this.editedItem.id
-        );
-        if (index > -1) {
-          this.rows[index] = { ...this.editedItem };
-        }
+      const store = useStoreProjectInfo();
+      const editedItemCopy = { ...this.editedItem };
+      console.log("edited item =>", editedItemCopy._id);
+
+      if (editedItemCopy._id) {
+        store
+          .UpdateITEquipment(editedItemCopy._id, editedItemCopy)
+          .then((res) => {
+            this.editedItem = {
+              ProjectName: "",
+              Location: "",
+              ReferenceNo: "",
+              TotalProjectCost: "",
+              DateStarted: "",
+              TargetAccomplished: "",
+              ProjectInCharge: "",
+            };
+            store.fetchITEquipment().then((res) => {
+              this.closeDialog();
+            });
+          });
+        console.log("Item Updated: ", editedItemCopy);
       } else {
-        this.rows.push({ ...this.editedItem, id: this.getNextId() });
+        store.AddITEquipment(editedItemCopy).then((res) => {
+          this.editedItem = {
+            id: null,
+            ProjectName: "",
+            Location: "",
+            ReferenceNo: "",
+            TotalProjectCost: "",
+            DateStarted: "",
+            TargetAccomplished: "",
+            ProjectInCharge: "",
+          };
+          store.fetchITEquipment().then((res) => {
+            this.closeDialog();
+          });
+        });
+        console.log("save=", editedItemCopy);
       }
-      this.closeDialog();
     },
+
     closeDialog() {
       this.editedItem = {
         id: null,
-        name: "",
-        start: "",
-        cost: "",
-        assignee: "",
+        ProjectName: "",
+        Location: "",
+        ReferenceNo: "",
+        TotalProjectCost: "",
+        DateStarted: "",
+        TargetAccomplished: "",
+        ProjectInCharge: "",
       };
       this.dialogVisible = false;
     },
@@ -244,6 +369,16 @@ export default {
       const ids = this.rows.map((item) => item.id);
       return Math.max(...ids) + 1;
     },
+  },
+
+  setup() {
+    const store = useStoreProjectInfo();
+    store.fetchProject();
+
+    return {
+      store,
+      model: ref(null),
+    };
   },
 };
 </script>

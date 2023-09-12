@@ -26,7 +26,7 @@
         "
       >
         <q-list>
-          <q-item clickable v-ripple>
+          <q-item clickable v-ripple @click="toggleSection('dashboard')">
             <q-icon name="home" size="24px" class="q-mr-md" /> Home
           </q-item>
           <q-expansion-item label="Management" expand-separator icon="receipt">
@@ -95,6 +95,9 @@
       </q-img>
     </q-drawer>
 
+    <q-page-container v-if="DashboardView">
+      <DashboardView />
+    </q-page-container>
     <q-page-container v-if="showEmployee">
       <!-- <router-view /> -->
       <CenterTable />
@@ -122,6 +125,7 @@ import MachineTable from "components/MachineTable.vue";
 import ItTable from "components/ItTable.vue";
 import ProjectTable from "components/ProjectTable.vue";
 import UserTable from "components/UserTable.vue";
+import DashboardView from "src/components/DashboardView.vue";
 
 const linksList = [
   {
@@ -148,8 +152,9 @@ export default defineComponent({
     MachineTable,
     ProjectTable,
     UserTable,
-    ItTable
-  },
+    ItTable,
+    DashboardView
+},
 
   setup() {
     const leftDrawerOpen = ref(false);
@@ -165,11 +170,12 @@ export default defineComponent({
   data() {
     return {
       submenuOpen: false,
-      showEmployee: true,
+      showEmployee: false,
       showMachine: false,
-      showProject: false,
+      showProject: true,
       showUser: false,
       showIt: false,
+      DashboardView: false,
     };
   },
   methods: {
@@ -186,6 +192,7 @@ export default defineComponent({
       this.showMachine = section === "machine";
       this.showProject = section === "project";
       this.showUser = section === "user";
+      this.DashboardView = section === "dashboard";
     },
   },
 });
