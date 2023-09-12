@@ -293,9 +293,9 @@ export default {
     editItem(item) {
       const store = useStoreProjectInfo();
 
-      store.GetITEquipment(item._id).then((res) => {
-        this.editedItem = store.itequipment;
-        store.fetchITEquipment();
+      store.GetProject(item._id).then((res) => {
+        this.editedItem = store.projects;
+        store.fetchProject();
         console.log("sdasda=", this.editedItem);
       });
       this.dialogVisible = true;
@@ -304,8 +304,8 @@ export default {
     deleteItem(id) {
       console.log("Delete Item ID => ", id._id);
       const store = useStoreProjectInfo();
-      store.DeleteITEquipment(id._id).then((res) => {
-        store.fetchITEquipment();
+      store.DeleteProject(id._id).then((res) => {
+        store.fetchProject();
       });
     },
 
@@ -316,7 +316,7 @@ export default {
 
       if (editedItemCopy._id) {
         store
-          .UpdateITEquipment(editedItemCopy._id, editedItemCopy)
+          .UpdateProject(editedItemCopy._id, editedItemCopy)
           .then((res) => {
             this.editedItem = {
               ProjectName: "",
@@ -327,13 +327,13 @@ export default {
               TargetAccomplished: "",
               ProjectInCharge: "",
             };
-            store.fetchITEquipment().then((res) => {
+            store.fetchProject().then((res) => {
               this.closeDialog();
             });
           });
         console.log("Item Updated: ", editedItemCopy);
       } else {
-        store.AddITEquipment(editedItemCopy).then((res) => {
+        store.AddProject(editedItemCopy).then((res) => {
           this.editedItem = {
             id: null,
             ProjectName: "",
@@ -344,7 +344,7 @@ export default {
             TargetAccomplished: "",
             ProjectInCharge: "",
           };
-          store.fetchITEquipment().then((res) => {
+          store.fetchProject().then((res) => {
             this.closeDialog();
           });
         });

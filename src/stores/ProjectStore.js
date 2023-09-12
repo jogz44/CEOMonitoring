@@ -4,15 +4,14 @@ import axios from "axios";
 export const useStoreProjectInfo = defineStore("projectinfo", {
   state: () => ({
     projects: [],
+    project: [],
     projectsCount: 0,
   }),
 
   actions: {
     async fetchProject() {
       try {
-        const response = await axios.get(
-          "http://10.0.1.23:5000/api/Projects/"
-        );
+        const response = await axios.get("http://10.0.1.23:5000/api/Projects/");
 
         this.projects = response.data;
         this.projectsCount = response.data.length;
@@ -55,6 +54,18 @@ export const useStoreProjectInfo = defineStore("projectinfo", {
         }
       } catch (error) {
         console.log(`Cannot Update ${error}`);
+      }
+    },
+
+    async GetProject(id) {
+      console.log("getproject=", id);
+      try {
+        const response = await axios.get(
+          `http://10.0.1.23:5000/api/Projects/` + id
+        );
+        this.project = response.data;
+      } catch (error) {
+        console.log("Unable to retrieve=", error);
       }
     },
   },
