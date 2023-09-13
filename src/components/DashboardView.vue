@@ -1,5 +1,49 @@
 <template>
-  <div class="dashboard">
+  <div class="dashboard column">
+    <div class="col-3 col-sm-6">
+      <q-card class="my-card" bordered>
+        <q-card-section horizontal>
+          <q-card-section>
+            <q-item>
+              <q-item-section avatar>
+                <q-avatar
+                  rounded
+                  style="background-color: #007fff"
+                  text-color="white"
+                  icon="groups"
+                >
+                </q-avatar>
+              </q-item-section>
+
+              <q-item-section class="">
+                <q-item-label><b>CEO EMPLOYEE</b></q-item-label>
+                <q-item-label caption> Employee List </q-item-label>
+              </q-item-section>
+            </q-item>
+          </q-card-section>
+
+          <q-separator vertical />
+
+          <q-card-section class="q-pa-md">
+            <div
+              class="text-center"
+              style="
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100%;
+              "
+            >
+              <!-- Center horizontally -->
+              <p>
+                <b style="font-size: 30px">{{ store.personnelsCount }}</b>
+              </p>
+            </div>
+          </q-card-section>
+        </q-card-section>
+      </q-card>
+    </div>
+    <div class="col-3 col-sm-6">
     <q-card class="my-card" bordered>
       <q-card-section horizontal>
         <q-card-section>
@@ -9,49 +53,7 @@
                 rounded
                 style="background-color: #007fff"
                 text-color="white"
-                icon="account-group-outline"
-              >
-              </q-avatar>
-            </q-item-section>
-
-            <q-item-section class="">
-              <q-item-label><b>CEO EMPLOYEE</b></q-item-label>
-              <q-item-label caption> Employee List </q-item-label>
-            </q-item-section>
-          </q-item>
-        </q-card-section>
-
-        <q-separator vertical />
-
-        <q-card-section class="q-pa-md">
-          <div
-            class="text-center"
-            style="
-              display: flex;
-              justify-content: center;
-              align-items: center;
-              height: 100%;
-            "
-          >
-            <!-- Center horizontally -->
-            <p>
-              <b style="font-size: 30px">{{ store.personnelsCount }}</b>
-            </p>
-          </div>
-        </q-card-section>
-      </q-card-section>
-    </q-card>
-
-    <q-card class="my-card" bordered>
-      <q-card-section horizontal>
-        <q-card-section>
-          <q-item>
-            <q-item-section avatar>
-              <q-avatar
-                rounded
-                style="background-color: #007fff"
-                text-color="white"
-                icon="account-group-outline"
+                icon="precision_manufacturing"
               >
               </q-avatar>
             </q-item-section>
@@ -85,7 +87,8 @@
         </q-card-section>
       </q-card-section>
     </q-card>
-
+    </div>
+    <div class="col-3 col-sm-6">
     <q-card class="my-card" bordered>
       <q-card-section horizontal>
         <q-card-section>
@@ -95,7 +98,7 @@
                 rounded
                 style="background-color: #007fff"
                 text-color="white"
-                icon="account-group-outline"
+                icon="devices_other"
               >
               </q-avatar>
             </q-item-section>
@@ -129,7 +132,8 @@
         </q-card-section>
       </q-card-section>
     </q-card>
-
+    </div>
+    <div class="col-3 col-sm-6">
     <q-card class="my-card" bordered>
       <q-card-section horizontal>
         <q-card-section>
@@ -139,7 +143,7 @@
                 rounded
                 style="background-color: #007fff"
                 text-color="white"
-                icon="account-group-outline"
+                icon="engineering"
               >
               </q-avatar>
             </q-item-section>
@@ -173,6 +177,7 @@
         </q-card-section>
       </q-card-section>
     </q-card>
+    </div>
   </div>
 </template>
 
@@ -208,14 +213,37 @@ export default {
 </script>
 
 <style scoped>
-/* Add custom CSS styles here */
 .dashboard {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(300px, 1fr)
+  );
   gap: 30px;
   padding: 3%;
 }
+
 .my-card {
   box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.3);
 }
+
+
+/* @media (max-width: 768px) {
+  .dashboard {
+    grid-template-columns: repeat(
+      2,
+      1fr
+    );
+  }
+}
+
+
+@media (max-width: 480px) {
+  .dashboard {
+    grid-template-columns: repeat(
+      1,
+      1fr
+    );
+  }
+} */
 </style>

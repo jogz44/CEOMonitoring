@@ -27,6 +27,7 @@ export const useStoreProjectInfo = defineStore("projectinfo", {
           "http://10.0.1.23:5000/api/Projects/",
           payload
         );
+
         this.projects.push(response.data);
       } catch (error) {
         console.log(`Error fetching tasks: ${error}`);

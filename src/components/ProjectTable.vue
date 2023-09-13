@@ -26,6 +26,16 @@
           </template>
         </q-input>
       </template>
+      <template v-slot:body-cell-DateStarted="{ row }">
+        <q-td>
+          {{ formatDate(row.DateStarted) }}
+        </q-td>
+      </template>
+      <template v-slot:body-cell-TargetAccomplished="{ row }">
+        <q-td>
+          {{ formatDate(row.TargetAccomplished) }}
+        </q-td>
+      </template>
 
       <template v-slot:body-cell-actions="{ row }">
         <div class="actionsbtn">
@@ -98,6 +108,7 @@
                   label="Total Project Cost"
                   dense
                   class="q-pa-sm"
+                  type="number"
                 />
               </div>
             </div>
@@ -109,6 +120,7 @@
                   label="Date Started"
                   dense
                   class="q-pa-sm"
+                  type="date"
                 />
               </div>
               <div class="col">
@@ -118,6 +130,7 @@
                   label="Target Accomplished"
                   dense
                   class="q-pa-sm"
+                  type="date"
                 />
               </div>
             </div>
@@ -294,8 +307,14 @@ export default {
       const store = useStoreProjectInfo();
 
       store.GetProject(item._id).then((res) => {
-        this.editedItem = store.projects;
+        this.editedItem = store.project;
         store.fetchProject();
+        const DateStarted = new Date(item.DateStarted);
+        const TargetAccomplished = new Date(item.TargetAccomplished);
+
+        this.editedItem.DateStarted = this.formatDate(DateStarted);
+        this.editedItem.TargetAccomplished = this.formatDate(TargetAccomplished);
+
         console.log("sdasda=", this.editedItem);
       });
       this.dialogVisible = true;
@@ -333,6 +352,7 @@ export default {
           });
         console.log("Item Updated: ", editedItemCopy);
       } else {
+
         store.AddProject(editedItemCopy).then((res) => {
           this.editedItem = {
             id: null,

@@ -27,14 +27,14 @@
       >
         <q-list>
           <q-item clickable v-ripple @click="toggleSection('dashboard')">
-            <q-icon name="home" size="24px" class="q-mr-md" /> Home
+            <q-icon name="dashboard" size="24px" class="q-mr-md" /> HOME
           </q-item>
-          <q-expansion-item label="Management" expand-separator icon="receipt">
+          <q-expansion-item label="MANAGEMENT" expand-separator icon="list">
             <q-item clickable v-ripple @click="toggleSection('employee')">
               <q-item-section class="q-ml-sm">
                 <!-- Icon added here -->
                 <q-item-label>
-                  <q-icon name="people" class="q-ml-md q-mr-md" />
+                  <q-icon name="groups" class="q-ml-md q-mr-md" />
                   Employee</q-item-label
                 >
               </q-item-section>
@@ -43,7 +43,7 @@
               <q-item-section class="q-ml-sm">
                 <q-item-label>
                   <q-icon
-                    name="settings"
+                    name="precision_manufacturing"
                     class="q-ml-md q-mr-md"
                   />Machine Equipment</q-item-label
                 >
@@ -53,7 +53,7 @@
               <q-item-section class="q-ml-sm">
                 <q-item-label>
                   <q-icon
-                    name="computer"
+                    name="devices_other"
                     class="q-ml-md q-mr-md"
                   />IT Equipment</q-item-label
                 >
@@ -62,13 +62,13 @@
             <q-item clickable v-ripple @click="toggleSection('project')">
               <q-item-section class="q-ml-sm">
                 <q-item-label>
-                  <q-icon name="work" class="q-ml-md q-mr-md" />
+                  <q-icon name="engineering" class="q-ml-md q-mr-md" />
                   Project</q-item-label
                 >
               </q-item-section>
             </q-item>
           </q-expansion-item>
-          <q-expansion-item label="Settings" expand-separator icon="settings">
+          <q-expansion-item label="SETTINGS" expand-separator icon="settings">
             <q-item clickable v-ripple @click="toggleSection('user')">
               <q-item-section class="q-ml-sm">
                 <q-item-label>
@@ -172,8 +172,8 @@ export default defineComponent({
       submenuOpen: false,
       showEmployee: false,
       showMachine: false,
-      showProject: true,
-      showUser: false,
+      showProject: false,
+      showUser: true,
       showIt: false,
       DashboardView: false,
     };
