@@ -1,57 +1,39 @@
 <template>
-  <div class="dashboard column">
-    <div class="col-3 col-sm-6">
-      <q-card class="my-card" bordered>
-        <q-card-section horizontal>
-          <q-card-section>
-            <q-item>
-              <q-item-section avatar>
-                <q-avatar
-                  rounded
-                  style="background-color: #007fff"
-                  text-color="white"
-                  icon="groups"
-                >
-                </q-avatar>
-              </q-item-section>
+   <div>
+  <div class="row dashboard">
 
-              <q-item-section class="">
-                <q-item-label><b>CEO EMPLOYEE</b></q-item-label>
-                <q-item-label caption> Employee List </q-item-label>
-              </q-item-section>
-            </q-item>
-          </q-card-section>
-
-          <q-separator vertical />
-
-          <q-card-section class="q-pa-md">
-            <div
-              class="text-center"
-              style="
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                height: 100%;
-              "
-            >
-              <!-- Center horizontally -->
-              <p>
-                <b style="font-size: 30px">{{ store.personnelsCount }}</b>
-              </p>
-            </div>
-          </q-card-section>
-        </q-card-section>
-      </q-card>
-    </div>
-    <div class="col-3 col-sm-6">
-    <q-card class="my-card" bordered>
-      <q-card-section horizontal>
-        <q-card-section>
+    <div class="col-12 col-sm-6 col-md-3 col-lg-3">
+      <q-card class="my-card" bordered >
+        <q-card-section horizontal class="content" @click="employee=true">
           <q-item>
             <q-item-section avatar>
               <q-avatar
                 rounded
-                style="background-color: #007fff"
+                style="background-color: #057407"
+                text-color="white"
+                icon="groups"
+              >
+              </q-avatar>
+            </q-item-section>
+
+            <q-item-section >
+              <q-item-label><b>CEO EMPLOYEE</b></q-item-label>
+              <p>
+                <b style="font-size: 20px; color:#057407 ;">{{ store.personnelsCount }}</b>
+              </p>
+            </q-item-section>
+          </q-item>
+        </q-card-section>
+      </q-card>
+    </div>
+    <div class="col-12 col-sm-6 col-md-3 col-lg-3">
+      <q-card class="my-card" bordered>
+        <q-card-section horizontal >
+          <q-item>
+            <q-item-section avatar>
+              <q-avatar
+                rounded
+                style="background-color: #057407"
                 text-color="white"
                 icon="precision_manufacturing"
               >
@@ -60,43 +42,24 @@
 
             <q-item-section>
               <q-item-label><b>MACHINE EQUIPMENT</b></q-item-label>
-              <q-item-label caption> Machine List </q-item-label>
+              <p>
+                <b style="font-size: 20px; color:#057407 ;">{{
+                  storeEquipment.equipmentsCount
+                }}</b>
+              </p>
             </q-item-section>
           </q-item>
         </q-card-section>
-
-        <q-separator vertical />
-
-        <q-card-section class="q-pa-md">
-          <div
-            class="text-center"
-            style="
-              display: flex;
-              justify-content: center;
-              align-items: center;
-              height: 100%;
-            "
-          >
-            <!-- Center horizontally -->
-            <p>
-              <b style="font-size: 30px">{{
-                storeEquipment.equipmentsCount
-              }}</b>
-            </p>
-          </div>
-        </q-card-section>
-      </q-card-section>
-    </q-card>
+      </q-card>
     </div>
-    <div class="col-3 col-sm-6">
-    <q-card class="my-card" bordered>
-      <q-card-section horizontal>
-        <q-card-section>
+    <div class="col-12 col-sm-6 col-md-3 col-lg-3">
+      <q-card class="my-card" bordered>
+        <q-card-section horizontal>
           <q-item>
             <q-item-section avatar>
               <q-avatar
                 rounded
-                style="background-color: #007fff"
+                style="background-color: #057407"
                 text-color="white"
                 icon="devices_other"
               >
@@ -105,43 +68,26 @@
 
             <q-item-section>
               <q-item-label><b>IT EQUIPMENT</b></q-item-label>
-              <q-item-label caption> IT Equipment List</q-item-label>
+              <p>
+                <b style="font-size: 20px; color:#057407 ;">{{
+                  storeITEquipment.itequipmentsCount
+                }}</b>
+              </p>
             </q-item-section>
           </q-item>
-        </q-card-section>
 
-        <q-separator vertical />
 
-        <q-card-section class="q-pa-md">
-          <div
-            class="text-center"
-            style="
-              display: flex;
-              justify-content: center;
-              align-items: center;
-              height: 100%;
-            "
-          >
-            <!-- Center horizontally -->
-            <p>
-              <b style="font-size: 30px">{{
-                storeITEquipment.itequipmentsCount
-              }}</b>
-            </p>
-          </div>
         </q-card-section>
-      </q-card-section>
-    </q-card>
+      </q-card>
     </div>
-    <div class="col-3 col-sm-6">
-    <q-card class="my-card" bordered>
-      <q-card-section horizontal>
-        <q-card-section>
+    <div class="col-12 col-sm-6 col-md-3 col-lg-3">
+      <q-card class="my-card" bordered>
+        <q-card-section horizontal>
           <q-item>
             <q-item-section avatar>
               <q-avatar
                 rounded
-                style="background-color: #007fff"
+                style="background-color: #057407"
                 text-color="white"
                 icon="engineering"
               >
@@ -150,45 +96,45 @@
 
             <q-item-section>
               <q-item-label><b>CEO PROJECTS</b></q-item-label>
-              <q-item-label caption> Project List </q-item-label>
+              <p>
+                <b style="font-size: 20px; color:#057407 ;">{{
+                  storeITEquipment.itequipmentsCount
+                }}</b>
+              </p>
             </q-item-section>
           </q-item>
-        </q-card-section>
 
-        <q-separator vertical />
-
-        <q-card-section class="q-pa-md">
-          <div
-            class="text-center"
-            style="
-              display: flex;
-              justify-content: center;
-              align-items: center;
-              height: 100%;
-            "
-          >
-            <!-- Center horizontally -->
-            <p>
-              <b style="font-size: 30px">{{
-                storeITEquipment.itequipmentsCount
-              }}</b>
-            </p>
-          </div>
         </q-card-section>
-      </q-card-section>
-    </q-card>
+      </q-card>
+    </div>
+  </div>
+
+    <div v-if="employee">
+      <!-- <router-view /> -->
+      <CenterTable />
     </div>
   </div>
 </template>
 
 <script>
+import {defineComponent} from "vue";
+import CenterTable from "./CenterTable.vue";
 import { useStorePersonnelInfo } from "../stores/personnelStore";
 import { useEquipmentInfo } from "../stores/EquipmentsStore";
 import { useITEquipmentInfo } from "../stores/ItStore";
 import { useStoreProjectInfo } from "../stores/ProjectStore";
 
-export default {
+export default defineComponent({
   name: "DashboardView",
+  components: {
+    CenterTable,
+  },
+  data(){
+    return {
+      employee: false,
+
+    }
+  },
   setup() {
     const store = useStorePersonnelInfo();
     const storeEquipment = useEquipmentInfo();
@@ -205,45 +151,33 @@ export default {
       storeEquipment,
       storeITEquipment,
       storeProjectInfo,
-      lorem:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
     };
   },
-};
+});
 </script>
 
 <style scoped>
 .dashboard {
-  display: grid;
-  grid-template-columns: repeat(
-    auto-fit,
-    minmax(300px, 1fr)
-  );
-  gap: 30px;
-  padding: 3%;
+  padding: 2%;
+  justify-content: space-between;
 }
 
 .my-card {
-  box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.3);
+  box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.2);
+  margin: 1%;
 }
 
-
-/* @media (max-width: 768px) {
-  .dashboard {
-    grid-template-columns: repeat(
-      2,
-      1fr
-    );
-  }
+@media (max-width: 768px) {
+.responsive-text{
+  font-size: 1px !important;
 }
-
+}
 
 @media (max-width: 480px) {
-  .dashboard {
-    grid-template-columns: repeat(
-      1,
-      1fr
-    );
-  }
-} */
+
+.responsive-text{
+  font-size: 1px !important;
+}
+
+}
 </style>

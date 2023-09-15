@@ -25,6 +25,27 @@
 
         <q-space />
 
+        <q-input
+          class="GNL__toolbar-input"
+          outlined
+          dense
+          v-model="search"
+          color="bg-grey-7 shadow-1"
+          placeholder="Search for topics, locations & sources"
+        >
+          <template v-slot:prepend>
+            <q-icon v-if="search === ''" name="search" />
+            <q-icon
+              v-else
+              name="clear"
+              class="cursor-pointer"
+              @click="search = ''"
+            />
+          </template>
+        </q-input>
+
+        <q-space />
+
         <div class="q-gutter-sm row items-center no-wrap">
           <q-btn round dense flat color="grey-8" icon="notifications">
             <q-badge color="red" text-color="white" floating> 2 </q-badge>
@@ -49,65 +70,15 @@
     >
       <q-scroll-area class="fit">
         <q-list padding class="text-grey-8">
-          <q-item
-            clickable
-            v-ripple
-            @click="handleItemClick"
-            :class="{ 'active-item': selectedSection === 'dashboard' }"
-          >
-            <q-item-section avatar>
-              <q-avatar
-                rounded
-                :style="{
-                  'background-color':
-                    selectedSection === 'dashboard' ? '#057407' : '#5f6368',
-                }"
-                text-color="white"
-                icon="dashboard"
-              >
-              </q-avatar>
-            </q-item-section>
-
-            <q-item-section class="responsive-text">
-              <q-item-label> <b>Home</b> </q-item-label>
-            </q-item-section>
+          <q-item clickable v-ripple @click="toggleSection('dashboard')">
+            <q-icon name="dashboard" size="24px" class="q-mr-md" /> HOME
           </q-item>
-
-          <q-expansion-item group="somegroup" v-model="management">
-            <template v-slot:header>
-              <q-item-section avatar>
-                <q-avatar
-                  rounded
-                  text-color="white"
-                  icon="list"
-                  size="40px"
-                  :style="{
-                    'background-color':
-                      management === true ? '#057407' : '#5f6368',
-                  }"
-                ></q-avatar>
-              </q-item-section>
-              <q-item-section class="responsive-text">
-                <q-item-label> <b>Management</b> </q-item-label>
-              </q-item-section>
-            </template>
-
-            <q-item
-              clickable
-              v-ripple
-              @click="toggleSection('employee')"
-              :class="{ 'active-item': selectedSection === 'employee' }"
-            >
+          <q-expansion-item label="MANAGEMENT" expand-separator icon="list">
+            <q-item clickable v-ripple @click="toggleSection('employee')">
               <q-item-section class="q-ml-sm">
+                <!-- Icon added here -->
                 <q-item-label>
-                  <q-icon
-                    :style="{
-                      color:
-                        selectedSection === 'employee' ? '#006400' : 'inherit',
-                    }"
-                    name="groups"
-                    class="q-ml-md q-mr-md"
-                  />
+                  <q-icon name="groups" class="q-ml-md q-mr-md" />
                   Employee</q-item-label
                 >
               </q-item-section>
@@ -116,10 +87,6 @@
               <q-item-section class="q-ml-sm">
                 <q-item-label>
                   <q-icon
-                    :style="{
-                      color:
-                        selectedSection === 'machine' ? '#006400' : 'inherit',
-                    }"
                     name="precision_manufacturing"
                     class="q-ml-md q-mr-md"
                   />Machine Equipment</q-item-label
@@ -129,77 +96,38 @@
             <q-item clickable v-ripple @click="toggleSection('it')">
               <q-item-section class="q-ml-sm">
                 <q-item-label>
-                  <q-icon
-                    :style="{
-                      color: selectedSection === 'it' ? '#006400' : 'inherit',
-                    }"
-                    name="devices_other"
-                    class="q-ml-md q-mr-md"
-                  />IT Equipment</q-item-label
+                  <q-icon name="devices_other" class="q-ml-md q-mr-md" />IT
+                  Equipment</q-item-label
                 >
               </q-item-section>
             </q-item>
             <q-item clickable v-ripple @click="toggleSection('project')">
               <q-item-section class="q-ml-sm">
                 <q-item-label>
-                  <q-icon
-                    :style="{
-                      color:
-                        selectedSection === 'project' ? '#006400' : 'inherit',
-                    }"
-                    name="engineering"
-                    class="q-ml-md q-mr-md"
-                  />
+                  <q-icon name="engineering" class="q-ml-md q-mr-md" />
                   Project</q-item-label
                 >
               </q-item-section>
             </q-item>
           </q-expansion-item>
-
-          <q-expansion-item group="somegroup" v-model="settings">
-            <template v-slot:header>
-              <q-item-section avatar>
-                <q-avatar
-                  rounded
-                  :style="{
-                    'background-color':
-                      settings === true ? '#057407' : '#5f6368',
-                  }"
-                  text-color="white"
-                  icon="settings"
-                  size="40px"
-                ></q-avatar>
-              </q-item-section>
-              <q-item-section class="responsive-text">
-                <q-item-label> <b>Settings</b> </q-item-label>
-              </q-item-section>
-            </template>
-            <q-item
-              clickable
-              v-ripple
-              @click="toggleSection('user')"
-              :class="{ 'active-item': selectedSection === 'user' }"
-            >
+          <q-expansion-item label="SETTINGS" expand-separator icon="settings">
+            <q-item clickable v-ripple @click="toggleSection('user')">
               <q-item-section class="q-ml-sm">
                 <q-item-label>
-                  <q-icon
-                    :style="{
-                      color: selectedSection === 'user' ? '#006400' : 'inherit',
-                    }"
-                    name="people"
-                    class="q-ml-md q-mr-md"
-                  />
+                  <q-icon name="people" class="q-ml-md q-mr-md" />
                   User</q-item-label
                 >
               </q-item-section>
             </q-item>
           </q-expansion-item>
+
         </q-list>
       </q-scroll-area>
     </q-drawer>
-    <!-- <q-page-container>
+
+    <q-page-container>
       <router-view />
-    </q-page-container> -->
+    </q-page-container>
     <q-page-container v-if="DashboardView">
       <DashboardView />
     </q-page-container>
@@ -224,7 +152,8 @@
 
 <script>
 import { defineComponent, ref } from "vue";
-// import EssentialLink from "components/EssentialLink.vue";
+
+// import { fasEarthAmericas, fasFlask } from "@quasar/extras/fontawesome-v6";
 import CenterTable from "components/CenterTable.vue";
 import MachineTable from "components/MachineTable.vue";
 import ItTable from "components/ItTable.vue";
@@ -232,49 +161,26 @@ import ProjectTable from "components/ProjectTable.vue";
 import UserTable from "components/UserTable.vue";
 import DashboardView from "src/components/DashboardView.vue";
 
-const linksList = [
-  {
-    title: "Admin",
-    // caption: 'quasar.dev',
-    caption: "",
-    icon: "home",
-    link: "https://quasar.dev",
-  },
-  {
-    title: "Github",
-    caption: "github.com/quasarframework",
-    icon: "code",
-    link: "https://github.com/quasarframework",
-  },
-];
-
-export default defineComponent({
-  name: "MainLayout",
-
-  components: {
-    // EssentialLink,
-    CenterTable,
-    MachineTable,
-    ProjectTable,
-    UserTable,
-    ItTable,
-    DashboardView,
-  },
+export default  {
+  name: "NavBar",
 
   setup() {
     const leftDrawerOpen = ref(false);
+    const search = ref("");
+
+    function toggleLeftDrawer() {
+      leftDrawerOpen.value = !leftDrawerOpen.value;
+    }
 
     return {
-      essentialLinks: linksList,
       leftDrawerOpen,
-      toggleLeftDrawer() {
-        leftDrawerOpen.value = !leftDrawerOpen.value;
-      },
+      search,
+      toggleLeftDrawer,
     };
   },
+
   data() {
     return {
-      selectedSection: "dashboard",
       submenuOpen: false,
       showEmployee: false,
       showMachine: false,
@@ -282,15 +188,9 @@ export default defineComponent({
       showUser: false,
       showIt: false,
       DashboardView: true,
-      management: false,
-      settings: false,
     };
   },
   methods: {
-    handleItemClick() {
-      // Call both functions here
-      this.toggleSection("dashboard");
-    },
     toggleSubMenu() {
       this.submenuOpen = !this.submenuOpen;
     },
@@ -305,22 +205,11 @@ export default defineComponent({
       this.showProject = section === "project";
       this.showUser = section === "user";
       this.DashboardView = section === "dashboard";
-      if (section === "dashboard") {
-        this.management = false; // Close management expansion item
-        this.settings = false; // Close settings expansion item
-      } else {
-      }
-      if (this.selectedSection === section) {
-        // If the clicked section is already open, close it
-        this.selectedSection = null;
-      } else {
-        this.selectedSection = null;
-        this.selectedSection = section;
-      }
     },
   },
-});
+};
 </script>
+
 <style scoped>
 .GNL__toolbar {
   height: 64px;
