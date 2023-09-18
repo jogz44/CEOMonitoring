@@ -7,6 +7,9 @@ const routes = [
       { path: '', component: () => import('pages/IndexPage.vue') }
     ]
   },
+  // {
+  //   path: ''
+  // },
   {
     path: '/login',
     component: () => import ('pages/LoginPage.vue'),
@@ -14,6 +17,10 @@ const routes = [
   {
     path: '/navbar',
     component: () => import ('layouts/NavBar.vue'),
+  },
+  {
+    path: '/Test',
+    component: () => import ('pages/TestOne.vue'),
   },
   // Always leave this as last one,
   // but you can also remove it
