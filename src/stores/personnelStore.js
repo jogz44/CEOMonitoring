@@ -6,6 +6,7 @@ export const useStorePersonnelInfo = defineStore("personnelinfo", {
     personnels: [],
     personnel: [],
     personnelsCount: 0,
+    
   }),
 
   actions: {
@@ -17,6 +18,8 @@ export const useStorePersonnelInfo = defineStore("personnelinfo", {
 
         this.personnels = response.data;
         this.personnelsCount = response.data.length;
+
+
         console.log("res=", this.personnels);
         console.log("count =>", this.personnelsCount)
       } catch (error) {

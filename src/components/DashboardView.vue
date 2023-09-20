@@ -3,7 +3,7 @@
     <div class="row dashboard" v-if="menu">
       <div class="col-12 col-sm-6 col-md-3 col-lg-3">
         <q-card class="my-card" bordered>
-          <q-card-section horizontal class="content" @click="CeoEmployee">
+          <q-card-section horizontal @click="CeoEmployee">
             <q-item>
               <q-item-section avatar>
                 <q-avatar
@@ -42,7 +42,7 @@
               </q-item-section>
 
               <q-item-section>
-                <q-item-label><b>MACHINE EQUIPMENT</b></q-item-label>
+                <q-item-label><b>MACHINERY</b></q-item-label>
                 <p>
                   <b style="font-size: 20px; color: #057407">{{
                     storeEquipment.equipmentsCount
@@ -97,7 +97,7 @@
                 <q-item-label><b>CEO PROJECTS</b></q-item-label>
                 <p>
                   <b style="font-size: 20px; color: #057407">{{
-                    storeITEquipment.itequipmentsCount
+                    storeProjectInfo.projectsCount
                   }}</b>
                 </p>
               </q-item-section>
@@ -107,32 +107,148 @@
       </div>
     </div>
 
-    <div>
+    <!-- chart viewing -->
+    <div class="row dashboard">
+      <div class="col-12 col-sm-8 col-md-8 col-lg-8">
+        <q-card class="my-card" bordered>
+          <q-card-section>
+            <pie-chart :chart-data="chartData" class="pie" />
+          </q-card-section>
+        </q-card>
+      </div>
+      <div class="col-12 col-sm-4 col-md-4 col-lg-4">
+        <q-card class="my-card" bordered>
+          <q-card-section>
+            <q-card>
+              <q-card-section>
+                <p><b style="font-size: 14px">Total Project Cost : </b></p>
+              </q-card-section>
+            </q-card>
 
+            <q-card class="q-mt-sm">
+              <q-card-section>
+                <p>
+                  <b style="font-size: 20px; color: #057407">PHP </b>
+                  <br />
+                  <b
+                    style="color: #057407; text-align: center; display: block"
+                    class="responsive-text"
+                    >{{ formatProjectCost(storeProjectInfo.projectCost) }}</b
+                  >
+                </p>
+              </q-card-section>
+            </q-card>
+
+            <q-card class="q-mt-sm">
+              <q-card-section>
+                <p>
+                  <b style="font-size: 14px"
+                    >Engineering Projects : <br />
+                    <p>
+                      <b
+                        style="
+                          font-size: 20px;
+                          color: #057407;
+                          text-align: center;
+                          display: block;
+                        "
+                        >{{ storeProjectInfo.projectsCount }}</b
+                      >
+                    </p></b
+                  >
+                </p>
+              </q-card-section>
+            </q-card>
+          </q-card-section>
+        </q-card>
+      </div>
+    </div>
+
+    <div class="row chart">
+      <div class="col-12 col-sm-4 col-md-4 col-lg-4">
+        <q-card class="my-card" bordered>
+          <q-card-section>
+            <q-card>
+              <p class="q-pa-md" style="text-align: center">
+                <b style="font-size: 18px; color: #057407"
+                  >MACHINE EQUIPMENT
+                </b>
+              </p>
+            </q-card>
+
+            <p>
+              <b>
+                Heavy Equipment:
+                <span style="font-size: 18px; color: #057407">{{
+                  storeEquipment.heavyEquipmentsCount
+                }}</span></b
+              >
+            </p>
+            <p>
+              <b>
+                Light Equipment:
+                <span style="font-size: 18px; color: #057407">{{
+                  storeEquipment.lightEquipmentsCount
+                }}</span></b
+              >
+            </p>
+          </q-card-section>
+        </q-card>
+      </div>
+      <div class="col-12 col-sm-4 col-md-4 col-lg-4">
+        <q-card class="my-card" bordered>
+          <q-card-section>
+            <q-card>
+              <p class="q-pa-md" style="text-align: center">
+                <b style="font-size: 18px; color: #057407">IT EQUIPMENT </b>
+              </p>
+            </q-card>
+          </q-card-section>
+        </q-card>
+      </div>
+      <div class="col-12 col-sm-4 col-md-4 col-lg-4">
+        <q-card class="my-card" bordered>
+          <q-card-section>
+            <q-card>
+              <p class="q-pa-md" style="text-align: center">
+                <b style="font-size: 18px; color: #057407">PROJECT NAMES </b>
+              </p>
+            </q-card>
+            <q-card>
+              <q-table
+                dense
+                :rows="storeProjectInfo.projects"
+                :columns="columns"
+              >
+                <template v-slot:body-cell-TargetAccomplished="{ row }">
+                  <q-td>
+                    {{ formatDate(row.TargetAccomplished) }}
+                  </q-td>
+                </template>
+              </q-table>
+            </q-card>
+          </q-card-section>
+        </q-card>
+      </div>
     </div>
 
     <div v-if="employee">
-      <!-- <router-view /> -->
-
       <CenterTable />
     </div>
     <div v-if="machine">
-      <!-- <router-view /> -->
       <MachineTable />
     </div>
     <div v-if="it">
-      <!-- <router-view /> -->
       <ItTable />
     </div>
     <div v-if="projects">
-      <!-- <router-view /> -->
       <ProjectTable />
     </div>
   </div>
 </template>
 
 <script>
-
+import PieChart from "../components/PieChart.vue";
 import { defineComponent } from "vue";
 import CenterTable from "./CenterTable.vue";
 import MachineTable from "./MachineTable.vue";
@@ -143,7 +259,6 @@ import { useEquipmentInfo } from "../stores/EquipmentsStore";
 import { useITEquipmentInfo } from "../stores/ItStore";
 import { useStoreProjectInfo } from "../stores/ProjectStore";
 
-
 export default defineComponent({
   name: "DashboardView",
   components: {
@@ -151,6 +266,7 @@ export default defineComponent({
     ItTable,
     ProjectTable,
     MachineTable,
+    PieChart,
   },
   data() {
     return {
@@ -159,32 +275,94 @@ export default defineComponent({
       machine: false,
       it: false,
       projects: false,
-    }
+
+      chartData: {
+        labels: ["Active", "End of Contract"],
+        datasets: [
+          {
+            data: [10, 30],
+            backgroundColor: ["#83db7b", "#4dbf50"],
+          },
+        ],
+      },
+
+      columns: [
+        {
+          name: "ProjectName",
+          required: true,
+          label: "Project Name",
+          align: "left",
+          field: (row) => row.ProjectName,
+          format: (val) => `${val}`,
+          sortable: true,
+        },
+        {
+          name: "TargetAccomplished",
+          label: "Target Accomplished",
+          field: "TargetAccomplished",
+          align: "left",
+        },
+      ],
+    };
   },
+  // computed: {
+  //   latestProjects() {
+  //     // Sort projects by TargetAccomplished date in descending order
+  //     const sortedProjects = this.storeProjectInfo.projects.sort(
+  //       (a, b) =>
+  //         new Date(b.TargetAccomplished) - new Date(a.TargetAccomplished)
+  //     );
+
+  //     // Take the latest 3 projects
+  //     return sortedProjects.slice(0, 3);
+  //   },
+  // },
   methods: {
     CeoEmployee() {
       this.employee = true;
       this.machine = false;
-      this.it= false;
-      this.projects= false;
+      this.it = false;
+      this.projects = false;
     },
     MachineEquipment() {
       this.employee = false;
       this.machine = true;
-      this.it= false;
-      this.projects= false;
+      this.it = false;
+      this.projects = false;
     },
     ItEquipment() {
       this.employee = false;
       this.machine = false;
-      this.it= true;
-      this.projects= false;
+      this.it = true;
+      this.projects = false;
     },
     CeoProjects() {
-      this.employee = false ;
+      this.employee = false;
       this.machine = false;
-      this.it= false;
-      this.projects= true;
+      this.it = false;
+      this.projects = true;
+    },
+    formatDate(value) {
+      if (!value) return "";
+
+      const date = new Date(value);
+
+      const year = date.getFullYear();
+      const month = (date.getMonth() + 1).toString().padStart(2, "0");
+      const day = date.getDate().toString().padStart(2, "0");
+
+      return `${year}-${month}-${day}`;
+    },
+    formatProjectCost(cost) {
+      if (typeof cost !== "number") {
+        return cost; // Return as is if not a number
+      }
+
+      // Format the number with commas for thousands and display with 2 decimal places
+      return cost.toLocaleString("en-US", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      });
     },
   },
   setup() {
@@ -212,22 +390,50 @@ export default defineComponent({
 .dashboard {
   padding: 2%;
   justify-content: space-between;
+  display: flex;
+  flex-wrap: wrap;
+}
+.chart {
+  padding-left: 2%;
+  padding-right: 2%;
+  justify-content: space-between;
+  margin-top: -10px;
+}
+.pie {
 }
 
 .my-card {
   box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.2);
   margin: 1%;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
-
-@media (max-width: 768px) {
+@media (max-width: 576px) {
+  /* Small screens (sm) */
   .responsive-text {
-    font-size: 1px !important;
+    font-size: 16px !important;
   }
 }
 
-@media (max-width: 480px) {
+@media (min-width: 576px) and (max-width: 768px) {
+  /* Medium screens (md) */
   .responsive-text {
-    font-size: 1px !important;
+    font-size: 18px !important;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 992px) {
+  /* Large screens (lg) */
+  .responsive-text {
+    font-size: 20px !important;
+  }
+}
+
+@media (min-width: 992px) {
+  /* Extra-large screens (xl) */
+  .responsive-text {
+    font-size: 28px !important;
   }
 }
 </style>

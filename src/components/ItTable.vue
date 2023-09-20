@@ -80,19 +80,30 @@
                 <q-input
                   filled
                   v-model="editedItem.MachineName"
-                  label="Machine Name"
+                  label="Equipment Name"
                   dense
                   class="q-pa-sm"
                 />
               </div>
               <div class="col-12">
-                <q-input
+                <div class="q-gutter-md">
+                  <q-select
+                    filled
+                    v-model="editedItem.EquipmentType"
+                    dense
+                    use-input
+                    class="q-pa-sm"
+                    :options="options"
+                    label="Equipment Type"
+                  />
+                </div>
+                <!-- <q-input
                   filled
                   v-model="editedItem.EquipmentType"
                   label="Equipment Type"
                   dense
                   class="q-pa-sm"
-                />
+                /> -->
               </div>
             </div>
 
@@ -332,6 +343,28 @@ export default {
         },
         Remarks: "",
       },
+      options: [
+        "Computer",
+        "Printer",
+        "Multi-function Printer",
+        "Laptop",
+        "Projector",
+        "Mouse",
+        "Telephone",
+        "Router",
+      ],
+      // filterFn(val, update) {
+      //   if (val === "") {
+      //     update(() => {
+      //       this.options.value = options;
+      //     })
+      //     return
+      //   }
+      //   update(() => {
+      //     const needle = val.toLowerCase()
+      //     options.value = stringOptions.filter(v => v.toLowerCase().indexOf(needle) > -1)
+      //   })
+      // },
       columns: [
         {
           name: "MachineName",

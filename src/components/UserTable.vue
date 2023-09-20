@@ -45,6 +45,14 @@
             @click="deleteItem(row)"
           >
           </q-btn>
+          <q-btn
+            icon="security"
+            flat
+            round
+            color="primary"
+            @click="accessItem(row)"
+          >
+          </q-btn>
         </div>
       </template>
     </q-table>
@@ -161,6 +169,34 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
+
+    <!-- USER ACCESS BUTTON DIALOG -->
+    <q-dialog v-model="UserAccess">
+      <q-card style="width: 40%; height: 35%">
+        <q-card-section>
+          <div class="text-h6">User Access</div>
+        </q-card-section>
+        <q-separator />
+          <div class="q-pa-lg">
+            <q-option-group
+              v-model="group"
+              :options="options"
+              color="green"
+              type="checkbox"
+            />
+          </div>
+          <q-card-actions align="right">
+          <q-btn flat label="Cancel" color="primary" v-close-popup size="md" />
+          <q-btn
+            label="Save"
+            color="secondary"
+            size="md"
+            v-close-popup
+            @click="save"
+          />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </div>
 </template>
 
@@ -174,6 +210,7 @@ export default {
       myEquipments: [],
       filter: "",
       dialogVisible: false,
+      UserAccess: false,
       secondDialog: false,
       MaintenanceDelete: false,
       editedIndex: -1,
@@ -264,13 +301,15 @@ export default {
 
       return `${year}-${month}-${day}`;
     },
+    accessItem(item) {
+      this.UserAccess = true;
+    },
     editItem(item) {
       const store = useStoreUserInfo();
 
       store.GetUser(item._id).then((res) => {
         this.editedItem = store.user;
         store.fetchUser();
-
 
         console.log("sdasda=", this.editedItem);
       });
@@ -355,8 +394,28 @@ export default {
     return {
       store,
       model: ref(null),
+      group: ref(['display']),
+      options: [
+        {
+          label: 'Create',
+          value: 'create'
+        },
+        {
+          label: 'Remove',
+          value: 'remove'
+        },
+        {
+          label: 'Update',
+          value: 'update'
+        },
+        {
+          label: 'Display',
+          value: 'display'
+        }
+      ]
     };
   },
+
 };
 </script>
 

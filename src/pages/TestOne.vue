@@ -1,36 +1,49 @@
 <template>
-  <q-page>
+  <q-layout>
     <q-page-container>
-      <q-card class="q-mb-md">
-        <q-card-section>
-          <canvas ref="chart"></canvas>
-        </q-card-section>
-      </q-card>
+      <q-page>
+        <q-page-container>
+          <pie-chart :chart-data="chartData" />
+        </q-page-container>
+      </q-page>
     </q-page-container>
-  </q-page>
+  </q-layout>
 </template>
 
 <script>
-import { Doughnut, mixins } from 'vue-chartjs';
+import { ref } from "vue";
+import PieChart from "../components/PieChart.vue";
+import { useStorePersonnelInfo } from "src/stores/personnelStore";
+
+const stringOptions = ["Active", "End of Contract"];
 
 export default {
-  extends: Doughnut,
-  mixins: [mixins.reactiveData],
+  components: {
+    PieChart,
+  },
   data() {
     return {
       chartData: {
-        labels: ['Red', 'Blue', 'Yellow'],
+        labels: ["Active", "End of Contract"],
         datasets: [
           {
-            data: [300, 50, 100],
-            backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'],
+            data: [10, 30],
+            backgroundColor: ["#FF6384", "#36A2EB"],
           },
         ],
       },
     };
   },
-  mounted() {
-    this.renderChart(this.chartData, { responsive: true, maintainAspectRatio: false });
-  },
+  setup(){
+    const options = ref(stringOptions);
+    const store = useStorePersonnelInfo();
+    store.fetchPersonnel();
+    return{
+      store,
+      stringOptions,
+      options,
+      model: ref(null)
+    }
+  }
 };
 </script>

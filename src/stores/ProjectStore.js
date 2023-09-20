@@ -6,6 +6,7 @@ export const useStoreProjectInfo = defineStore("projectinfo", {
     projects: [],
     project: [],
     projectsCount: 0,
+    projectCost: 0,
   }),
 
   actions: {
@@ -15,6 +16,12 @@ export const useStoreProjectInfo = defineStore("projectinfo", {
 
         this.projects = response.data;
         this.projectsCount = response.data.length;
+        
+        this.projectCost = response.data.reduce((totalCost, project) => {
+          return totalCost + project.TotalProjectCost;
+        }, 0);
+
+        console.log("Total Project Cost", this.projectCost);
         console.log("res=", this.projects);
         console.log("count =>", this.projectsCount);
       } catch (error) {

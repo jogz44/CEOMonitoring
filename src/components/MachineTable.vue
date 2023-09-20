@@ -86,13 +86,23 @@
                 />
               </div>
               <div class="col-12">
-                <q-input
+                <div class="q-gutter-md">
+                  <q-select
+                    filled
+                    v-model="editedItem.EquipmentType"
+                    dense
+                    class="q-pa-sm"
+                    :options="options"
+                    label="Equipment Type"
+                  />
+                  <!-- <q-input
                   filled
                   v-model="editedItem.EquipmentType"
                   label="Equipment Type"
                   dense
                   class="q-pa-sm"
-                />
+                /> -->
+                </div>
               </div>
             </div>
 
@@ -295,7 +305,6 @@
 import { ref } from "vue";
 import { useEquipmentInfo } from "../stores/EquipmentsStore";
 
-
 export default {
   data() {
     return {
@@ -333,6 +342,7 @@ export default {
         },
         Remarks: "",
       },
+      options: ["Heavy", "Light"],
       columns: [
         {
           name: "MachineName",

@@ -19,7 +19,7 @@ const routes = [
     component: () => import ('layouts/NavBar.vue'),
   },
   {
-    path: '/Test',
+    path: '/test',
     component: () => import ('pages/TestOne.vue'),
   },
   // Always leave this as last one,

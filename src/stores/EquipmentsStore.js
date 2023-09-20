@@ -6,6 +6,10 @@ export const useEquipmentInfo = defineStore("equipmentinfo", {
     equipments: [],
     equipment: [],
     equipmentsCount: 0,
+    filteredEquipments: [],
+    heavyEquipmentsCount: 0,
+    lightEquipmentsCount: 0,
+    selectedEquipmentType: null,
   }),
 
   actions: {
@@ -17,6 +21,25 @@ export const useEquipmentInfo = defineStore("equipmentinfo", {
 
         this.equipments = response.data;
         this.equipmentsCount = response.data.length;
+
+        this.filteredEquipments = response.data.filter(
+          (equipments) =>
+            equipments.EquipmentType === "Heavy" ||
+            equipments.EquipmentType === "Light"
+        );
+
+        this.heavyEquipmentsCount = this.filteredEquipments.filter(
+          (equipments) => equipments.EquipmentType === "Heavy"
+        ).length;
+
+        this.lightEquipmentsCount = this.filteredEquipments.filter(
+          (equipments) => equipments.EquipmentType === "Light"
+        ).length;
+        // Count the occurrences of the selected equipment type
+
+        console.log("Filtered equipments:", this.filteredEquipments);
+        console.log("Heavy equipments count:", this.heavyEquipmentsCount);
+        console.log("Light equipments count:", this.lightEquipmentsCount);
         console.log("res=", this.equipments);
         console.log("res=", this.equipmentsCount);
       } catch (error) {
