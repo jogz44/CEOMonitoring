@@ -9,7 +9,6 @@ export const useEquipmentInfo = defineStore("equipmentinfo", {
     filteredEquipments: [],
     heavyEquipmentsCount: 0,
     lightEquipmentsCount: 0,
-    selectedEquipmentType: null,
   }),
 
   actions: {

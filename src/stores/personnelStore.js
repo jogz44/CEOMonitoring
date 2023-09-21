@@ -1,13 +1,26 @@
 import { defineStore } from "pinia";
 import axios from "axios";
+import { date } from "quasar";
 
 export const useStorePersonnelInfo = defineStore("personnelinfo", {
   state: () => ({
     personnels: [],
     personnel: [],
     personnelsCount: 0,
-    
+
   }),
+  getters:{
+    ActiveCount(){
+      return this.personnels.reduce((p,c)=>{
+        return new Date(c.employmentDtl[0].DteEnded) >= new Date() ? p+1:p
+      },0)
+    },
+    // EndCount(){
+    //   return this.personnels.reduce((p,c)=>{
+    //     return new Date(c.employmentDtl[0].DteEnded) <= new Date() ? p+1:p
+    //   },0)
+    // }
+  },
 
   actions: {
     async fetchPersonnel() {

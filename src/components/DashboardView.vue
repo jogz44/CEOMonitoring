@@ -19,7 +19,7 @@
                 <q-item-label><b>CEO EMPLOYEE</b></q-item-label>
                 <p>
                   <b style="font-size: 20px; color: #057407">{{
-                    store.personnelsCount
+                    store.ActiveCount
                   }}</b>
                 </p>
               </q-item-section>
@@ -112,7 +112,7 @@
       <div class="col-12 col-sm-8 col-md-8 col-lg-8">
         <q-card class="my-card" bordered>
           <q-card-section>
-            <pie-chart :chart-data="chartData" class="pie" />
+            <pie-chart :chart-data="ChartDatas" class="pie" />
           </q-card-section>
         </q-card>
       </div>
@@ -203,6 +203,15 @@
                 <b style="font-size: 18px; color: #057407">IT EQUIPMENT </b>
               </p>
             </q-card>
+            <q-card>
+              <q-table dense :rows="storeITEquipment.itequipments" :columns="itcolumns">
+                <template v-slot:body-cell-DateStarted="{ row }">
+                  <q-td>
+                    {{ formatDate(row.DateStarted) }}
+                  </q-td>
+                </template>
+              </q-table>
+            </q-card>
           </q-card-section>
         </q-card>
       </div>
@@ -215,14 +224,10 @@
               </p>
             </q-card>
             <q-card>
-              <q-table
-                dense
-                :rows="storeProjectInfo.projects"
-                :columns="columns"
-              >
-                <template v-slot:body-cell-TargetAccomplished="{ row }">
+              <q-table dense :rows="latestProject" :columns="columns">
+                <template v-slot:body-cell-DateStarted="{ row }">
                   <q-td>
-                    {{ formatDate(row.TargetAccomplished) }}
+                    {{ formatDate(row.DateStarted) }}
                   </q-td>
                 </template>
               </q-table>
@@ -276,16 +281,32 @@ export default defineComponent({
       it: false,
       projects: false,
 
-      chartData: {
-        labels: ["Active", "End of Contract"],
-        datasets: [
-          {
-            data: [10, 30],
-            backgroundColor: ["#83db7b", "#4dbf50"],
-          },
-        ],
-      },
-
+      // chartData: {
+      //   labels: ["Active", "End of Contract"],
+      //   datasets: [
+      //     {
+      //       data: [10,20],
+      //       backgroundColor: ["#83db7b", "#4dbf50"],
+      //     },
+      //   ],
+      // },
+      itcolumns: [
+        {
+          name: "EquipmentType",
+          required: true,
+          label: "Equipment Type",
+          align: "left",
+          field: (row) => row.EquipmentType,
+          format: (val) => `${val}`,
+          sortable: true,
+        },
+        {
+          name: "ItemCount",
+          label: "Item Count",
+          field: "ItemCount",
+          align: "left",
+        },
+      ],
       columns: [
         {
           name: "ProjectName",
@@ -297,27 +318,52 @@ export default defineComponent({
           sortable: true,
         },
         {
-          name: "TargetAccomplished",
-          label: "Target Accomplished",
-          field: "TargetAccomplished",
+          name: "DateStarted",
+          label: "Date Started",
+          field: "DateStarted",
           align: "left",
         },
       ],
     };
   },
-  // computed: {
-  //   latestProjects() {
-  //     // Sort projects by TargetAccomplished date in descending order
-  //     const sortedProjects = this.storeProjectInfo.projects.sort(
-  //       (a, b) =>
-  //         new Date(b.TargetAccomplished) - new Date(a.TargetAccomplished)
-  //     );
-
-  //     // Take the latest 3 projects
-  //     return sortedProjects.slice(0, 3);
-  //   },
-  // },
+  computed: {
+    ChartDatas() {
+      // Sort projects by TargetAccomplished date in descending order
+      const activecount = this.store.ActiveCount;
+      const inactive = this.store.personnelsCount - activecount;
+      const chartData = {
+        labels: ["Active", "End of Contract"],
+        datasets: [
+          {
+            data: [activecount, inactive],
+            backgroundColor: ["#83db7b", "#4dbf50"],
+          },
+        ],
+      };
+      return chartData;
+    },
+    latestProject() {
+      const sortedProjects = this.storeProjectInfo.projects
+        .slice()
+        .sort((a, b) => new Date(b.DateStarted) - new Date(a.DateStarted));
+      return sortedProjects.slice(0, 3);
+    },
+  },
+  created() {
+    // console.log("datasets=",this.chartData.datasets[0].data)
+    // console.log("datasets2=",this.chartData.datasets[0].data)
+    // this.store.fetchPersonnel().then(res=>{
+    // //   this.chartData.datasets[0].data[0]=this.store.ActiveCount;
+    // // this.chartData.datasets[0].data[1]=this.store.personnelsCount;
+    // // console.log("datasets2=",this.chartData)
+    // this.updatechart();
+    // })
+  },
   methods: {
+    updatechart() {
+      this.chartData.datasets[0].data[2] = this.store.ActiveCount;
+      this.chartData.datasets[0].data[1] = this.store.personnelsCount;
+    },
     CeoEmployee() {
       this.employee = true;
       this.machine = false;
@@ -365,6 +411,7 @@ export default defineComponent({
       });
     },
   },
+
   setup() {
     const store = useStorePersonnelInfo();
     const storeEquipment = useEquipmentInfo();

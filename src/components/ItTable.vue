@@ -345,13 +345,12 @@ export default {
       },
       options: [
         "Computer",
-        "Printer",
         "Multi-function Printer",
         "Laptop",
         "Projector",
         "Mouse",
         "Telephone",
-        "Router",
+        "Network Items",
       ],
       // filterFn(val, update) {
       //   if (val === "") {

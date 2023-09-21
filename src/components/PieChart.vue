@@ -24,6 +24,9 @@ export default {
   },
   methods: {
     renderChart() {
+      if (this.chart) {
+      this.chart.destroy();
+    }
       const ctx = this.$refs.pieChart.getContext("2d");
       this.chart = new Chart(ctx, {
         type: "pie",
