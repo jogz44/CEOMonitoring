@@ -204,12 +204,12 @@
               </p>
             </q-card>
             <q-card>
-              <q-table dense :rows="storeITEquipment.itequipments" :columns="itcolumns">
-                <template v-slot:body-cell-DateStarted="{ row }">
+              <q-table dense :rows="storeITEquipment.itequipmenttype" :columns="itcolumns">
+                <!-- <template v-slot:body-cell-ItemCount="{ row }">
                   <q-td>
-                    {{ formatDate(row.DateStarted) }}
+                    {{ row.ItemCount }}
                   </q-td>
-                </template>
+                </template> -->
               </q-table>
             </q-card>
           </q-card-section>
@@ -303,8 +303,8 @@ export default defineComponent({
         {
           name: "ItemCount",
           label: "Item Count",
-          field: "ItemCount",
-          align: "left",
+          field: "count",
+          align: "center",
         },
       ],
       columns: [
@@ -336,7 +336,7 @@ export default defineComponent({
         datasets: [
           {
             data: [activecount, inactive],
-            backgroundColor: ["#83db7b", "#4dbf50"],
+            backgroundColor: ["#77DD76", "#FFB6B3"],
           },
         ],
       };
@@ -420,7 +420,8 @@ export default defineComponent({
 
     store.fetchPersonnel();
     storeEquipment.fetchEquipment();
-    storeITEquipment.fetchITEquipment();
+    storeITEquipment.fetchDashboard();
+
     storeProjectInfo.fetchProject();
 
     return {

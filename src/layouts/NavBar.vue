@@ -120,7 +120,6 @@
               </q-item-section>
             </q-item>
           </q-expansion-item>
-
         </q-list>
       </q-scroll-area>
     </q-drawer>
@@ -161,7 +160,7 @@ import ProjectTable from "components/ProjectTable.vue";
 import UserTable from "components/UserTable.vue";
 import DashboardView from "src/components/DashboardView.vue";
 
-export default  {
+export default {
   name: "NavBar",
 
   setup() {

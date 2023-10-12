@@ -6,6 +6,7 @@ export const useITEquipmentInfo = defineStore("itequipmentinfo", {
     itequipments: [],
     itequipment: [],
     itequipmentsCount: 0,
+    itequipmenttype:[]
   }),
 
   actions: {
@@ -17,8 +18,8 @@ export const useITEquipmentInfo = defineStore("itequipmentinfo", {
 
         this.itequipments = response.data;
         this.itequipmentsCount = response.data.length;
-        console.log("res=", this.itequipments);
-        console.log("res=", this.itequipmentsCount);
+        console.log("resItEquipment=", this.itequipments);
+        console.log("resEquipment=", this.itequipmentsCount);
       } catch (error) {
         console.log(`Error fetching tasks: ${error}`);
       }
@@ -92,6 +93,22 @@ export const useITEquipmentInfo = defineStore("itequipmentinfo", {
         );
       } catch (error) {
         console.log(`Unable to Delete ${error}`);
+      }
+    },
+    async fetchDashboard() {
+      try {
+        const response = await axios.get(
+          "http://10.0.1.23:5000/api/ITEquipments/dashboard"
+        );
+
+        // this.itequipments = response.data;
+        // this.itequipmentsCount = response.data.length;
+        // console.log("resItEquipment=", this.itequipments);
+        console.log("resEquipment=", response.data);
+          this.itequipmenttype=response.data
+
+      } catch (error) {
+        console.log(`Error fetching tasks: ${error}`);
       }
     },
   },
