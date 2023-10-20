@@ -7,7 +7,7 @@ export const useStorePersonnelInfo = defineStore("personnelinfo", {
     personnels: [],
     personnel: [],
     personnelsCount: 0,
-
+    designationtype: [],
   }),
   getters:{
     ActiveCount(){
@@ -113,6 +113,22 @@ export const useStorePersonnelInfo = defineStore("personnelinfo", {
         );
       } catch (error) {
         console.log(`Unable to Delete ${error}`);
+      }
+    },
+    async fetchDashboard() {
+      try {
+        const response = await axios.get(
+          "http://10.0.1.23:5000/api/Personnels/dashboard"
+        );
+
+        // this.itequipments = response.data;
+        // this.itequipmentsCount = response.data.length;
+        // console.log("resItEquipment=", this.itequipments);
+        console.log("resDesignation=", response.data);
+          this.designationtype=response.data
+
+      } catch (error) {
+        console.log(`Error fetching tasks: ${error}`);
       }
     },
   },

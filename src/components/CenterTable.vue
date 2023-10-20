@@ -28,7 +28,7 @@
         </q-input>
       </template>
 
-      <template v-slot:body-cell-DteStarted="{ row }">
+      <template v-slot:body-cell-DteStarted="{ row }" >
         <q-td>
           {{ row.employmentDtl[0].DteStarted }}
         </q-td>
@@ -217,7 +217,7 @@
           dense
           :rows="store.personnel.employmentDtl"
           :columns="history"
-          :filter="filter"
+          :filter="filters"
           row-key="id"
         >
           <template v-slot:top-right>
@@ -225,7 +225,7 @@
               borderless
               dense
               debounce="300"
-              v-model="filter"
+              v-model="filters"
               placeholder="Search"
             >
               <template v-slot:append>
@@ -365,6 +365,7 @@ export default {
   data() {
     return {
       filter: "",
+      filters: "",
       dialogVisible: false,
       secondDialog: false,
       editedIndex: -1,
@@ -423,26 +424,26 @@ export default {
         {
           name: "DteStarted",
           label: "Date Started",
-          field: "row.employmentDtl.DteStarted[0]",
+          field: "employmentDtl[0].DteStarted",
           sortable: true,
           align: "center",
         },
         {
           name: "de",
           label: "Date Ended",
-          field: "row.employmentDtl.DteEnded[0]",
+          field: "employmentDtl[0].DteEnded",
           align: "center",
         },
         {
           name: "designation",
           label: "Designation",
-          field: "row.employmentDtl.Designation",
+          field: "employmentDtl[0].Designation",
           align: "center",
         },
         {
           name: "charges",
           label: "Charges",
-          field: "row.employmentDtl.Charges",
+          field: "employmentDtl[0].Charges",
           align: "center",
         },
         {

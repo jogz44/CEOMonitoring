@@ -12,6 +12,7 @@
       :columns="columns"
       :filter="filter"
       row-key="id"
+      :rows-per-page-options="[20]"
     >
       <template v-slot:top-right>
         <q-input
@@ -29,17 +30,29 @@
 
       <template v-slot:body-cell-MaintenanceType="{ row }">
         <q-td>
-          {{ row.MaintenanceDtls[0].MaintenanceType }}
+          {{
+            row.MaintenanceDtls[0]
+              ? row.MaintenanceDtls[0].MaintenanceType
+              : null
+          }}
         </q-td>
       </template>
       <template v-slot:body-cell-MaintenanceDate="{ row }">
         <q-td>
-          {{ formatDate(row.MaintenanceDtls[0].MaintenanceDate) }}
+          {{
+            row.MaintenanceDtls[0]
+              ? formatDate(row.MaintenanceDtls[0].MaintenanceDate)
+              : null
+          }}
         </q-td>
       </template>
       <template v-slot:body-cell-MaintenanceDesc="{ row }">
         <q-td>
-          {{ row.MaintenanceDtls[0].MaintenanceDesc }}
+          {{
+            row.MaintenanceDtls[0]
+              ? row.MaintenanceDtls[0].MaintenanceDesc
+              : null
+          }}
         </q-td>
       </template>
 
@@ -65,14 +78,13 @@
       </template>
     </q-table>
 
+    <!-- DIALOG FOR DETAILS -->
     <q-dialog v-model="dialogVisible" persistent>
-      <q-card style="width: 30%; height: 60%">
+      <q-card style="width: 40%; height: 52%">
         <q-card-section>
-          <div class="text-h6">IT Equipment Details</div>
+          <div class="text-h6">IT EQUIPMENT DETAILS</div>
         </q-card-section>
-
         <q-separator />
-
         <q-card-section style="max-height: 50vh" class="scroll">
           <q-form>
             <div class="row">
@@ -97,16 +109,8 @@
                     label="Equipment Type"
                   />
                 </div>
-                <!-- <q-input
-                  filled
-                  v-model="editedItem.EquipmentType"
-                  label="Equipment Type"
-                  dense
-                  class="q-pa-sm"
-                /> -->
               </div>
             </div>
-
             <div class="row">
               <div class="col">
                 <q-input
@@ -140,24 +144,34 @@
             </div>
           </q-form>
         </q-card-section>
-        <q-card-actions align="right">
-          <q-btn flat label="Cancel" color="primary" v-close-popup size="md" />
+        <q-card-actions align="right" class="q-mr-md">
+          <q-btn flat label="Cancel" color="orange" v-close-popup size="md" />
           <q-btn
             label="Save"
-            color="secondary"
+            color="green-5"
             size="md"
             v-close-popup
             @click="save"
           />
         </q-card-actions>
+        <q-card class="q-px-lg q-pt-sm">
+          <q-btn
+            style="width: 100%"
+            class="btn-fixed-width"
+            color="green-10"
+            label="VIEW MAINTENANCE HISTORY"
+            icon="lightbulb_outline"
+            @click="ITMaintenanceDialog = true"
+          />
+        </q-card>
       </q-card>
+    </q-dialog>
 
+    <!-- DIALOG FOR MAINTENANCE -->
+    <q-dialog v-model="ITMaintenanceDialog">
       <q-card style="width: 50%; height: 60%">
-        <q-card-section style="max-height: 50vh" class="scroll">
-          <div class="text-h6">
-            Equipment Maintenance History
-            <q-btn label="Add Maintenance" @click="secondDialog = true"></q-btn>
-          </div>
+        <q-card-section class="scroll">
+          <div class="text-h6">MAINTENANCE HISTORY</div>
         </q-card-section>
         <q-table
           class="my-sticky-header-table"
@@ -165,7 +179,7 @@
           bordered
           title=""
           dense
-          :rows="store.itequipment.MaintenanceDtls"
+          :rows="maintenancedetailsOptions"
           :columns="history"
           :filter="filter"
           row-key="id"
@@ -207,15 +221,31 @@
                 flat
                 round
                 color="deep-orange"
-                @click="deleteMaintenance(editedItem._id, row._id)"
+                @click="deleteMaintenance(row._id)"
               >
               </q-btn>
             </div>
           </template>
         </q-table>
+
         <q-separator />
+        <div style="position: absolute; bottom: 10px; right: 10px">
+          <q-btn
+            label=""
+            size="15px"
+            @click="secondDialog = true"
+            icon="add"
+            color="green-10"
+            round
+            style="position: absolute; bottom: 0; right: 0"
+            ><q-tooltip class="white"
+              >Create new Maintenance History</q-tooltip
+            ></q-btn
+          >
+        </div>
       </q-card>
     </q-dialog>
+
     <q-dialog
       v-model="secondDialog"
       persistent
@@ -224,7 +254,7 @@
     >
       <q-card class="" style="width: 500px">
         <q-card-section>
-          <div class="text-h6">Add Maintenance</div>
+          <div class="text-h6">ADD MAINTENANCE</div>
         </q-card-section>
         <q-separator />
         <q-card-section>
@@ -249,6 +279,20 @@
               />
             </div>
           </div>
+          <!-- image for update/edit -->
+          <!-- <div class="row">
+            <div class="col">
+              <q-input
+                filled
+                v-model="editedItem.MaintenanceDtls.MaintenanceDesc"
+                hint="Maintenance Proof"
+                dense
+                class="q-pa-sm q-mb-sm"
+                type="file"
+                accept=".jpg, image/*"
+              />
+            </div>
+          </div> -->
           <div class="row">
             <div class="col">
               <q-input
@@ -264,10 +308,10 @@
         </q-card-section>
 
         <q-card-actions align="right">
-          <q-btn flat label="Cancel" color="primary" v-close-popup size="md" />
+          <q-btn flat label="Cancel" color="orange" v-close-popup size="md" />
           <q-btn
             label="Save"
-            color="secondary"
+            color="green-5"
             size="md"
             v-close-popup
             @click="savehistory(editedItem)"
@@ -311,6 +355,7 @@ export default {
     return {
       myEquipments: [],
       filter: "",
+      ITMaintenanceDialog: false,
       dialogVisible: false,
       secondDialog: false,
       MaintenanceDelete: false,
@@ -352,18 +397,6 @@ export default {
         "Telephone",
         "Network Items",
       ],
-      // filterFn(val, update) {
-      //   if (val === "") {
-      //     update(() => {
-      //       this.options.value = options;
-      //     })
-      //     return
-      //   }
-      //   update(() => {
-      //     const needle = val.toLowerCase()
-      //     options.value = stringOptions.filter(v => v.toLowerCase().indexOf(needle) > -1)
-      //   })
-      // },
       columns: [
         {
           name: "MachineName",
@@ -408,15 +441,6 @@ export default {
           field: "row.MaintenanceDtls.MaintenanceType",
           sortable: true,
         },
-        // {
-        //   name: "MaintenanceDesc",
-        //   align: "left",
-        //   label: "Maintenance Description",
-        //   field: "row.MaintenanceDtls.MaintenanceDesc",
-        //   sortable: true,
-        // },
-
-        // { name: "Remarks", align: "left", label: "Remarks", field: "Remarks" },
         {
           name: "actions",
           label: "Actions",
@@ -456,6 +480,16 @@ export default {
       ],
     };
   },
+  computed: {
+    maintenancedetailsOptions() {
+      if (this.editedItem.MaintenanceDtls) {
+        // console.log("maintenancedetails=",Object.values(this.editItem.MaintenanceDtls))
+        return Object.values(this.editedItem.MaintenanceDtls);
+      } else {
+        return {};
+      }
+    },
+  },
   methods: {
     // MaintenanceDelete1(id){
     //   this.MaintenanceDelete=true;
@@ -469,13 +503,14 @@ export default {
         EquipmentType: "",
         PropertyCustodian: "",
         SerialNo: "",
-        MaintenanceDtls: {
-          MaintenanceType: "",
-          MaintenanceDate: "",
-          MaintenanceDesc: "",
-        },
+        // MaintenanceDtls: {
+        //   MaintenanceType: "",
+        //   MaintenanceDate: "",
+        //   MaintenanceDesc: "",
+        // },
         Remarks: "",
       };
+
       this.dialogVisible = true;
     },
     formatDate(value) {
@@ -494,9 +529,10 @@ export default {
 
       store.GetITEquipment(item._id).then((res) => {
         this.editedItem = store.itequipment;
-        store.fetchITEquipment();
+        // store.fetchITEquipment();
         console.log("sdasda=", this.editedItem);
       });
+      console.log("thisthis=", this.editedItem.MaintenanceDtls);
       this.dialogVisible = true;
     },
 
@@ -508,7 +544,9 @@ export default {
       });
     },
 
-    deleteMaintenance(id, maintenanceid) {
+    deleteMaintenance(maintenanceid) {
+      console.log("editeditem=", this.editedItem);
+      const id = this.editedItem._id;
       console.log("Maintenance ID =>", id + "----" + maintenanceid);
 
       // const store = useEquipmentInfo();
@@ -520,14 +558,16 @@ export default {
       // const editedItemCopy = { ...this.editedItem.MaintenanceDtls };
       store.DeleteITMaintenance(id, maintenanceid).then((req) => {
         store.fetchITEquipment();
-        store.GetITEquipment(id);
+        store.GetITEquipment(id).then((res) => {
+          this.editedItem = store.itequipment;
+        });
       });
     },
 
     save() {
       const store = useITEquipmentInfo();
       const editedItemCopy = { ...this.editedItem };
-      console.log("edited item =>", editedItemCopy._id);
+      console.log("edited item =>", editedItemCopy);
 
       if (editedItemCopy._id) {
         store

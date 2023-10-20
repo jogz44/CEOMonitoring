@@ -36,6 +36,11 @@
           {{ formatDate(row.TargetAccomplished) }}
         </q-td>
       </template>
+      <template v-slot:body-cell-DateAccomplished="{ row }">
+        <q-td>
+          {{ formatDate(row.DateAccomplished) }}
+        </q-td>
+      </template>
 
       <template v-slot:body-cell-actions="{ row }">
         <div class="actionsbtn">
@@ -135,6 +140,19 @@
               </div>
             </div>
             <div class="row">
+              <div class="col">
+                <q-input
+                  v-if="editedItem._id"
+                  filled
+                  v-model="editedItem.DateAccomplished"
+                  label="Actual Finished Date"
+                  dense
+                  class="q-pa-sm"
+                  type="date"
+                />
+              </div>
+            </div>
+            <div class="row">
               <div class="col-12">
                 <q-input
                   filled
@@ -193,7 +211,6 @@ import { useStoreProjectInfo } from "../stores/ProjectStore";
 export default {
   data() {
     return {
-      myEquipments: [],
       filter: "",
       dialogVisible: false,
       secondDialog: false,
@@ -207,6 +224,7 @@ export default {
         TotalProjectCost: "",
         DateStarted: "",
         TargetAccomplished: "",
+        DateAccomplished: "",
         ProjectInCharge: "",
       },
       defaultItem: {
@@ -217,6 +235,7 @@ export default {
         TotalProjectCost: "",
         DateStarted: "",
         TargetAccomplished: "",
+        DateAccomplished: null,
         ProjectInCharge: "",
       },
       columns: [
@@ -263,6 +282,12 @@ export default {
           align: "left",
         },
         {
+          name: "DateAccomplished",
+          label: "Actual Date Finished",
+          field: "DateAccomplished",
+          align: "left",
+        },
+        {
           name: "ProjectInCharge",
           align: "left",
           label: "Project In Charge",
@@ -288,6 +313,7 @@ export default {
         TotalProjectCost: "",
         DateStarted: "",
         TargetAccomplished: "",
+        // DateAccomplished: "",
         ProjectInCharge: "",
       };
       this.dialogVisible = true;
@@ -309,13 +335,31 @@ export default {
       store.GetProject(item._id).then((res) => {
         this.editedItem = store.project;
         store.fetchProject();
+
+        // VIEWING OF DATES WITH TRAPPING IF EMPTY
         const DateStarted = new Date(item.DateStarted);
         const TargetAccomplished = new Date(item.TargetAccomplished);
+        const DateAccomplished = new Date(item.DateAccomplished);
 
-        this.editedItem.DateStarted = this.formatDate(DateStarted);
-        this.editedItem.TargetAccomplished = this.formatDate(TargetAccomplished);
+        if (this.editedItem.DateStarted == null) {
+          this.editedItem.DateStarted = "";
+          console.log("sdasda=", this.editedItem);
+        } else {
+          this.editedItem.DateStarted = this.formatDate(DateStarted);
+        }
 
-        console.log("sdasda=", this.editedItem);
+        if (this.editedItem.TargetAccomplished == null) {
+          this.editedItem.TargetAccomplished = "";
+        } else {
+          this.editedItem.TargetAccomplished =
+            this.formatDate(TargetAccomplished);
+        }
+
+        if (this.editedItem.DateAccomplished == null) {
+          this.editedItem.DateAccomplished = "";
+        } else {
+          this.editedItem.DateAccomplished = this.formatDate(DateAccomplished);
+        }
       });
       this.dialogVisible = true;
     },
@@ -331,39 +375,32 @@ export default {
     save() {
       const store = useStoreProjectInfo();
       const editedItemCopy = { ...this.editedItem };
+
       console.log("edited item =>", editedItemCopy._id);
+      const isDateAccomplishedSet =
+        editedItemCopy.DateAccomplished !== null &&
+        editedItemCopy.DateAccomplished !== undefined;
+      const isNewItem = !editedItemCopy._id;
+
+      if (isNewItem) {
+        // For new items, don't set DateAccomplished
+        editedItemCopy.DateAccomplished = null;
+      } else if (!isDateAccomplishedSet) {
+        // For edit, if DateAccomplished is not set, keep the existing value
+        editedItemCopy.DateAccomplished = this.editedItem.DateAccomplished;
+      }
 
       if (editedItemCopy._id) {
-        store
-          .UpdateProject(editedItemCopy._id, editedItemCopy)
-          .then((res) => {
-            this.editedItem = {
-              ProjectName: "",
-              Location: "",
-              ReferenceNo: "",
-              TotalProjectCost: "",
-              DateStarted: "",
-              TargetAccomplished: "",
-              ProjectInCharge: "",
-            };
-            store.fetchProject().then((res) => {
-              this.closeDialog();
-            });
+        store.UpdateProject(editedItemCopy._id, editedItemCopy).then((res) => {
+          this.editedItem = { ...this.defaultItem };
+          store.fetchProject().then((res) => {
+            this.closeDialog();
           });
+        });
         console.log("Item Updated: ", editedItemCopy);
       } else {
-
         store.AddProject(editedItemCopy).then((res) => {
-          this.editedItem = {
-            id: null,
-            ProjectName: "",
-            Location: "",
-            ReferenceNo: "",
-            TotalProjectCost: "",
-            DateStarted: "",
-            TargetAccomplished: "",
-            ProjectInCharge: "",
-          };
+          this.editedItem = { ...this.defaultItem };
           store.fetchProject().then((res) => {
             this.closeDialog();
           });
@@ -381,6 +418,7 @@ export default {
         TotalProjectCost: "",
         DateStarted: "",
         TargetAccomplished: "",
+        DateAccomplished: "",
         ProjectInCharge: "",
       };
       this.dialogVisible = false;

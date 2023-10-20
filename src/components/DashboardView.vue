@@ -107,16 +107,115 @@
       </div>
     </div>
 
-    <!-- chart viewing -->
-    <div class="row dashboard">
-      <div class="col-12 col-sm-8 col-md-8 col-lg-8">
+    <!-- dashboard -->
+    <div class="row chart">
+      <div class="col-12 col-sm-6 col-md-3 col-lg-3">
         <q-card class="my-card" bordered>
           <q-card-section>
-            <pie-chart :chart-data="ChartDatas" class="pie" />
+            <q-card>
+              <p class="q-pa-md" style="text-align: center">
+                <b style="font-size: 18px; color: #057407"
+                  >EMPLOYEE DESIGNATION
+                </b>
+              </p>
+            </q-card>
+            <q-card>
+              <q-table
+                dense
+                :rows="store.designationtype"
+                :columns="personnelcolumns"
+              >
+              </q-table>
+            </q-card>
           </q-card-section>
         </q-card>
       </div>
-      <div class="col-12 col-sm-4 col-md-4 col-lg-4">
+      <div class="col-12 col-sm-6 col-md-3 col-lg-3">
+        <q-card class="my-card" bordered>
+          <q-card-section>
+            <q-card>
+              <p class="q-pa-md" style="text-align: center">
+                <b style="font-size: 18px; color: #057407"
+                  >MACHINE EQUIPMENT
+                </b>
+              </p>
+            </q-card>
+
+            <p>
+              <b>
+                Heavy Equipment:
+                <span style="font-size: 18px; color: #057407">{{
+                  storeEquipment.heavyEquipmentsCount
+                }}</span></b
+              >
+            </p>
+            <p>
+              <b>
+                Light Equipment:
+                <span style="font-size: 18px; color: #057407">{{
+                  storeEquipment.lightEquipmentsCount
+                }}</span></b
+              >
+            </p>
+          </q-card-section>
+        </q-card>
+      </div>
+      <div class="col-12 col-sm-6 col-md-3 col-lg-3">
+        <q-card class="my-card" bordered>
+          <q-card-section>
+            <q-card>
+              <p class="q-pa-md" style="text-align: center">
+                <b style="font-size: 18px; color: #057407">IT EQUIPMENT </b>
+              </p>
+            </q-card>
+            <q-card>
+              <q-table
+                dense
+                :rows="storeITEquipment.itequipmenttype"
+                :columns="itcolumns"
+              >
+                <!-- <template v-slot:body-cell-ItemCount="{ row }">
+                  <q-td>
+                    {{ row.ItemCount }}
+                  </q-td>
+                </template> -->
+              </q-table>
+            </q-card>
+          </q-card-section>
+        </q-card>
+      </div>
+      <div class="col-12 col-sm-6 col-md-3 col-lg-3">
+        <q-card class="my-card" bordered>
+          <q-card-section>
+            <q-card>
+              <p class="q-pa-md" style="text-align: center">
+                <b style="font-size: 18px; color: #057407">PROJECT NAMES </b>
+              </p>
+            </q-card>
+            <q-card>
+              <q-table dense :rows="latestProject" :columns="columns">
+                <template v-slot:body-cell-DateStarted="{ row }">
+                  <q-td>
+                    {{ formatDate(row.DateStarted) }}
+                  </q-td>
+                </template>
+              </q-table>
+            </q-card>
+          </q-card-section>
+        </q-card>
+      </div>
+    </div>
+
+    <!-- chart viewing -->
+    <div class="row dashboard">
+      <div class="col-12 col-sm-6 col-md-6 col-lg-6">
+        <q-card class="my-card" bordered>
+          <q-card-section>
+            <pie-chart :chart-data="ChartDatas()" class="pie" />
+          </q-card-section>
+        </q-card>
+      </div>
+      <div class="col-12 col-sm-6 col-md-6 col-lg-6">
         <q-card class="my-card" bordered>
           <q-card-section>
             <q-card>
@@ -158,79 +257,6 @@
                   >
                 </p>
               </q-card-section>
-            </q-card>
-          </q-card-section>
-        </q-card>
-      </div>
-    </div>
-
-    <div class="row chart">
-      <div class="col-12 col-sm-4 col-md-4 col-lg-4">
-        <q-card class="my-card" bordered>
-          <q-card-section>
-            <q-card>
-              <p class="q-pa-md" style="text-align: center">
-                <b style="font-size: 18px; color: #057407"
-                  >MACHINE EQUIPMENT
-                </b>
-              </p>
-            </q-card>
-
-            <p>
-              <b>
-                Heavy Equipment:
-                <span style="font-size: 18px; color: #057407">{{
-                  storeEquipment.heavyEquipmentsCount
-                }}</span></b
-              >
-            </p>
-            <p>
-              <b>
-                Light Equipment:
-                <span style="font-size: 18px; color: #057407">{{
-                  storeEquipment.lightEquipmentsCount
-                }}</span></b
-              >
-            </p>
-          </q-card-section>
-        </q-card>
-      </div>
-      <div class="col-12 col-sm-4 col-md-4 col-lg-4">
-        <q-card class="my-card" bordered>
-          <q-card-section>
-            <q-card>
-              <p class="q-pa-md" style="text-align: center">
-                <b style="font-size: 18px; color: #057407">IT EQUIPMENT </b>
-              </p>
-            </q-card>
-            <q-card>
-              <q-table dense :rows="storeITEquipment.itequipmenttype" :columns="itcolumns">
-                <!-- <template v-slot:body-cell-ItemCount="{ row }">
-                  <q-td>
-                    {{ row.ItemCount }}
-                  </q-td>
-                </template> -->
-              </q-table>
-            </q-card>
-          </q-card-section>
-        </q-card>
-      </div>
-      <div class="col-12 col-sm-4 col-md-4 col-lg-4">
-        <q-card class="my-card" bordered>
-          <q-card-section>
-            <q-card>
-              <p class="q-pa-md" style="text-align: center">
-                <b style="font-size: 18px; color: #057407">PROJECT NAMES </b>
-              </p>
-            </q-card>
-            <q-card>
-              <q-table dense :rows="latestProject" :columns="columns">
-                <template v-slot:body-cell-DateStarted="{ row }">
-                  <q-td>
-                    {{ formatDate(row.DateStarted) }}
-                  </q-td>
-                </template>
-              </q-table>
             </q-card>
           </q-card-section>
         </q-card>
@@ -281,15 +307,23 @@ export default defineComponent({
       it: false,
       projects: false,
 
-      // chartData: {
-      //   labels: ["Active", "End of Contract"],
-      //   datasets: [
-      //     {
-      //       data: [10,20],
-      //       backgroundColor: ["#83db7b", "#4dbf50"],
-      //     },
-      //   ],
-      // },
+      personnelcolumns: [
+        {
+          name: "Designation",
+          required: true,
+          label: "Designation",
+          align: "left",
+          field: (row) => row._id,
+          format: (val) => `${val}`,
+          sortable: true,
+        },
+        {
+          name: "PersonnelCount",
+          label: "Designation Count",
+          field: "count",
+          align: "center",
+        },
+      ],
       itcolumns: [
         {
           name: "EquipmentType",
@@ -326,9 +360,18 @@ export default defineComponent({
       ],
     };
   },
+
   computed: {
+    latestProject() {
+      const sortedProjects = this.storeProjectInfo.projects
+        .slice()
+        .sort((a, b) => new Date(b.DateStarted) - new Date(a.DateStarted));
+      return sortedProjects.slice(0, 3);
+    },
+  },
+  created() {},
+  methods: {
     ChartDatas() {
-      // Sort projects by TargetAccomplished date in descending order
       const activecount = this.store.ActiveCount;
       const inactive = this.store.personnelsCount - activecount;
       const chartData = {
@@ -341,28 +384,6 @@ export default defineComponent({
         ],
       };
       return chartData;
-    },
-    latestProject() {
-      const sortedProjects = this.storeProjectInfo.projects
-        .slice()
-        .sort((a, b) => new Date(b.DateStarted) - new Date(a.DateStarted));
-      return sortedProjects.slice(0, 3);
-    },
-  },
-  created() {
-    // console.log("datasets=",this.chartData.datasets[0].data)
-    // console.log("datasets2=",this.chartData.datasets[0].data)
-    // this.store.fetchPersonnel().then(res=>{
-    // //   this.chartData.datasets[0].data[0]=this.store.ActiveCount;
-    // // this.chartData.datasets[0].data[1]=this.store.personnelsCount;
-    // // console.log("datasets2=",this.chartData)
-    // this.updatechart();
-    // })
-  },
-  methods: {
-    updatechart() {
-      this.chartData.datasets[0].data[2] = this.store.ActiveCount;
-      this.chartData.datasets[0].data[1] = this.store.personnelsCount;
     },
     CeoEmployee() {
       this.employee = true;
@@ -419,9 +440,10 @@ export default defineComponent({
     const storeProjectInfo = useStoreProjectInfo();
 
     store.fetchPersonnel();
+    store.fetchDashboard();
     storeEquipment.fetchEquipment();
     storeITEquipment.fetchDashboard();
-
+    storeITEquipment.fetchITEquipment();
     storeProjectInfo.fetchProject();
 
     return {
@@ -446,8 +468,6 @@ export default defineComponent({
   padding-right: 2%;
   justify-content: space-between;
   margin-top: -10px;
-}
-.pie {
 }
 
 .my-card {

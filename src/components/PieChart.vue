@@ -47,14 +47,17 @@ export default {
         },
       });
     },
+    destroy() {
+      if (this.chart) {
+        this.chart.destroy();
+      }
+    },
   },
   watch: {
     chartData: "renderChart",
   },
   beforeUnmount() {
-    if (this.chart) {
-      this.chart.destroy();
-    }
+    this.destroy();
   },
 };
 </script>

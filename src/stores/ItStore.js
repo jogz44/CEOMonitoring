@@ -59,7 +59,7 @@ export const useITEquipmentInfo = defineStore("itequipmentinfo", {
       }
     },
 
-    // For the Machine Maintenance History
+    // For the IT Maintenance History
 
     async GetITEquipment(id) {
       console.log("getequipment=", id);
