@@ -9,9 +9,9 @@
       bordered
       title="Employee List"
       dense
-      :rows="store.personnels"
+      :rows="filteredEmployees"
       :columns="columns"
-      :filter="filter"
+
       row-key="id"
     >
       <template v-slot:top-right>
@@ -26,6 +26,7 @@
             <q-icon name="search" />
           </template>
         </q-input>
+
       </template>
 
       <template v-slot:body-cell-DteStarted="{ row }" >
@@ -494,6 +495,32 @@ export default {
         },
       ],
     };
+  },
+  computed: {
+    filteredEmployees() {
+    const searchTerm = this.filter.toLowerCase();
+    return this.store.personnels.filter((employee) => {
+      const lastName = employee.lastName ? employee.lastName.toLowerCase() : '';
+      const firstName = employee.firstName ? employee.firstName.toLowerCase() : '';
+      const middleName = employee.middleName ? employee.middleName.toLowerCase() : '';
+      const employmentDtl = employee.employmentDtl[0] || {}; // Assuming there's at least one employment detail
+
+      const dteStarted = employmentDtl.DteStarted ? employmentDtl.DteStarted.toLowerCase() : '';
+      const dteEnded = employmentDtl.DteEnded ? employmentDtl.DteEnded.toLowerCase() : '';
+      const designation = employmentDtl.Designation ? employmentDtl.Designation.toLowerCase() : '';
+      const charges = employmentDtl.Charges ? employmentDtl.Charges.toLowerCase() : '';
+
+      return (
+        lastName.includes(searchTerm) ||
+        firstName.includes(searchTerm) ||
+        middleName.includes(searchTerm) ||
+        dteStarted.includes(searchTerm) ||
+        dteEnded.includes(searchTerm) ||
+        designation.includes(searchTerm) ||
+        charges.includes(searchTerm)
+      );
+    });
+  },
   },
   methods: {
     getStatusClass(status) {

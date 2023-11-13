@@ -8,9 +8,8 @@
       bordered
       title="IT Equipment List"
       dense
-      :rows="store.itequipments"
+      :rows="filteredIT"
       :columns="columns"
-      :filter="filter"
       row-key="id"
       :rows-per-page-options="[20]"
     >
@@ -80,7 +79,7 @@
 
     <!-- DIALOG FOR DETAILS -->
     <q-dialog v-model="dialogVisible" persistent>
-      <q-card style="width: 40%; height: 52%">
+      <q-card style="width: 40%; height: 55%">
         <q-card-section>
           <div class="text-h6">IT EQUIPMENT DETAILS</div>
         </q-card-section>
@@ -489,6 +488,30 @@ export default {
         return {};
       }
     },
+    filteredIT() {
+    const searchTerm = this.filter.toLowerCase();
+    return this.store.itequipments.filter((machine) => {
+      const EquipmentType = machine.EquipmentType ? machine.EquipmentType.toLowerCase() : '';
+      const MachineName = machine.MachineName ? machine.MachineName.toLowerCase() : '';
+      const PropertyCustodian = machine.PropertyCustodian ? machine.PropertyCustodian.toLowerCase() : '';
+      const SerialNo = machine.SerialNo ? machine.SerialNo.toLowerCase() : '';
+      const MaintenanceDtls = machine.MaintenanceDtls[0] || {}; // Assuming there's at least one employment detail
+
+      const MaintenanceType = MaintenanceDtls.MaintenanceType ? MaintenanceDtls.MaintenanceType.toLowerCase() : '';
+      const MaintenanceDate = MaintenanceDtls.MaintenanceDate ? MaintenanceDtls.MaintenanceDate.toLowerCase() : '';
+      const MaintenanceDesc = MaintenanceDtls.MaintenanceDesc ? MaintenanceDtls.MaintenanceDesc.toLowerCase() : '';
+
+      return (
+        EquipmentType.includes(searchTerm) ||
+        MachineName.includes(searchTerm) ||
+        PropertyCustodian.includes(searchTerm) ||
+        SerialNo.includes(searchTerm) ||
+        MaintenanceType.includes(searchTerm) ||
+        MaintenanceDate.includes(searchTerm) ||
+        MaintenanceDesc.includes(searchTerm)
+      );
+    });
+  },
   },
   methods: {
     // MaintenanceDelete1(id){

@@ -65,9 +65,9 @@
     </q-table>
 
     <q-dialog v-model="dialogVisible" persistent>
-      <q-card style="width: 50%; height: 50%">
+      <q-card style="width: 50%; height: 55%">
         <q-card-section>
-          <div class="text-h6">Project Details</div>
+          <div class="text-h6">PROJECT DETAILS</div>
         </q-card-section>
 
         <q-separator />
@@ -166,10 +166,10 @@
           </q-form>
         </q-card-section>
         <q-card-actions align="right">
-          <q-btn flat label="Cancel" color="primary" v-close-popup size="md" />
+          <q-btn flat label="Cancel" color="orange" v-close-popup size="md" />
           <q-btn
             label="Save"
-            color="secondary"
+            color="green-5"
             size="md"
             v-close-popup
             @click="save"
