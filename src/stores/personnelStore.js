@@ -12,7 +12,11 @@ export const useStorePersonnelInfo = defineStore("personnelinfo", {
   getters:{
     ActiveCount(){
       return this.personnels.reduce((p,c)=>{
+        if (c.employmentDtl[0] && c.employmentDtl[0].DteEnded) {
         return new Date(c.employmentDtl[0].DteEnded) >= new Date() ? p+1:p
+        }else{
+          return p;
+        }
       },0)
     },
     // EndCount(){

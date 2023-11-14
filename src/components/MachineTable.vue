@@ -1,6 +1,13 @@
 <template>
   <div class="q-pa-md">
     <q-btn label="Add" @click="Rowclick" class="q-mb-sm" />
+    <q-btn
+      label="Convert to Excel"
+      flat
+      class="q-mb-sm"
+      style="color: green"
+      @click="exportToExcel"
+    ></q-btn>
 
     <q-table
       class="my-sticky-header-table"
@@ -11,7 +18,6 @@
       :rows="filteredMachine"
       :columns="columns"
       row-key="id"
-      :rows-per-page-options="[20]"
     >
       <template v-slot:top-right>
         <q-input
@@ -160,12 +166,13 @@
             label="VIEW MAINTENANCE HISTORY"
             icon="lightbulb_outline"
             @click="ITMaintenanceDialog = true"
+            v-show="maintenancehistory"
           />
         </q-card>
       </q-card>
-      </q-dialog>
+    </q-dialog>
 
-      <!-- DIALOG FOR MAINTENANCE -->
+    <!-- DIALOG FOR MAINTENANCE -->
     <q-dialog v-model="ITMaintenanceDialog">
       <q-card style="width: 50%; height: 60%">
         <q-card-section style="max-height: 50vh" class="scroll">
@@ -245,7 +252,6 @@
         </div>
       </q-card>
     </q-dialog>
-
 
     <q-dialog
       v-model="secondDialog"
@@ -350,10 +356,12 @@
 <script>
 import { ref } from "vue";
 import { useEquipmentInfo } from "../stores/EquipmentsStore";
+import * as XLSX from "xlsx";
 
 export default {
   data() {
     return {
+      maintenancehistory: true,
       myEquipments: [],
       filter: "",
       filters: "",
@@ -484,35 +492,43 @@ export default {
       }
     },
     filteredMachine() {
-    const searchTerm = this.filter.toLowerCase();
-    return this.store.equipments.filter((machine) => {
-      const EquipmentType = machine.EquipmentType ? machine.EquipmentType.toLowerCase() : '';
-      const MachineName = machine.MachineName ? machine.MachineName.toLowerCase() : '';
-      const PropertyCustodian = machine.PropertyCustodian ? machine.PropertyCustodian.toLowerCase() : '';
-      const MaintenanceDtls = machine.MaintenanceDtls[0] || {}; // Assuming there's at least one employment detail
+      const searchTerm = this.filter.toLowerCase();
+      return this.store.equipments.filter((machine) => {
+        const EquipmentType = machine.EquipmentType
+          ? machine.EquipmentType.toLowerCase()
+          : "";
+        const MachineName = machine.MachineName
+          ? machine.MachineName.toLowerCase()
+          : "";
+        const PropertyCustodian = machine.PropertyCustodian
+          ? machine.PropertyCustodian.toLowerCase()
+          : "";
+        const MaintenanceDtls = machine.MaintenanceDtls[0] || {}; // Assuming there's at least one employment detail
 
-      const MaintenanceType = MaintenanceDtls.MaintenanceType ? MaintenanceDtls.MaintenanceType.toLowerCase() : '';
-      const MaintenanceDate = MaintenanceDtls.MaintenanceDate ? MaintenanceDtls.MaintenanceDate.toLowerCase() : '';
-      const MaintenanceDesc = MaintenanceDtls.MaintenanceDesc ? MaintenanceDtls.MaintenanceDesc.toLowerCase() : '';
+        const MaintenanceType = MaintenanceDtls.MaintenanceType
+          ? MaintenanceDtls.MaintenanceType.toLowerCase()
+          : "";
+        const MaintenanceDate = MaintenanceDtls.MaintenanceDate
+          ? MaintenanceDtls.MaintenanceDate.toLowerCase()
+          : "";
+        const MaintenanceDesc = MaintenanceDtls.MaintenanceDesc
+          ? MaintenanceDtls.MaintenanceDesc.toLowerCase()
+          : "";
 
-      return (
-        EquipmentType.includes(searchTerm) ||
-        MachineName.includes(searchTerm) ||
-        PropertyCustodian.includes(searchTerm) ||
-        MaintenanceType.includes(searchTerm) ||
-        MaintenanceDate.includes(searchTerm) ||
-        MaintenanceDesc.includes(searchTerm)
-      );
-    });
-  },
+        return (
+          EquipmentType.includes(searchTerm) ||
+          MachineName.includes(searchTerm) ||
+          PropertyCustodian.includes(searchTerm) ||
+          MaintenanceType.includes(searchTerm) ||
+          MaintenanceDate.includes(searchTerm) ||
+          MaintenanceDesc.includes(searchTerm)
+        );
+      });
+    },
   },
   methods: {
-    // MaintenanceDelete1(id){
-    //   this.MaintenanceDelete=true;
-    //   console.log("Delete =>", id._id)
-    // },
-
     Rowclick() {
+      this.maintenancehistory = false;
       this.editedItem = {
         id: null,
         MachineName: "",
@@ -540,6 +556,7 @@ export default {
       return `${year}-${month}-${day}`;
     },
     editItem(item) {
+      this.maintenancehistory = true;
       const store = useEquipmentInfo();
 
       store.GetEquipment(item._id).then((res) => {
@@ -652,6 +669,34 @@ export default {
     getNextId() {
       const ids = this.rows.map((item) => item.id);
       return Math.max(...ids) + 1;
+    },
+    exportToExcel() {
+      const data = [
+        [
+          "EquipmentType",
+          "MachineName",
+          "PropertyCustodian",
+          "MaintenanceType",
+          "MaintenanceDate",
+          "MaintenanceDesc",
+        ],
+        ...this.filteredMachine.map((row) => [
+          row.EquipmentType || "",
+          row.MachineName || "",
+          row.PropertyCustodian || "",
+          row.MaintenanceDtls[0]?.MaintenanceType || "",
+          this.formatDate(row.MaintenanceDtls[0]?.MaintenanceDate) || "",
+          row.MaintenanceDtls[0]?.MaintenanceDesc || "",
+        ]),
+      ];
+
+      // Create a workbook with a worksheet
+      const ws = XLSX.utils.aoa_to_sheet(data);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Machine Data");
+
+      // Save the workbook as a .xlsx file
+      XLSX.writeFile(wb, "Machine_Data.xlsx");
     },
   },
 

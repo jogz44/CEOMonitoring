@@ -1,6 +1,13 @@
 <template>
   <div class="q-pa-md">
     <q-btn label="Add" @click="Rowclick" class="q-mb-sm" />
+    <q-btn
+      label="Convert to Excel"
+      flat
+      class="q-mb-sm"
+      style="color: green"
+      @click="exportToExcel"
+    ></q-btn>
 
     <q-table
       class="my-sticky-header-table"
@@ -207,6 +214,7 @@
 <script>
 import { ref } from "vue";
 import { useStoreProjectInfo } from "../stores/ProjectStore";
+import * as XLSX from 'xlsx';
 
 export default {
   data() {
@@ -426,6 +434,38 @@ export default {
     getNextId() {
       const ids = this.rows.map((item) => item.id);
       return Math.max(...ids) + 1;
+    },
+    exportToExcel() {
+      const data = [
+        [
+          "ProjectName",
+          "Location",
+          "ReferenceNo",
+          "TotalProjectCost",
+          "DateStarted",
+          "TargetAccomplished",
+          "ProjectInCharge",
+          "DateAccomplished",
+        ],
+        ...this.store.projects.map((row) => [
+          row.ProjectName || "",
+          row.Location || "",
+          row.ReferenceNo || "",
+          row.TotalProjectCost || "",
+          this.formatDate(row.DateStarted) || "",
+          this.formatDate(row.TargetAccomplished) || "",
+          row.ProjectInCharge || "",
+          this.formatDate(row.DateAccomplished) || "",
+        ]),
+      ];
+
+      // Create a workbook with a worksheet
+      const ws = XLSX.utils.aoa_to_sheet(data);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Project Data");
+
+      // Save the workbook as a .xlsx file
+      XLSX.writeFile(wb, "Project_Data.xlsx");
     },
   },
 

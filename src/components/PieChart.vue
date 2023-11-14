@@ -19,7 +19,7 @@ export default {
       required: true,
     },
   },
-  mounted() {
+  created() {
     this.renderChart();
   },
   methods: {
@@ -27,7 +27,7 @@ export default {
       if (this.chart) {
       this.chart.destroy();
     }
-      const ctx = this.$refs.pieChart.getContext("2d");
+      const ctx = this.$refs.pieChart
       this.chart = new Chart(ctx, {
         type: "pie",
         data: this.chartData,

@@ -1,7 +1,13 @@
 <template>
   <div class="q-pa-md">
     <q-btn label="Add" @click="Rowclick" class="q-mb-sm" />
-
+    <q-btn
+      label="Convert to Excel"
+      flat
+      class="q-mb-sm"
+      style="color: green"
+      @click="exportToExcel"
+    ></q-btn>
     <q-table
       class="my-sticky-header-table"
       flat
@@ -161,6 +167,7 @@
             label="VIEW MAINTENANCE HISTORY"
             icon="lightbulb_outline"
             @click="ITMaintenanceDialog = true"
+            v-show="maintenancehistory"
           />
         </q-card>
       </q-card>
@@ -348,10 +355,12 @@
 <script>
 import { ref } from "vue";
 import { useITEquipmentInfo } from "../stores/ItStore";
+import * as XLSX from 'xlsx';
 
 export default {
   data() {
     return {
+      maintenancehistory: true,
       myEquipments: [],
       filter: "",
       ITMaintenanceDialog: false,
@@ -520,6 +529,7 @@ export default {
     // },
 
     Rowclick() {
+      this.maintenancehistory = false;
       this.editedItem = {
         id: null,
         MachineName: "",
@@ -548,6 +558,7 @@ export default {
       return `${year}-${month}-${day}`;
     },
     editItem(item) {
+      this.maintenancehistory = true;
       const store = useITEquipmentInfo();
 
       store.GetITEquipment(item._id).then((res) => {
@@ -661,6 +672,34 @@ export default {
     getNextId() {
       const ids = this.rows.map((item) => item.id);
       return Math.max(...ids) + 1;
+    },
+    exportToExcel() {
+      const data = [
+        [
+          "EquipmentType",
+          "MachineName",
+          "PropertyCustodian",
+          "MaintenanceType",
+          "MaintenanceDate",
+          "MaintenanceDesc",
+        ],
+        ...this.filteredIT.map((row) => [
+          row.EquipmentType || "",
+          row.MachineName || "",
+          row.PropertyCustodian || "",
+          row.MaintenanceDtls[0]?.MaintenanceType || "",
+          this.formatDate(row.MaintenanceDtls[0]?.MaintenanceDate) || "",
+          row.MaintenanceDtls[0]?.MaintenanceDesc || "",
+        ]),
+      ];
+
+      // Create a workbook with a worksheet
+      const ws = XLSX.utils.aoa_to_sheet(data);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "IT Equipment Data");
+
+      // Save the workbook as a .xlsx file
+      XLSX.writeFile(wb, "ItEquipment_Data.xlsx");
     },
   },
 
