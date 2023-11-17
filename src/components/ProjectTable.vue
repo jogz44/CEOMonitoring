@@ -13,12 +13,13 @@
       class="my-sticky-header-table"
       flat
       bordered
-      title="Project List"
+      title="PROJECT LIST"
       dense
       :rows="store.projects"
       :columns="columns"
       :filter="filter"
       row-key="id"
+      :rows-per-page-options="[0]"
     >
       <template v-slot:top-right>
         <q-input
@@ -52,6 +53,14 @@
       <template v-slot:body-cell-actions="{ row }">
         <div class="actionsbtn">
           <q-btn
+            icon="add"
+            size="sm"
+            round
+            color="green"
+            @click="viewItem(row)"
+          >
+          </q-btn>
+          <q-btn
             icon="edit"
             flat
             round
@@ -72,7 +81,7 @@
     </q-table>
 
     <q-dialog v-model="dialogVisible" persistent>
-      <q-card style="width: 50%; height: 55%">
+      <q-card style="width: 50%; height: auto">
         <q-card-section>
           <div class="text-h6">PROJECT DETAILS</div>
         </q-card-section>
@@ -180,46 +189,205 @@
             size="md"
             v-close-popup
             @click="save"
+            class="q-mr-md"
           />
         </q-card-actions>
+        <q-card class="q-px-lg q-pt-sm q-mb-md">
+          <q-btn
+            style="width: 100%"
+            class="btn-fixed-width"
+            color="green-10"
+            label="VIEW UPDATE HISTORY"
+            icon="lightbulb_outline"
+            @click="UpdateProjectDialog = true"
+            v-show="updateproject"
+          />
+        </q-card>
       </q-card>
     </q-dialog>
 
-    <!-- For the Delete of the Maintenance -->
+    <q-dialog v-model="UpdateProjectDialog">
+      <q-card style="width: 50%; height: 60%">
+        <q-card-section style="max-height: 50vh" class="scroll">
+          <div class="row text-h6">
+            <div class="col-11">PROJECT UPDATE HISTORY</div>
+            <div class="col-1">
+              <q-btn flat round color="orange" icon="arrow_back" @click="this.UpdateProjectDialog = false" />
+            </div>
+          </div>
+        </q-card-section>
+        <q-table
+          class="my-sticky-header-table"
+          flat
+          bordered
+          title=""
+          dense
+          :rows="updatedetailsOptions"
+          :columns="history"
+          :filter="filters"
+          row-key="id"
+        >
+          <template v-slot:top-right>
+            <q-input
+              borderless
+              dense
+              debounce="300"
+              v-model="filters"
+              placeholder="Search"
+            >
+              <template v-slot:append>
+                <q-icon name="search" />
+              </template>
+            </q-input>
+          </template>
 
-    <!-- <q-dialog
-      v-model="MaintenanceDelete"
+          <template v-slot:body-cell-DateUpdate="{ row }">
+            <q-td>
+              {{ formatDate(row.DateUpdate) }}
+            </q-td>
+          </template>
+          <!-- <template v-slot:body-cell-MaintenanceDate="{ row }">
+            <q-td>
+              {{ formatDate(row.MaintenanceDate) }}
+            </q-td>
+          </template> -->
+          <template v-slot:body-cell-ImageUpdate="{ row }">
+            <q-td>
+              {{ row.ImageUpdate }}
+            </q-td>
+          </template>
+          <template v-slot:body-cell-UpdateDescription="{ row }">
+            <q-td>
+              {{ row.UpdateDescription }}
+            </q-td>
+          </template>
+
+          <template v-slot:body-cell-actions="{ row }">
+            <div class="actionsbtn">
+              <q-btn
+                icon="delete"
+                flat
+                round
+                color="deep-orange"
+                @click="deleteUpdate(row._id)"
+              >
+              </q-btn>
+            </div>
+          </template>
+        </q-table>
+        <!-- <q-list>
+          <q-separator />
+          <q-item clickable v-ripple>
+            <q-item-section avatar>
+              <q-avatar rounded>
+                <img src="https://cdn.quasar.dev/img/mountains.jpg" />
+              </q-avatar>
+            </q-item-section>
+            <q-item-section
+              ><q-item-label>Update One</q-item-label>
+              <q-item-label caption
+                >Dria Description badi</q-item-label
+              ></q-item-section
+            >
+          </q-item>
+        </q-list> -->
+        <q-separator />
+        <div style="position: absolute; bottom: 10px; right: 10px">
+          <q-btn
+            label=""
+            size="15px"
+            @click="secondDialog = true"
+            icon="add"
+            color="green-10"
+            round
+            style="position: absolute; bottom: 0; right: 0"
+            ><q-tooltip class="white"
+              >Create new Update History</q-tooltip
+            ></q-btn
+          >
+        </div>
+      </q-card>
+    </q-dialog>
+
+    <q-dialog
+      v-model="secondDialog"
       persistent
       transition-show="scale"
       transition-hide="scale"
     >
-      <q-card class="bg-teal text-white" style="width: 400px">
+      <q-card class="" style="width: 500px">
         <q-card-section>
-          <div class="text-h6">Delete Maintenance</div>
+          <div class="text-h6">Add Update</div>
+        </q-card-section>
+        <q-separator />
+        <q-card-section>
+          <div class="row">
+            <div class="col">
+              <q-input
+                filled
+                v-model="editedItem.ProjectUpdates.DateUpdate"
+                label="Update Date"
+                dense
+                class="q-pa-sm"
+                type="date"
+              />
+            </div>
+          </div>
+          <!-- image for update/edit -->
+          <div class="row">
+            <div class="col">
+              <q-file
+                filled
+                v-model="editedItem.ProjectUpdates.ImageUpdate"
+                hint="Update Proof"
+                use-chips
+                dense
+                class="q-pa-sm q-mb-sm"
+                accept=".jpg, image/*"
+              />
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <q-input
+                filled
+                v-model="editedItem.ProjectUpdates.UpdateDescription"
+                label="Update Description"
+                dense
+                class="q-pa-sm"
+                type="textarea"
+              />
+            </div>
+          </div>
         </q-card-section>
 
-        <q-card-section class="q-pt-none">
-          Do you want to delete this Machine Maintenance History?
-        </q-card-section>
-
-        <q-card-actions align="right" class="bg-white text-teal">
-          <q-btn flat label="Cancel" color="red" v-close-popup />
-          <q-btn label="OK" color="secondary" v-close-popup @click="deleteMaintenance(editedItem._id,editedItem.MaintenanceDtls._id )" />
+        <q-card-actions align="right">
+          <q-btn flat label="Cancel" color="warning" v-close-popup size="md" />
+          <q-btn
+            label="Save"
+            color="green-10"
+            size="md"
+            v-close-popup
+            @click="savehistory(editedItem)"
+          />
         </q-card-actions>
       </q-card>
-    </q-dialog> -->
+    </q-dialog>
   </div>
 </template>
 
 <script>
 import { ref } from "vue";
 import { useStoreProjectInfo } from "../stores/ProjectStore";
-import * as XLSX from 'xlsx';
+import * as XLSX from "xlsx";
 
 export default {
   data() {
     return {
+      updateproject: true,
+      UpdateProjectDialog: false,
       filter: "",
+      filters: "",
       dialogVisible: false,
       secondDialog: false,
       MaintenanceDelete: false,
@@ -234,6 +402,13 @@ export default {
         TargetAccomplished: "",
         DateAccomplished: "",
         ProjectInCharge: "",
+        ProjectUpdates: {
+          0: {
+            DateUpdate: "",
+            ImageUpdate: "",
+            UpdateDescription: "",
+          },
+        },
       },
       defaultItem: {
         id: null,
@@ -245,12 +420,17 @@ export default {
         TargetAccomplished: "",
         DateAccomplished: null,
         ProjectInCharge: "",
+        ProjectUpdates: {
+          DateUpdate: "",
+          ImageUpdate: "",
+          UpdateDescription: "",
+        },
       },
       columns: [
         {
           name: "ProjectName",
           required: true,
-          label: "Project Name",
+          label: "PROJECT NAME",
           align: "left",
           field: (row) => row.ProjectName,
           format: (val) => `${val}`,
@@ -259,60 +439,97 @@ export default {
 
         {
           name: "Location",
-          label: "Location",
+          label: "LOCATION",
           field: "Location",
           align: "left",
           sortable: true,
         },
         {
           name: "ReferenceNo",
-          label: "Reference Number",
+          label: "REFERENCE NUMBER",
           field: "ReferenceNo",
           align: "left",
         },
         {
           name: "TotalProjectCost",
           align: "left",
-          label: "Total Project Cost",
+          label: "TOTAL PROJECT COST",
           field: "TotalProjectCost",
         },
         {
           name: "DateStarted",
-          label: "Date Started",
+          label: "DATE STARTED",
           field: "DateStarted",
           align: "left",
           sortable: true,
         },
         {
           name: "TargetAccomplished",
-          label: "Target Accomplished",
+          label: "TARGET ACCOMPLISHED",
           field: "TargetAccomplished",
           align: "left",
         },
         {
           name: "DateAccomplished",
-          label: "Actual Date Finished",
+          label: "ACTUAL DATE FINISHED",
           field: "DateAccomplished",
           align: "left",
         },
-        {
-          name: "ProjectInCharge",
-          align: "left",
-          label: "Project In Charge",
-          field: "ProjectInCharge",
-        },
+        // {
+        //   name: "ProjectInCharge",
+        //   align: "left",
+        //   label: "PROJECT IN CHARGE",
+        //   field: "ProjectInCharge",
+        // },
 
         {
           name: "actions",
-          label: "Actions",
+          label: "ACTIONS",
           field: "actions",
           align: "left",
         },
       ],
+      history: [
+        {
+          name: "DateUpdate",
+          align: "left",
+          label: "Date Update",
+          field: "DateUpdate",
+        },
+        {
+          name: "ImageUpdate",
+          align: "left",
+          label: "Update Image",
+          field: "ImageUpdate",
+        },
+        {
+          name: "",
+          align: "left",
+          label: "Update Description",
+          field: "UpdateDescription",
+        },
+        {
+          name: "actions",
+          align: "left",
+          label: "Action",
+          field: "actions",
+          sortable: true,
+        },
+      ]
     };
+  },
+  computed : {
+    updatedetailsOptions() {
+      if(this.editedItem.ProjectUpdates){
+        return Object.values(this.editedItem.ProjectUpdates);
+      } else {
+        return {};
+      }
+    }
   },
   methods: {
     Rowclick() {
+      this.updateproject = false;
       this.editedItem = {
         id: null,
         ProjectName: "",
@@ -338,6 +555,7 @@ export default {
       return `${year}-${month}-${day}`;
     },
     editItem(item) {
+      this.updateproject = true;
       const store = useStoreProjectInfo();
 
       store.GetProject(item._id).then((res) => {
@@ -371,12 +589,43 @@ export default {
       });
       this.dialogVisible = true;
     },
+    viewItem(item) {
+      this.UpdateProjectDialog = true;
+      const store = useStoreProjectInfo();
+
+      store.GetProject(item._id).then((res) => {
+        this.editedItem = store.project;
+        // store.fetchEquipment();
+        console.log("sdasda=", this.editedItem);
+      });
+      this.dialogVisible = false;
+    },
 
     deleteItem(id) {
       console.log("Delete Item ID => ", id._id);
       const store = useStoreProjectInfo();
       store.DeleteProject(id._id).then((res) => {
         store.fetchProject();
+      });
+    },
+
+    deleteUpdate(updateid) {
+      console.log("editeditem=", this.editedItem);
+      const id = this.editedItem._id;
+      console.log("Update ID =>", id + "----" + updateid);
+
+      // const store = useEquipmentInfo();
+      // store.DeleteMaintenance(id._id, maintenanceid).then((res) => {
+      //   store.GetEquipment(id._id);
+      // });
+
+      const store = useStoreProjectInfo();
+      // const editedItemCopy = { ...this.editedItem.MaintenanceDtls };
+      store.DeleteUpdate(id, updateid).then((req) => {
+        store.fetchProject();
+        store.GetProject(id).then((res) => {
+          this.editedItem = store.project;
+        });
       });
     },
 
@@ -415,6 +664,21 @@ export default {
         });
         console.log("save=", editedItemCopy);
       }
+    },
+    savehistory(id){
+      console.log("ID NAKO >> ", id._id);
+      const store = useStoreProjectInfo();
+      const formData = new FormData();
+      formData.append("DateUpdate", this.editedItem.ProjectUpdates.DateUpdate);
+      formData.append("file", this.editedItem.ProjectUpdates.ImageUpdate);
+      formData.append("ImageUpdate", "");
+      formData.append("UpdateDescription", this.editedItem.ProjectUpdates.UpdateDescription);
+      console.log("kkkk = ", this.editedItem);
+      store.UploadImage(id._id, formData).then((res)=> {
+        store.GetProject(id._id).then((res)=> {
+          this.editedItem = store.project;
+        })
+      })
     },
 
     closeDialog() {

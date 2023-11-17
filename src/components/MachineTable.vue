@@ -13,11 +13,12 @@
       class="my-sticky-header-table"
       flat
       bordered
-      title="Machine List"
+      title="MACHINE LIST"
       dense
       :rows="filteredMachine"
       :columns="columns"
       row-key="id"
+      :rows-per-page-options="[0]"
     >
       <template v-slot:top-right>
         <q-input
@@ -64,6 +65,14 @@
       <template v-slot:body-cell-actions="{ row }">
         <div class="actionsbtn">
           <q-btn
+            icon="add"
+            size="sm"
+            round
+            color="green"
+            @click="viewItem(row)"
+          >
+          </q-btn>
+          <q-btn
             icon="edit"
             flat
             round
@@ -84,7 +93,7 @@
     </q-table>
 
     <q-dialog v-model="dialogVisible" persistent>
-      <q-card style="width: 40%; height: 55%">
+      <q-card style="width: 40%; height: auto">
         <q-card-section>
           <div class="text-h6">MACHINE DETAILS</div>
         </q-card-section>
@@ -158,14 +167,14 @@
             class="q-mr-md"
           />
         </q-card-actions>
-        <q-card class="q-px-lg q-pt-sm">
+        <q-card class="q-px-lg q-pt-sm q-mb-md">
           <q-btn
             style="width: 100%"
             class="btn-fixed-width"
             color="green-10"
             label="VIEW MAINTENANCE HISTORY"
             icon="lightbulb_outline"
-            @click="ITMaintenanceDialog = true"
+            @click="MaintenanceDialog = true"
             v-show="maintenancehistory"
           />
         </q-card>
@@ -173,12 +182,20 @@
     </q-dialog>
 
     <!-- DIALOG FOR MAINTENANCE -->
-    <q-dialog v-model="ITMaintenanceDialog">
+    <q-dialog v-model="MaintenanceDialog" persistent="">
       <q-card style="width: 50%; height: 60%">
         <q-card-section style="max-height: 50vh" class="scroll">
-          <div class="text-h6">
-            MACHINE MAINTENANCE HISTORY
-            <!-- <q-btn label="Add Maintenance" @click="secondDialog = true"></q-btn> -->
+          <div class="row text-h6">
+            <div class="col-11">MACHINE MAINTENANCE HISTORY</div>
+            <div class="col-1">
+              <q-btn
+                flat
+                round
+                color="orange"
+                icon="arrow_back"
+                @click="this.MaintenanceDialog = false"
+              />
+            </div>
           </div>
         </q-card-section>
         <q-table
@@ -287,19 +304,19 @@
             </div>
           </div>
           <!-- image for update/edit -->
-          <!-- <div class="row">
+          <div class="row">
             <div class="col">
-              <q-input
+              <q-file
                 filled
-                v-model="editedItem.MaintenanceDtls.MaintenanceDesc"
+                v-model="editedItem.MaintenanceDtls.MaintenanceImageProof"
                 hint="Maintenance Proof"
+                use-chips
                 dense
                 class="q-pa-sm q-mb-sm"
-                type="file"
                 accept=".jpg, image/*"
               />
             </div>
-          </div> -->
+          </div>
           <div class="row">
             <div class="col">
               <q-input
@@ -365,7 +382,7 @@ export default {
       myEquipments: [],
       filter: "",
       filters: "",
-      ITMaintenanceDialog: false,
+      MaintenanceDialog: false,
       dialogVisible: false,
       secondDialog: false,
       MaintenanceDelete: false,
@@ -380,6 +397,7 @@ export default {
           0: {
             MaintenanceType: "",
             MaintenanceDate: "",
+            MaintenanceImageProof: "",
             MaintenanceDesc: "",
           },
         },
@@ -394,6 +412,7 @@ export default {
         MaintenanceDtls: {
           MaintenanceType: "",
           MaintenanceDate: "",
+          MaintenanceImageProof: "",
           MaintenanceDesc: "",
         },
         Remarks: "",
@@ -403,7 +422,7 @@ export default {
         {
           name: "MachineName",
           required: true,
-          label: "Machine Name",
+          label: "MACHINE NAME",
           align: "left",
           field: (row) => row.MachineName,
           format: (val) => `${val}`,
@@ -412,40 +431,40 @@ export default {
 
         {
           name: "EquipmentType",
-          label: "Equipment Type",
+          label: "EQUIPMENT TYPE",
           field: "EquipmentType",
           align: "left",
           sortable: true,
         },
         {
           name: "PropertyCustodian",
-          label: "Property Custodian",
+          label: "PROPERTY CUSTODIAN",
           field: "PropertyCustodian",
           align: "left",
         },
         {
           name: "PlateNo",
           align: "left",
-          label: "Plate/Serial Number",
+          label: "PLATE / SERIAL NUMBER",
           field: "PlateNo",
         },
         {
           name: "MaintenanceDate",
           align: "left",
-          label: "Maintenance Date",
-          field: "row.MaintenanceDtls.MaintenanceDate",
+          label: "MAINTENANCE DATE",
+          field: (row) => row.MaintenanceDate,
           sortable: true,
         },
         {
           name: "MaintenanceType",
           align: "left",
-          label: "Maintenance Type",
+          label: "MAINTENANCE TYPE",
           field: "row.MaintenanceDtls.MaintenanceType",
           sortable: true,
         },
         {
           name: "actions",
-          label: "Actions",
+          label: "ACTIONS",
           field: "actions",
           align: "left",
         },
@@ -566,6 +585,17 @@ export default {
       });
       this.dialogVisible = true;
     },
+    viewItem(item) {
+      this.MaintenanceDialog = true;
+      const store = useEquipmentInfo();
+
+      store.GetEquipment(item._id).then((res) => {
+        this.editedItem = store.equipment;
+        // store.fetchEquipment();
+        console.log("sdasda=", this.editedItem);
+      });
+      this.dialogVisible = false;
+    },
 
     deleteItem(id) {
       console.log("Delete Item ID => ", id._id);
@@ -638,18 +668,105 @@ export default {
         console.log("save=", editedItemCopy);
       }
     },
+    // handleImageChange(event) {
+    //   // Handle image selection
+    //   console.log("event=", event);
+    //   this.editedItem.MaintenanceDtls.MaintenanceImageProof =
+    //     event.target.files[0];
+    // },
+    //   handleImageChange(event) {
+    //   // Ensure that event and event.target are defined
+    //   if (event && event.target) {
+    //     // Access files property if available
+    //     const selectedFile = event.target.files ? event.target.files[0] : null;
+
+    //     // Update MaintenanceImageProof if a file is selected
+    //     if (selectedFile) {
+    //       this.editedItem.MaintenanceDtls.MaintenanceImageProof = selectedFile;
+    //     } else {
+    //       // Handle the case when no file is selected
+    //       console.error('No file selected.');
+    //     }
+    //   } else {
+    //     // Handle the case when event or event.target is undefined
+    //     console.error('Invalid event object.');
+    //   }
+    // },
     savehistory(id) {
       console.log("ID NAKO >> ", id._id);
       const store = useEquipmentInfo();
-      const editedItemCopy = { ...this.editedItem.MaintenanceDtls };
-      store.AddMaintenance(id._id, editedItemCopy);
-      store.fetchEquipment().then((res) => {
-        store.GetEquipment(id._id).then((res1) => {
+
+      const formData = new FormData();
+      formData.append(
+        "MaintenanceType",
+        this.editedItem.MaintenanceDtls.MaintenanceType
+      );
+      formData.append(
+        "MaintenanceDate",
+        this.editedItem.MaintenanceDtls.MaintenanceDate
+      );
+      formData.append(
+        "file",
+        this.editedItem.MaintenanceDtls.MaintenanceImageProof
+      );
+      formData.append("MaintenanceImageProof", "");
+      formData.append(
+        "MaintenanceDesc",
+        this.editedItem.MaintenanceDtls.MaintenanceDesc
+      );
+      store.UploadImage(id._id, formData).then((res) => {
+        store.GetEquipment(id._id).then((res) => {
           this.editedItem = store.equipment;
-          store.fetchEquipment();
         });
       });
+      // let res=axios.post(`http://10.0.1.23:5000/api/Equipments/" + ${{id}}+ "/maintenance`, {
+
+      //   body: formData,
+      // })
+      //   .then((response) => response.json())
+      //   .then((imageData) => {
+      //     console.log ("mao ni=>", imageData)
+      //     // Now, `imageData` should contain information about the uploaded image, including its filename
+      //     const editedItemCopy = {
+      //       ...this.editedItem.MaintenanceDtls,
+      //       MaintenanceImageProof: `Q:\\Engineering\\server\\public\\uploads\\equipments\\${imageData.fileName}`,
+      //     };
+
+      //     // Save maintenance history with the received image URL
+      //     store.AddMaintenance(id._id, editedItemCopy);
+      //     store.fetchEquipment().then(() => {
+      //       store.GetEquipment(id._id).then(() => {
+      //         this.editedItem = store.equipment;
+      //         store.fetchEquipment();
+
+      //       });
+      //     });
+      //   })
+      //   .catch((error) => {
+      //     console.error("Error uploading image:", error);
+      //   });
+
+      // const editedItemCopy = { ...this.editedItem.MaintenanceDtls };
+      // store.AddMaintenance(id._id, editedItemCopy);
+      // store.fetchEquipment().then((res) => {
+      //   store.GetEquipment(id._id).then((res1) => {
+      //     this.editedItem = store.equipment;
+      //     store.fetchEquipment();
+      //   });
+      // });
     },
+    // savehistory(id) {
+    //   console.log("ID NAKO >> ", id._id);
+    //   const store = useEquipmentInfo();
+    //   const editedItemCopy = { ...this.editedItem.MaintenanceDtls };
+    //   store.AddMaintenance(id._id, editedItemCopy);
+    //   store.fetchEquipment().then((res) => {
+    //     store.GetEquipment(id._id).then((res1) => {
+    //       this.editedItem = store.equipment;
+    //       store.fetchEquipment();
+    //     });
+    //   });
+    // },
     closeDialog() {
       this.editedItem = {
         id: null,
@@ -660,6 +777,7 @@ export default {
         MaintenanceDtls: {
           MaintenanceType: "",
           MaintenanceDate: "",
+          MaintenanceImageProof: "",
           MaintenanceDesc: "",
         },
         Remarks: "",

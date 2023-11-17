@@ -95,6 +95,18 @@ export const useITEquipmentInfo = defineStore("itequipmentinfo", {
         console.log(`Unable to Delete ${error}`);
       }
     },
+    async UploadImage (id, payload) {
+      try {
+        let response = await axios.post(
+          "http://10.0.1.23:5000/api/ITEquipments/" + id + "/maintenance",
+          payload
+        );
+        console.log("response=",response)
+        // this.equipment.push(response.data);
+      } catch (error) {
+        console.log(`Error fetching tasks: ${error}`);
+      }
+    },
     async fetchDashboard() {
       try {
         const response = await axios.get(

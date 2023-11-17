@@ -12,12 +12,12 @@
       class="my-sticky-header-table"
       flat
       bordered
-      title="IT Equipment List"
+      title="IT EQUIPMENT LIST"
       dense
       :rows="filteredIT"
       :columns="columns"
       row-key="id"
-      :rows-per-page-options="[20]"
+      :rows-per-page-options="[0]"
     >
       <template v-slot:top-right>
         <q-input
@@ -64,6 +64,14 @@
       <template v-slot:body-cell-actions="{ row }">
         <div class="actionsbtn">
           <q-btn
+            icon="add"
+            size="sm"
+            round
+            color="green"
+            @click="viewItem(row)"
+          >
+          </q-btn>
+          <q-btn
             icon="edit"
             flat
             round
@@ -85,7 +93,7 @@
 
     <!-- DIALOG FOR DETAILS -->
     <q-dialog v-model="dialogVisible" persistent>
-      <q-card style="width: 40%; height: 55%">
+      <q-card style="width: 40%; height: auto">
         <q-card-section>
           <div class="text-h6">IT EQUIPMENT DETAILS</div>
         </q-card-section>
@@ -159,7 +167,7 @@
             @click="save"
           />
         </q-card-actions>
-        <q-card class="q-px-lg q-pt-sm">
+        <q-card class="q-px-lg q-pt-sm q-mb-md">
           <q-btn
             style="width: 100%"
             class="btn-fixed-width"
@@ -174,10 +182,21 @@
     </q-dialog>
 
     <!-- DIALOG FOR MAINTENANCE -->
-    <q-dialog v-model="ITMaintenanceDialog">
+    <q-dialog v-model="ITMaintenanceDialog" persistent>
       <q-card style="width: 50%; height: 60%">
         <q-card-section class="scroll">
-          <div class="text-h6">MAINTENANCE HISTORY</div>
+          <div class="row text-h6">
+            <div class="col-11">IT MAINTENANCE HISTORY</div>
+            <div class="col-1">
+              <q-btn
+                flat
+                round
+                color="orange"
+                icon="arrow_back"
+                @click="this.ITMaintenanceDialog = false"
+              />
+            </div>
+          </div>
         </q-card-section>
         <q-table
           class="my-sticky-header-table"
@@ -286,19 +305,19 @@
             </div>
           </div>
           <!-- image for update/edit -->
-          <!-- <div class="row">
+          <div class="row">
             <div class="col">
-              <q-input
+              <q-file
                 filled
-                v-model="editedItem.MaintenanceDtls.MaintenanceDesc"
+                v-model="editedItem.MaintenanceDtls.MaintenanceImage"
                 hint="Maintenance Proof"
+                use-chips
                 dense
                 class="q-pa-sm q-mb-sm"
-                type="file"
                 accept=".jpg, image/*"
               />
             </div>
-          </div> -->
+          </div>
           <div class="row">
             <div class="col">
               <q-input
@@ -355,7 +374,7 @@
 <script>
 import { ref } from "vue";
 import { useITEquipmentInfo } from "../stores/ItStore";
-import * as XLSX from 'xlsx';
+import * as XLSX from "xlsx";
 
 export default {
   data() {
@@ -378,6 +397,7 @@ export default {
           0: {
             MaintenanceType: "",
             MaintenanceDate: "",
+            MaintenanceImage: "",
             MaintenanceDesc: "",
           },
         },
@@ -392,6 +412,7 @@ export default {
         MaintenanceDtls: {
           MaintenanceType: "",
           MaintenanceDate: "",
+          MaintenanceImage: "",
           MaintenanceDesc: "",
         },
         Remarks: "",
@@ -409,7 +430,7 @@ export default {
         {
           name: "MachineName",
           required: true,
-          label: "Machine Name",
+          label: "MACHINE NAME",
           align: "left",
           field: (row) => row.MachineName,
           format: (val) => `${val}`,
@@ -418,40 +439,40 @@ export default {
 
         {
           name: "EquipmentType",
-          label: "Equipment Type",
+          label: "EQUIPMENT TYPE",
           field: "EquipmentType",
           align: "left",
           sortable: true,
         },
         {
           name: "PropertyCustodian",
-          label: "Property Custodian",
+          label: "PROPERTY CUSTODIAN",
           field: "PropertyCustodian",
           align: "left",
         },
         {
           name: "SerialNo",
           align: "left",
-          label: "Serial Number",
+          label: "SERIAL NUMBER",
           field: "SerialNo",
         },
         {
           name: "MaintenanceDate",
           align: "left",
-          label: "Maintenance Date",
+          label: "MAINTENANCE DATE",
           field: "row.MaintenanceDtls.MaintenanceDate",
           sortable: true,
         },
         {
           name: "MaintenanceType",
           align: "left",
-          label: "Maintenance Type",
+          label: "MAINTENANCE TYPE",
           field: "row.MaintenanceDtls.MaintenanceType",
           sortable: true,
         },
         {
           name: "actions",
-          label: "Actions",
+          label: "ACTIONS",
           field: "actions",
           align: "left",
         },
@@ -498,29 +519,41 @@ export default {
       }
     },
     filteredIT() {
-    const searchTerm = this.filter.toLowerCase();
-    return this.store.itequipments.filter((machine) => {
-      const EquipmentType = machine.EquipmentType ? machine.EquipmentType.toLowerCase() : '';
-      const MachineName = machine.MachineName ? machine.MachineName.toLowerCase() : '';
-      const PropertyCustodian = machine.PropertyCustodian ? machine.PropertyCustodian.toLowerCase() : '';
-      const SerialNo = machine.SerialNo ? machine.SerialNo.toLowerCase() : '';
-      const MaintenanceDtls = machine.MaintenanceDtls[0] || {}; // Assuming there's at least one employment detail
+      const searchTerm = this.filter.toLowerCase();
+      return this.store.itequipments.filter((machine) => {
+        const EquipmentType = machine.EquipmentType
+          ? machine.EquipmentType.toLowerCase()
+          : "";
+        const MachineName = machine.MachineName
+          ? machine.MachineName.toLowerCase()
+          : "";
+        const PropertyCustodian = machine.PropertyCustodian
+          ? machine.PropertyCustodian.toLowerCase()
+          : "";
+        const SerialNo = machine.SerialNo ? machine.SerialNo.toLowerCase() : "";
+        const MaintenanceDtls = machine.MaintenanceDtls[0] || {}; // Assuming there's at least one employment detail
 
-      const MaintenanceType = MaintenanceDtls.MaintenanceType ? MaintenanceDtls.MaintenanceType.toLowerCase() : '';
-      const MaintenanceDate = MaintenanceDtls.MaintenanceDate ? MaintenanceDtls.MaintenanceDate.toLowerCase() : '';
-      const MaintenanceDesc = MaintenanceDtls.MaintenanceDesc ? MaintenanceDtls.MaintenanceDesc.toLowerCase() : '';
+        const MaintenanceType = MaintenanceDtls.MaintenanceType
+          ? MaintenanceDtls.MaintenanceType.toLowerCase()
+          : "";
+        const MaintenanceDate = MaintenanceDtls.MaintenanceDate
+          ? MaintenanceDtls.MaintenanceDate.toLowerCase()
+          : "";
+        const MaintenanceDesc = MaintenanceDtls.MaintenanceDesc
+          ? MaintenanceDtls.MaintenanceDesc.toLowerCase()
+          : "";
 
-      return (
-        EquipmentType.includes(searchTerm) ||
-        MachineName.includes(searchTerm) ||
-        PropertyCustodian.includes(searchTerm) ||
-        SerialNo.includes(searchTerm) ||
-        MaintenanceType.includes(searchTerm) ||
-        MaintenanceDate.includes(searchTerm) ||
-        MaintenanceDesc.includes(searchTerm)
-      );
-    });
-  },
+        return (
+          EquipmentType.includes(searchTerm) ||
+          MachineName.includes(searchTerm) ||
+          PropertyCustodian.includes(searchTerm) ||
+          SerialNo.includes(searchTerm) ||
+          MaintenanceType.includes(searchTerm) ||
+          MaintenanceDate.includes(searchTerm) ||
+          MaintenanceDesc.includes(searchTerm)
+        );
+      });
+    },
   },
   methods: {
     // MaintenanceDelete1(id){
@@ -568,6 +601,17 @@ export default {
       });
       console.log("thisthis=", this.editedItem.MaintenanceDtls);
       this.dialogVisible = true;
+    },
+    viewItem(item) {
+      this.ITMaintenanceDialog = true;
+      const store = useITEquipmentInfo();
+
+      store.GetITEquipment(item._id).then((res) => {
+        this.editedItem = store.itequipment;
+        // store.fetchEquipment();
+        console.log("sdasda=", this.editedItem);
+      });
+      this.dialogVisible = false;
     },
 
     deleteItem(id) {
@@ -644,15 +688,40 @@ export default {
     savehistory(id) {
       console.log("ID NAKO >> ", id._id);
       const store = useITEquipmentInfo();
-      const editedItemCopy = { ...this.editedItem.MaintenanceDtls };
-      store.AddITMaintenance(id._id, editedItemCopy);
-      store.fetchITEquipment().then((res) => {
-        store.GetITEquipment(id._id).then((res1) => {
+
+      const formData = new FormData();
+      formData.append(
+        "MaintenanceType",
+        this.editedItem.MaintenanceDtls.MaintenanceType
+      );
+      formData.append(
+        "MaintenanceDate",
+        this.editedItem.MaintenanceDtls.MaintenanceDate
+      );
+      formData.append("file", this.editedItem.MaintenanceDtls.MaintenanceImage);
+      formData.append("MaintenanceImageProof", "");
+      formData.append(
+        "MaintenanceDesc",
+        this.editedItem.MaintenanceDtls.MaintenanceDesc
+      );
+      store.UploadImage(id._id, formData).then((res) => {
+        store.GetITEquipment(id._id).then((res) => {
           this.editedItem = store.itequipment;
-          store.fetchITEquipment();
         });
       });
     },
+    // savehistory(id) {
+    //   console.log("ID NAKO >> ", id._id);
+    //   const store = useITEquipmentInfo();
+    //   const editedItemCopy = { ...this.editedItem.MaintenanceDtls };
+    //   store.AddITMaintenance(id._id, editedItemCopy);
+    //   store.fetchITEquipment().then((res) => {
+    //     store.GetITEquipment(id._id).then((res1) => {
+    //       this.editedItem = store.itequipment;
+    //       store.fetchITEquipment();
+    //     });
+    //   });
+    // },
     closeDialog() {
       this.editedItem = {
         id: null,

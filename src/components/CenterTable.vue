@@ -13,11 +13,12 @@
       class="my-sticky-header-table"
       flat
       bordered
-      title="Employee List"
+      title="EMPLOYEE LIST"
       dense
       :rows="filteredEmployees"
       :columns="columns"
       row-key="id"
+      :rows-per-page-options="[0]"
     >
       <template v-slot:top-right>
         <q-input
@@ -138,50 +139,6 @@
                 />
               </div>
             </div>
-            <!-- <div class="row">
-              <div class="col">
-                <q-input
-                  filled
-                  v-model="editedItem.employmentDtl.DteStarted"
-                  label="Date Started"
-                  dense
-                  class="q-pa-sm"
-                  type="date"
-                />
-              </div>
-              <div class="col">
-                <q-input
-                  filled
-                  v-model="editedItem.employmentDtl.DteEnded"
-                  label="Date Ended"
-                  dense
-                  class="q-pa-sm"
-                  type="date"
-                />
-              </div>
-            </div>
-            <div class="row">
-              <div class="col">
-                <q-input
-                  filled
-                  v-model="editedItem.employmentDtl.Designation"
-                  label="Designation"
-                  dense
-                  class="q-pa-sm"
-                />
-              </div>
-            </div>
-            <div class="row">
-              <div class="col">
-                <q-input
-                  filled
-                  v-model="editedItem.employmentDtl.Charges"
-                  label="Charges"
-                  dense
-                  class="q-pa-sm"
-                />
-              </div>
-            </div> -->
 
             <div class="row">
               <div class="col-xs-12 col-md-12">
@@ -205,9 +162,6 @@
 
         <q-separator />
 
-        <!-- <q-card-actions align="left">
-          <q-btn label="Save" color="secondary" v-close-popup @click="save" />
-        </q-card-actions> -->
         <q-card-actions align="right">
           <q-btn
             flat
@@ -425,7 +379,7 @@ export default {
         {
           name: "lastname",
           required: true,
-          label: "Lastname",
+          label: "LASTNAME",
           align: "left",
           field: (row) => row.lastName,
           format: (val) => `${val}`,
@@ -434,51 +388,51 @@ export default {
         {
           name: "firstname",
           align: "center",
-          label: "Firstname",
+          label: "FIRSTNAME",
           field: "firstName",
           sortable: true,
         },
         {
           name: "middlename",
           align: "center",
-          label: "Middlename",
+          label: "MIDDLENAME",
           field: "middleName",
           sortable: true,
         },
         {
           name: "DteStarted",
-          label: "Date Started",
+          label: "DATE STARTED",
           field: "employmentDtl[0].DteStarted",
           sortable: true,
           align: "center",
         },
         {
           name: "de",
-          label: "Date Ended",
+          label: "DATE ENDED",
           field: "employmentDtl[0].DteEnded",
           align: "center",
         },
         {
           name: "designation",
-          label: "Designation",
+          label: "DESIGNATION",
           field: "employmentDtl[0].Designation",
           align: "center",
         },
         {
           name: "charges",
-          label: "Charges",
+          label: "CHARGES",
           field: "employmentDtl[0].Charges",
           align: "center",
         },
         {
           name: "status",
-          label: "Status",
+          label: "STATUS",
           field: "status",
           align: "left",
         },
         {
           name: "actions",
-          label: "Actions",
+          label: "ACTIONS",
           field: "actions",
           align: "left",
         },
@@ -532,7 +486,7 @@ export default {
         const middleName = employee.middleName
           ? employee.middleName.toLowerCase()
           : "";
-        const employmentDtl = employee.employmentDtl[0] || {}; // Assuming there's at least one employment detail
+        const employmentDtl = employee.employmentDtl[0] || {};
 
         const dteStarted = employmentDtl.DteStarted
           ? employmentDtl.DteStarted.toLowerCase()
@@ -626,22 +580,9 @@ export default {
       const store = useStorePersonnelInfo();
       store.GetPersonnel(item._id).then((res) => {
         this.editedItem = store.personnel;
-        // store.fetchPersonnel();
-        // console.log("edited item=", this.editedItem);
-        // const datestarted = new Date(item.employmentDtl[0].DteStarted);
-        // const dateEnded = new Date(item.employmentDtl[0].DteEnded);
-
-        // this.editedItem.employmentDtl.DteStarted = this.formatDate(datestarted);
-        // this.editedItem.employmentDtl.DteEnded = this.formatDate(dateEnded);
-
-        // this.editedItem.employmentDtl.Charges = item.employmentDtl[0].Charges;
-        // this.editedItem.employmentDtl.Designation =
-        //   item.employmentDtl[0].Designation;
 
         console.log("this.editeditem=", this.editedItem);
       });
-
-      // this.editItem=item
       this.dialogVisible = true;
     },
 
@@ -792,17 +733,6 @@ export default {
       XLSX.writeFile(wb, "employee_data.xlsx");
     },
   },
-  // created() {
-  //   // const store = useStorePersonnelInfo()
-
-  //   // // usePersonnelInfoStore.fetchPersonnel()
-  //   // store.fetchPersonnel().then(
-  //   //    this.rows = store.personnels
-  //   // )
-
-  //   this.rows = useStorePersonnelInfo.personnels;
-  //   console.log("usePersonnelInfoStore.fetchPersonnel CREATED() ", this.rows);
-  // },
   setup() {
     const options = ref(stringOptions);
     const store = useStorePersonnelInfo();
@@ -839,9 +769,6 @@ export default {
   max-width: 250px;
   margin: 10px;
 }
-/* .actionsbtn {
-  margin-left: 90px;
-} */
 .text-red {
   background-color: red;
   color: white !important;
@@ -850,4 +777,8 @@ export default {
   background-color: rgb(103, 228, 72);
   color: white !important;
 }
+/* .my-sticky-header-table thead tr th {
+  position: sticky;
+  z-index: 1;
+} */
 </style>

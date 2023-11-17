@@ -12,6 +12,18 @@ export const useEquipmentInfo = defineStore("equipmentinfo", {
   }),
 
   actions: {
+    async UploadImage (id, payload) {
+      try {
+        let response = await axios.post(
+          "http://10.0.1.23:5000/api/Equipments/" + id + "/maintenance",
+          payload
+        );
+        console.log("response=",response)
+        // this.equipment.push(response.data);
+      } catch (error) {
+        console.log(`Error fetching tasks: ${error}`);
+      }
+    },
     async fetchEquipment() {
       try {
         const response = await axios.get(
@@ -56,6 +68,7 @@ export const useEquipmentInfo = defineStore("equipmentinfo", {
         console.log(`Error fetching tasks: ${error}`);
       }
     },
+
     async UpdateEquipment(id, payload) {
       try {
         const response = await axios.put(
@@ -103,7 +116,9 @@ export const useEquipmentInfo = defineStore("equipmentinfo", {
       } catch (error) {
         console.log(`Error fetching tasks: ${error}`);
       }
+
     },
+
     async DeleteMaintenance(id, maintenanceid) {
       try {
         await axios.delete(

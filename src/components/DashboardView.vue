@@ -124,6 +124,7 @@
                 dense
                 :rows="store.designationtype"
                 :columns="personnelcolumns"
+                :rows-per-page-options="[5]"
               >
               </q-table>
             </q-card>
@@ -173,6 +174,7 @@
                 dense
                 :rows="storeITEquipment.itequipmenttype"
                 :columns="itcolumns"
+                :rows-per-page-options="[5]"
               >
                 <!-- <template v-slot:body-cell-ItemCount="{ row }">
                   <q-td>
@@ -193,7 +195,12 @@
               </p>
             </q-card>
             <q-card>
-              <q-table dense :rows="latestProject" :columns="columns">
+              <q-table
+                dense
+                :rows="latestProject"
+                :columns="columns"
+                :rows-per-page-options="[5]"
+              >
                 <template v-slot:body-cell-DateStarted="{ row }">
                   <q-td>
                     {{ formatDate(row.DateStarted) }}

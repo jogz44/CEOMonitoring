@@ -172,7 +172,7 @@
 
     <!-- USER ACCESS BUTTON DIALOG -->
     <q-dialog v-model="UserAccess">
-      <q-card style="width: 40%; height: 35%">
+      <q-card style="width: 40%; height: 38%">
         <q-card-section>
           <div class="text-h6">User Access</div>
         </q-card-section>
