@@ -212,7 +212,13 @@
           <div class="row text-h6">
             <div class="col-11">PROJECT UPDATE HISTORY</div>
             <div class="col-1">
-              <q-btn flat round color="orange" icon="arrow_back" @click="this.UpdateProjectDialog = false" />
+              <q-btn
+                flat
+                round
+                color="orange"
+                icon="close"
+                @click="this.UpdateProjectDialog = false"
+              />
             </div>
           </div>
         </q-card-section>
@@ -246,14 +252,9 @@
               {{ formatDate(row.DateUpdate) }}
             </q-td>
           </template>
-          <!-- <template v-slot:body-cell-MaintenanceDate="{ row }">
-            <q-td>
-              {{ formatDate(row.MaintenanceDate) }}
-            </q-td>
-          </template> -->
           <template v-slot:body-cell-ImageUpdate="{ row }">
             <q-td>
-              {{ row.ImageUpdate }}
+              <q-img :src="row.ImageUpdate" />
             </q-td>
           </template>
           <template v-slot:body-cell-UpdateDescription="{ row }">
@@ -265,6 +266,14 @@
           <template v-slot:body-cell-actions="{ row }">
             <div class="actionsbtn">
               <q-btn
+                icon="visibility"
+                flat
+                round
+                color="green"
+                @click="viewUpdate(row)"
+              >
+              </q-btn>
+              <q-btn
                 icon="delete"
                 flat
                 round
@@ -275,22 +284,6 @@
             </div>
           </template>
         </q-table>
-        <!-- <q-list>
-          <q-separator />
-          <q-item clickable v-ripple>
-            <q-item-section avatar>
-              <q-avatar rounded>
-                <img src="https://cdn.quasar.dev/img/mountains.jpg" />
-              </q-avatar>
-            </q-item-section>
-            <q-item-section
-              ><q-item-label>Update One</q-item-label>
-              <q-item-label caption
-                >Dria Description badi</q-item-label
-              ></q-item-section
-            >
-          </q-item>
-        </q-list> -->
         <q-separator />
         <div style="position: absolute; bottom: 10px; right: 10px">
           <q-btn
@@ -309,6 +302,45 @@
       </q-card>
     </q-dialog>
 
+    <!-- Dialog for vIEWING EACH Project Update -->
+    <q-dialog
+      v-model="viewUpdateId"
+      transition-show="scale"
+      transition-hide="scale"
+    >
+      <q-card class="" style="min-width: 50%">
+        <q-card-section style="max-height: 50vh" class="scroll">
+          <div class="row text-h6">
+            <div class="col-11">UPDATE VIEW</div>
+            <div class="col-1">
+              <q-btn
+                flat
+                round
+                color="orange"
+                icon="close"
+                @click="this.viewUpdateId = false"
+              />
+            </div>
+          </div>
+        </q-card-section>
+        <q-separator />
+        <q-card-section>
+          <div class="row">
+            <div class="col-12">
+              <!-- Display details from the selected row in the dialog -->
+              <p><b>DATE:</b> {{ formatDate(selectedUpdate.DateUpdate) }}</p>
+              <p class="q-mb-sm"><b>PROOF:</b></p>
+              <q-img style="height: auto; max-width: auto" :src="selectedUpdate.ImageUpdate" />
+              <p class="q-mt-lg "><b>DESCRIPTION: </b> </p>
+              <p class="q-ml-md">{{ selectedUpdate.UpdateDescription }}</p>
+              <!-- Add more details as needed -->
+            </div>
+          </div>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
+
+    <!-- Dialog for Adding Project Update -->
     <q-dialog
       v-model="secondDialog"
       persistent
@@ -384,6 +416,8 @@ import * as XLSX from "xlsx";
 export default {
   data() {
     return {
+      viewUpdateId: false,
+      selectedUpdate: null,
       updateproject: true,
       UpdateProjectDialog: false,
       filter: "",
@@ -515,17 +549,17 @@ export default {
           field: "actions",
           sortable: true,
         },
-      ]
+      ],
     };
   },
-  computed : {
+  computed: {
     updatedetailsOptions() {
-      if(this.editedItem.ProjectUpdates){
+      if (this.editedItem.ProjectUpdates) {
         return Object.values(this.editedItem.ProjectUpdates);
       } else {
         return {};
       }
-    }
+    },
   },
   methods: {
     Rowclick() {
@@ -593,11 +627,14 @@ export default {
       this.UpdateProjectDialog = true;
       const store = useStoreProjectInfo();
 
-      store.GetProject(item._id).then((res) => {
-        this.editedItem = store.project;
-        // store.fetchEquipment();
-        console.log("sdasda=", this.editedItem);
-      });
+      store
+        .GetProject(item._id, item.ProjectUpdates.ImageUpdate)
+        .then((res) => {
+          this.editedItem = store.project;
+          // store.fetchEquipment();
+          console.log("sdasda=", this.editedItem);
+          console.log("filename = ", item.ProjectUpdates[0].ImageUpdate);
+        });
       this.dialogVisible = false;
     },
 
@@ -627,6 +664,16 @@ export default {
           this.editedItem = store.project;
         });
       });
+    },
+
+    viewUpdate(row) {
+      this.selectedUpdate = row;
+      this.viewUpdateId = true;
+      // this.viewUpdateId = true;
+      // const id = this.editedItem._id;
+
+      // const store = useStoreProjectInfo();
+      // store.GetProject(id);
     },
 
     save() {
@@ -665,20 +712,23 @@ export default {
         console.log("save=", editedItemCopy);
       }
     },
-    savehistory(id){
+    savehistory(id) {
       console.log("ID NAKO >> ", id._id);
       const store = useStoreProjectInfo();
       const formData = new FormData();
       formData.append("DateUpdate", this.editedItem.ProjectUpdates.DateUpdate);
       formData.append("file", this.editedItem.ProjectUpdates.ImageUpdate);
       formData.append("ImageUpdate", "");
-      formData.append("UpdateDescription", this.editedItem.ProjectUpdates.UpdateDescription);
+      formData.append(
+        "UpdateDescription",
+        this.editedItem.ProjectUpdates.UpdateDescription
+      );
       console.log("kkkk = ", this.editedItem);
-      store.UploadImage(id._id, formData).then((res)=> {
-        store.GetProject(id._id).then((res)=> {
+      store.UploadImage(id._id, formData).then((res) => {
+        store.GetProject(id._id).then((res) => {
           this.editedItem = store.project;
-        })
-      })
+        });
+      });
     },
 
     closeDialog() {

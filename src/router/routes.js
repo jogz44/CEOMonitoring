@@ -22,6 +22,7 @@ const routes = [
     path: '/test',
     component: () => import ('pages/TestOne.vue'),
   },
+  
   // Always leave this as last one,
   // but you can also remove it
   {

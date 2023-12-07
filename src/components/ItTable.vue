@@ -192,7 +192,7 @@
                 flat
                 round
                 color="orange"
-                icon="arrow_back"
+                icon="close"
                 @click="this.ITMaintenanceDialog = false"
               />
             </div>
@@ -242,6 +242,14 @@
           <template v-slot:body-cell-actions="{ row }">
             <div class="actionsbtn">
               <q-btn
+                icon="visibility"
+                flat
+                round
+                color="green"
+                @click="viewUpdate(row)"
+              >
+              </q-btn>
+              <q-btn
                 icon="delete"
                 flat
                 round
@@ -268,6 +276,44 @@
             ></q-btn
           >
         </div>
+      </q-card>
+    </q-dialog>
+
+    <!-- Dialog for vIEWING EACH IT EQUIPMENT MAINTENANCE HISTORY -->
+    <q-dialog
+      v-model="viewUpdateId"
+      transition-show="scale"
+      transition-hide="scale"
+    >
+      <q-card class="" style="min-width: 50%">
+        <q-card-section style="max-height: 50vh" class="scroll">
+          <div class="row text-h6">
+            <div class="col-11">IT EQUIPMENT MAINTENANCE HISTORY VIEW</div>
+            <div class="col-1">
+              <q-btn
+                flat
+                round
+                color="orange"
+                icon="close"
+                @click="this.viewUpdateId = false"
+              />
+            </div>
+          </div>
+        </q-card-section>
+        <q-separator />
+        <q-card-section>
+          <div class="row">
+            <div class="col-12">
+              <p><b>DATE:</b> {{ formatDate(selectedUpdate.MaintenanceDate) }}</p>
+              <p class="q-mb-sm"><b>TYPE: </b></p>
+              <p class="q-ml-md">{{ selectedUpdate.MaintenanceType }}</p>
+              <p class="q-mb-sm"><b>DESCRIPTION: </b></p>
+              <p class="q-ml-md">{{ selectedUpdate.MaintenanceDesc }}</p>
+              <p class="q-mb-sm"><b>PROOF:</b></p>
+              <q-img style="height: auto; max-width: auto" :src="selectedUpdate.MaintenanceImage" />
+            </div>
+          </div>
+        </q-card-section>
       </q-card>
     </q-dialog>
 
@@ -379,6 +425,8 @@ import * as XLSX from "xlsx";
 export default {
   data() {
     return {
+      viewUpdateId: false,
+      selectedUpdate: null,
       maintenancehistory: true,
       myEquipments: [],
       filter: "",
@@ -640,6 +688,15 @@ export default {
           this.editedItem = store.itequipment;
         });
       });
+    },
+    viewUpdate(row) {
+      this.selectedUpdate = row;
+      this.viewUpdateId = true;
+      // this.viewUpdateId = true;
+      // const id = this.editedItem._id;
+
+      // const store = useStoreProjectInfo();
+      // store.GetProject(id);
     },
 
     save() {

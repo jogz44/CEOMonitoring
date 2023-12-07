@@ -72,11 +72,14 @@ export const useStoreProjectInfo = defineStore("projectinfo", {
         const response = await axios.get(
           `http://10.0.1.23:5000/api/Projects/` + id
         );
+
         this.project = response.data;
+        console.log("Projectsssse=", this.project);
       } catch (error) {
         console.log("Unable to retrieve=", error);
       }
     },
+
     async AddUpdate(id, payload) {
       try {
         const response = await axios.post(
@@ -100,7 +103,7 @@ export const useStoreProjectInfo = defineStore("projectinfo", {
         console.log(`Error fetching tasks: ${error}`);
       }
     },
-    async DeleteUpdate (id, updateid) {
+    async DeleteUpdate(id, updateid) {
       try {
         await axios.delete(
           `http://10.0.1.23:5000/api/Projects/` +
@@ -111,6 +114,6 @@ export const useStoreProjectInfo = defineStore("projectinfo", {
       } catch (error) {
         console.log(`Unable to Delete ${error}`);
       }
-    }
+    },
   },
 });

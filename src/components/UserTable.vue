@@ -172,27 +172,44 @@
 
     <!-- USER ACCESS BUTTON DIALOG -->
     <q-dialog v-model="UserAccess">
-      <q-card style="width: 40%; height: 38%">
+      <q-card style="width: 50%; height: auto">
         <q-card-section>
-          <div class="text-h6">User Access</div>
+          <div class="text-h6">USER ACCESS</div>
         </q-card-section>
         <q-separator />
-          <div class="q-pa-lg">
-            <q-option-group
-              v-model="group"
-              :options="options"
-              color="green"
-              type="checkbox"
-            />
-          </div>
-          <q-card-actions align="right">
+        <q-table
+          :rows="rowAccess"
+          row-key="id"
+          :selection="selection"
+          @selection="onSelectionChange"
+        >
+          <template v-slot:body="props">
+            <q-tr :props="props">
+              <!-- <q-td :props="props">
+                <custom-checkbox
+                  :value="props.row.selectedCheckbox1"
+                  @input="toggleCheckbox1"
+                />
+                <custom-checkbox
+                  :value="props.row.selectedCheckbox2"
+                  @input="toggleCheckbox2"
+                />
+
+              </q-td> -->
+              <q-td v-for="col in props.cols" :key="col.name" :props="props">
+                {{ props.row[col.name] }}
+              </q-td>
+            </q-tr>
+          </template>
+        </q-table>
+        <q-card-actions align="right">
           <q-btn flat label="Cancel" color="primary" v-close-popup size="md" />
           <q-btn
             label="Save"
             color="secondary"
             size="md"
             v-close-popup
-            @click="save"
+            @click="saved"
           />
         </q-card-actions>
       </q-card>
@@ -210,7 +227,6 @@ export default {
       myEquipments: [],
       filter: "",
       dialogVisible: false,
-      UserAccess: false,
       secondDialog: false,
       MaintenanceDelete: false,
       editedIndex: -1,
@@ -236,6 +252,93 @@ export default {
         Designation: "",
         Office: "",
       },
+      UserAccess: false,
+      selection: [],
+      columnAccess: [
+        {
+          name: "Modulename",
+          required: true,
+          label: "MODULE NAME",
+          align: "left",
+          field: (row) => row.Modulename,
+          format: (val) => `${val}`,
+          sortable: true,
+        },
+        {
+          name: "Add",
+          required: true,
+          label: "ADD",
+          align: "left",
+          field: (row) => row.add,
+          format: (val) => `${val}`,
+          sortable: true,
+        },
+        {
+          name: "Edit",
+          required: true,
+          label: "EDIT",
+          align: "left",
+          field: (row) => row.edit,
+          format: (val) => `${val}`,
+          sortable: true,
+        },
+        {
+          name: "Delete",
+          required: true,
+          label: "DELETE",
+          align: "left",
+          field: (row) => row.delete,
+          format: (val) => `${val}`,
+          sortable: true,
+        },
+        {
+          name: "View",
+          required: true,
+          label: "VIEW",
+          align: "left",
+          field: (row) => row.view,
+          format: (val) => `${val}`,
+          sortable: true,
+        },
+      ],
+      rowAccess: [
+        {
+          Modulename: "Employee List",
+          // selectedCheckbox1: false,
+          // selectedCheckbox2: false,
+          add: false,
+          edit: false,
+          delete: false,
+          view: false, // Add more properties as needed
+        },
+        {
+          Modulename: "Machine Equipment List",
+          // selectedCheckbox1: false,
+          // selectedCheckbox2: false,
+          add: false,
+          edit: false,
+          delete: false,
+          view: false,
+        },
+        {
+          Modulename: "IT Equipment List",
+          // selectedCheckbox1: false,
+          // selectedCheckbox2: false,
+          add: false,
+          edit: false,
+          delete: false,
+          view: false,
+        },
+        {
+          Modulename: "Project List",
+          // selectedCheckbox1: false,
+          // selectedCheckbox2: false,
+          add: false,
+          edit: false,
+          delete: false,
+          view: false,
+        },
+      ],
       columns: [
         {
           name: "Username",
@@ -276,6 +379,18 @@ export default {
     };
   },
   methods: {
+    saved() {
+      this.UserAccess = false;
+    },
+    onSelectionChange(selected) {
+      this.selection = selected;
+    },
+    toggleCheckbox1(value, row) {
+      row.selectedCheckbox1 = value;
+    },
+    toggleCheckbox2(value, row) {
+      row.selectedCheckbox2 = value;
+    },
     Rowclick() {
       this.editedItem = {
         id: null,
@@ -386,6 +501,14 @@ export default {
       return Math.max(...ids) + 1;
     },
   },
+  // components: {
+  //   CustomCheckbox: {
+  //     props: {
+  //       value: Boolean,
+  //     },
+  //     template: '<q-checkbox v-model="value" />',
+  //   },
+  // },
 
   setup() {
     const store = useStoreUserInfo();
@@ -394,28 +517,27 @@ export default {
     return {
       store,
       model: ref(null),
-      group: ref(['display']),
+      group: ref(["display"]),
       options: [
         {
-          label: 'Create',
-          value: 'create'
+          label: "Create",
+          value: "create",
         },
         {
-          label: 'Remove',
-          value: 'remove'
+          label: "Remove",
+          value: "remove",
         },
         {
-          label: 'Update',
-          value: 'update'
+          label: "Update",
+          value: "update",
         },
         {
-          label: 'Display',
-          value: 'display'
-        }
-      ]
+          label: "Display",
+          value: "display",
+        },
+      ],
     };
   },
-
 };
 </script>
 
