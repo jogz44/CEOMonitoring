@@ -58,8 +58,19 @@ export const useStoreUserInfo = defineStore("userinfo", {
       }
     },
 
-    async GetUser(id) {
+    async GetUserCredentials(id) {
       console.log("getuser=", id);
+      try {
+        const response = await axios.get(
+          `http://10.0.1.23:5000/api/Users/` + id + `/creds`
+        );
+        this.user = response.data;
+      } catch (error) {
+        console.log("Unable to retrieve=", error);
+      }
+    },
+
+    async GetUser(id) {
       try {
         const response = await axios.get(
           `http://10.0.1.23:5000/api/Users/` + id

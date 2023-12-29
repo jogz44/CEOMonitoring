@@ -172,20 +172,21 @@
 
     <!-- USER ACCESS BUTTON DIALOG -->
     <q-dialog v-model="UserAccess">
-      <q-card style="width: 50%; height: auto">
+      <q-card style="width: 50%; height: auto" class="container">
         <q-card-section>
           <div class="text-h6">USER ACCESS</div>
         </q-card-section>
         <q-separator />
-        <q-table
+        <!-- <q-table
           :rows="rowAccess"
           row-key="id"
           :selection="selection"
           @selection="onSelectionChange"
+          :columns="columnAccess"
         >
           <template v-slot:body="props">
             <q-tr :props="props">
-              <!-- <q-td :props="props">
+              <q-td :props="props">
                 <custom-checkbox
                   :value="props.row.selectedCheckbox1"
                   @input="toggleCheckbox1"
@@ -195,13 +196,90 @@
                   @input="toggleCheckbox2"
                 />
 
-              </q-td> -->
+              </q-td>
               <q-td v-for="col in props.cols" :key="col.name" :props="props">
                 {{ props.row[col.name] }}
               </q-td>
             </q-tr>
           </template>
+        </q-table> -->
+
+        <!-- <q-table
+          flat
+          bordered
+          title="Treats"
+          :rows="rows"
+          :columns="columns"
+          row-key="name"
+          selection="multiple"
+          v-model:selected="selected"
+        >
+          <template v-slot:header-selection="scope">
+            <q-checkbox v-model="scope.selected" />
+          </template>
+
+          <template v-slot:body-selection="scope">
+            <q-checkbox  v-model="scope.selected" />
+          </template>
+        </q-table> -->
+
+        <!-- <q-table
+          :rows="rows"
+          :columns="columnsS"
+          row-key="id"
+          :selection="selection"
+          virtual-scroll
+          v-model:selected="selectedRows"
+        >
+          <template v-slot:body-cell-create="props">
+            <q-td :props="props">
+              <q-checkbox v-model="props.row.createPermission" />
+            </q-td>
+          </template>
+          <template v-slot:body-cell-read="props">
+            <q-td :props="props">
+              <q-checkbox v-model="props.row.readPermission" />
+            </q-td>
+          </template>
+          <template v-slot:body-cell-update="props">
+            <q-td :props="props">
+              <q-checkbox v-model="props.row.updatePermission" />
+            </q-td>
+          </template>
+          <template v-slot:body-cell-delete="props">
+            <q-td :props="props">
+              <q-checkbox v-model="props.row.deletePermission" />
+            </q-td>
+          </template>
+        </q-table> -->
+
+        <q-table
+          :rows="storeAccess.user"
+          :columns="columnsS"
+          row-key="id"
+          :rows-per-page-options="[10, 25, 50]"
+          v-model:pagination="pagination"
+          v-model:selected="selectedRows"
+        >
+          <template v-slot:body-cell="props">
+            <q-td :props="props">
+              <q-checkbox
+                v-if="
+                  props.col.field === 'selected' ||
+                  props.col.field === 'createPermission' ||
+                  props.col.field === 'readPermission' ||
+                  props.col.field === 'updatePermission' ||
+                  props.col.field === 'deletePermission'
+                "
+                v-model="props.row[props.col.field]"
+              />
+              <span v-else>
+                {{ props.row[props.col.field] }}
+              </span>
+            </q-td>
+          </template>
         </q-table>
+
         <q-card-actions align="right">
           <q-btn flat label="Cancel" color="primary" v-close-popup size="md" />
           <q-btn
@@ -224,6 +302,109 @@ import { useStoreUserInfo } from "../stores/UserStore";
 export default {
   data() {
     return {
+      createPermission: false,
+      columnsS: [
+        {
+          name: "Module Name",
+          required: true,
+          align: "left",
+          label: "MODULE NAME",
+          field: (row) => row.Credentials.Create,
+          sortable: true,
+        },
+        // {
+        //   name: "Checkbox",
+        //   required: true,
+        //   align: "center",
+        //   label: "Checkbox",
+        //   field: "selected",
+        //   sortable: false,
+        // },
+        {
+          name: "CREATE",
+          align: "left",
+          label: "CREATE",
+          field: "createPermission",
+          sortable: true,
+        },
+        {
+          name: "READ",
+          align: "left",
+          label: "READ",
+          field: "readPermission",
+          sortable: true,
+        },
+        {
+          name: "UPDATE",
+          align: "left",
+          label: "UPDATE",
+          field: "updatePermission",
+          sortable: true,
+        },
+        {
+          name: "DELETE",
+          align: "left",
+          label: "DELETE",
+          field: "deletePermission",
+          sortable: true,
+        },
+      ],
+
+
+      rows: [
+        {
+          id: 1,
+          name: "Employee",
+          // selected: true,
+          createPermission: this.Create,
+          readPermission: true,
+          updatePermission: false,
+          deletePermission: true,
+        },
+        {
+          id: 2,
+          name: "Machine Equipment",
+          // selected: true,
+          createPermission: true,
+          readPermission: true,
+          updatePermission: false,
+          deletePermission: true,
+        },
+        {
+          id: 3,
+          name: "IT Equipment",
+          // selected: false,
+          createPermission: true,
+          readPermission: true,
+          updatePermission: true,
+          deletePermission: true,
+        },
+        {
+          id: 4,
+          name: "Project",
+          // selected: false,
+          createPermission: true,
+          readPermission: true,
+          updatePermission: false,
+          deletePermission: true,
+        },
+        // Add more rows as needed
+      ],
+      selection: "multiple",
+      pagination: {
+        page: 1,
+        rowsPerPage: 10,
+      },
+      selectedRows: [],
+
+      // tableData: [
+      //   { name: "Row 1", selected: false },
+      //   { name: "Row 2", selected: false },
+      //   { name: "Row 3", selected: false },
+      //   { name: "Row 4", selected: false },
+      //   { name: "Row 5", selected: false },
+      //   // Add more rows if needed
+      // ],
       myEquipments: [],
       filter: "",
       dialogVisible: false,
@@ -253,7 +434,6 @@ export default {
         Office: "",
       },
       UserAccess: false,
-      selection: [],
       columnAccess: [
         {
           name: "Modulename",
@@ -304,39 +484,39 @@ export default {
       rowAccess: [
         {
           Modulename: "Employee List",
-          // selectedCheckbox1: false,
-          // selectedCheckbox2: false,
+          selectedCheckbox1: false,
+          selectedCheckbox2: false,
           add: false,
           edit: false,
           delete: false,
-          view: false, // Add more properties as needed
+          view: false,
         },
         {
           Modulename: "Machine Equipment List",
           // selectedCheckbox1: false,
           // selectedCheckbox2: false,
-          add: false,
-          edit: false,
-          delete: false,
-          view: false,
+          // add: false,
+          // edit: false,
+          // delete: false,
+          // view: false,
         },
         {
           Modulename: "IT Equipment List",
           // selectedCheckbox1: false,
           // selectedCheckbox2: false,
-          add: false,
-          edit: false,
-          delete: false,
-          view: false,
+          // add: false,
+          // edit: false,
+          // delete: false,
+          // view: false,
         },
         {
           Modulename: "Project List",
           // selectedCheckbox1: false,
           // selectedCheckbox2: false,
-          add: false,
-          edit: false,
-          delete: false,
-          view: false,
+          // add: false,
+          // edit: false,
+          // delete: false,
+          // view: false,
         },
       ],
       columns: [
@@ -416,7 +596,12 @@ export default {
 
       return `${year}-${month}-${day}`;
     },
-    accessItem(item) {
+   async accessItem(item) {
+      console.log("selectedID :", item)
+      const storeAccess = useStoreUserInfo();
+      await storeAccess.GetUserCredentials(item._id).then((res) => {
+       
+      })
       this.UserAccess = true;
     },
     editItem(item) {
@@ -512,10 +697,14 @@ export default {
 
   setup() {
     const store = useStoreUserInfo();
+    const storeAccess = useStoreUserInfo();
+
     store.fetchUser();
+    storeAccess.GetUser();
 
     return {
       store,
+      storeAccess,
       model: ref(null),
       group: ref(["display"]),
       options: [
