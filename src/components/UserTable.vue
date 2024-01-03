@@ -174,9 +174,59 @@
     <q-dialog v-model="UserAccess">
       <q-card style="width: 50%; height: auto" class="container">
         <q-card-section>
-          <div class="text-h6">USER ACCESS</div>
+          <div class="row">
+            <div class="text-h6 col-11">USER ACCESS</div>
+            <div class="col-1">
+              <q-btn
+                size="sm"
+                color="green"
+                icon="add"
+                @click="ModuleEditDialog = true"
+              />
+            </div>
+          </div>
         </q-card-section>
         <q-separator />
+
+        <q-table
+          title="Module Names"
+          :rows="ModuleRows"
+          :columns="ModuleColumn"
+          row-key="id"
+          flat
+          bordered
+          dense
+        >
+          <template v-slot:body-cell-actions="{ row }">
+            <div class="actionsbtn">
+              <q-btn
+                icon="edit"
+                flat
+                round
+                color="secondary"
+                @click="editModule(row)"
+              >
+              </q-btn>
+              <q-btn
+                icon="delete"
+                flat
+                round
+                color="deep-orange"
+                @click="deleteItem(row)"
+              >
+              </q-btn>
+              <!-- <q-btn
+            icon="security"
+            flat
+            round
+            color="primary"
+            @click="accessItem(row)"
+          >
+          </q-btn> -->
+            </div>
+          </template>
+        </q-table>
+
         <!-- <q-table
           :rows="rowAccess"
           row-key="id"
@@ -253,6 +303,7 @@
           </template>
         </q-table> -->
 
+        <!-- MAO NI TUNAY
         <q-table
           :rows="storeAccess.user"
           :columns="columnsS"
@@ -278,7 +329,7 @@
               </span>
             </q-td>
           </template>
-        </q-table>
+        </q-table> -->
 
         <q-card-actions align="right">
           <q-btn flat label="Cancel" color="primary" v-close-popup size="md" />
@@ -292,6 +343,92 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
+
+    <q-dialog v-model="ModuleEditDialog">
+      <q-card style="width: 50%; height: auto" class="container">
+        <q-card-section>
+          <div class="text-h6">USER ACCESS</div>
+        </q-card-section>
+        <q-separator />
+        <q-card-section>
+          <!-- Q-FORM FOR MODULE ADDITION -->
+          <q-form>
+            <div class="row">
+              <div class="col-lg-12 col-md-12 col-sm-12">
+                <q-input label="Module Name" filled dense class="q-pa-md" />
+              </div>
+              <div class="q-ml-md">
+                <p>USER MODULE ACCESS</p>
+                <q-separator></q-separator>
+              </div>
+              <div class="col-lg-12 col-md-12 col-sm-12 q-gutter-sm q-ml-sm">
+                <!-- <q-checkbox
+                  v-model="selected"
+                  val="Create"
+                  label="Create"
+                  color="teal"
+                /> -->
+                <p class="q-mb-sm">Create </p>
+                <q-checkbox
+                  v-model="selected"
+                  val="Create"
+                  label="Create {{ this.ModuleName }}"
+                  color="teal"
+                  class="q-ml-lg"
+                />
+                <br />
+                <q-checkbox
+                  v-model="selected"
+                  val="Create"
+                  label="Create {{ this.ModuleName }} History"
+                  color="teal"
+                  class="q-ml-lg"
+                />
+                <br />
+
+                <q-checkbox
+                  v-model="selected"
+                  val="Edit"
+                  label="Edit"
+                  color="teal"
+                />
+                <br />
+                <q-checkbox
+                  v-model="selected"
+                  val="Delete"
+                  label="Delete"
+                  color="teal"
+                />
+                <br />
+                <q-checkbox
+                  v-model="selected"
+                  val="View"
+                  label="View"
+                  color="teal"
+                />
+              </div>
+            </div>
+          </q-form>
+          <q-separator />
+          <q-card-actions align="right">
+            <q-btn
+              flat
+              label="Cancel"
+              color="primary"
+              v-close-popup
+              size="md"
+            />
+            <q-btn
+              label="Save"
+              color="secondary"
+              size="md"
+              v-close-popup
+              @click="saved"
+            />
+          </q-card-actions>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
   </div>
 </template>
 
@@ -302,6 +439,28 @@ import { useStoreUserInfo } from "../stores/UserStore";
 export default {
   data() {
     return {
+      selected: [],
+      ModuleRows: [
+        {
+          id: 1,
+          name: "Module 1",
+        },
+      ],
+      ModuleColumn: [
+        {
+          name: "Module Name",
+          align: "left",
+          label: "MODULE NAME",
+          field: "name",
+        },
+        {
+          name: "actions",
+          label: "Actions",
+          field: "actions",
+          align: "left",
+        },
+      ],
+      ModuleEditDialog: false,
       createPermission: false,
       columnsS: [
         {
@@ -349,7 +508,6 @@ export default {
           sortable: true,
         },
       ],
-
 
       rows: [
         {
@@ -596,12 +754,12 @@ export default {
 
       return `${year}-${month}-${day}`;
     },
-   async accessItem(item) {
-      console.log("selectedID :", item)
-      const storeAccess = useStoreUserInfo();
-      await storeAccess.GetUserCredentials(item._id).then((res) => {
-       
-      })
+    async accessItem(item) {
+      console.log("selectedID :", item);
+      // const storeAccess = useStoreUserInfo();
+      // await storeAccess.GetUserCredentials(item._id).then((res) => {
+
+      // })
       this.UserAccess = true;
     },
     editItem(item) {
@@ -614,6 +772,11 @@ export default {
         console.log("sdasda=", this.editedItem);
       });
       this.dialogVisible = true;
+    },
+
+    // FOR USER MODULE ACCESS EDIT
+    editModule(item) {
+      this.ModuleEditDialog = true;
     },
 
     deleteItem(id) {

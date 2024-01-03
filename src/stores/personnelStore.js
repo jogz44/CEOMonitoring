@@ -9,6 +9,7 @@ export const useStorePersonnelInfo = defineStore("personnelinfo", {
     personnelsCount: 0,
     designationtype: [],
   }),
+  persist: true,
   getters:{
     ActiveCount(){
       return this.personnels.reduce((p,c)=>{
