@@ -19,7 +19,7 @@
       :columns="columns"
       :filter="filter"
       row-key="id"
-      :rows-per-page-options="[0]"
+      :rows-per-page-options="[20]"
     >
       <template v-slot:top-right>
         <q-input

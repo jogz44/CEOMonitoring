@@ -18,7 +18,7 @@
       :rows="filteredEmployees"
       :columns="columns"
       row-key="id"
-      :rows-per-page-options="[0]"
+      :rows-per-page-options="[20]"
     >
       <template v-slot:top-right>
         <q-input
@@ -141,7 +141,7 @@
             </div>
 
             <div class="row">
-              <div class="col-xs-12 col-md-12">
+              <div class="col">
                 <q-file
                   dense
                   filled
@@ -157,6 +157,8 @@
                 </q-file>
               </div>
             </div>
+
+            <div class="row"></div>
           </q-form>
         </q-card-section>
 
@@ -312,6 +314,26 @@
               />
             </div>
           </div>
+          <div class="row">
+            <div class="col">
+              <q-input
+                filled
+                v-model="editedItem.Drate"
+                label="Employee Status"
+                class="q-pa-sm"
+                dense
+              />
+            </div>
+            <div class="col">
+              <q-input
+                filled
+                v-model="editedItem.EmpStatus"
+                label="Salary Rate"
+                class="q-pa-sm"
+                dense
+              />
+            </div>
+          </div>
         </q-card-section>
 
         <q-card-actions align="right">
@@ -351,12 +373,15 @@ export default {
         lastName: "",
         firstName: "",
         middleName: "",
+
         employmentDtl: {
           0: {
             DteStarted: "",
             DteEnded: "",
             Designation: "",
             Charges: "",
+            EmpStatus: "",
+            Drate: "",
           },
         },
         resumeLink: "",
@@ -366,11 +391,14 @@ export default {
         lastName: "",
         firstName: "",
         middleName: "",
+
         employmentDtl: {
           DteStarted: "",
           DteEnded: "",
           Designation: "",
           Charges: "",
+          EmpStatus: "",
+          Drate: "",
         },
         resumeLink: "",
       },
@@ -397,6 +425,20 @@ export default {
           align: "center",
           label: "MIDDLENAME",
           field: "middleName",
+          sortable: true,
+        },
+        {
+          name: "EmpStatus",
+          align: "center",
+          label: "EMP STATUS",
+          field: "EmpStatus",
+          sortable: true,
+        },
+        {
+          name: "Drate",
+          align: "center",
+          label: "RATE",
+          field: "Drate",
           sortable: true,
         },
         {
@@ -553,6 +595,7 @@ export default {
         lastName: "",
         firstName: "",
         middleName: "",
+
         // employmentDtl: {
         //   DteStarted: "",
         //   DteEnded: "",
@@ -608,11 +651,14 @@ export default {
         lastName: "",
         firstName: "",
         middleName: "",
+
         employmentDtl: {
           DteStarted: "",
           DteEnded: "",
           Designation: "",
           Charges: "",
+          EmpStatus: "",
+          Drate: "",
         },
         resumeLink: "",
       };
@@ -631,6 +677,7 @@ export default {
               lastName: "",
               firstName: "",
               middleName: "",
+
               // employmentDtl: {
               //   DteStarted: "",
               //   DteEnded: "",
@@ -651,6 +698,7 @@ export default {
             lastName: "",
             firstName: "",
             middleName: "",
+
             // employmentDtl: {
             //   DteStarted: "",
             //   DteEnded: "",
@@ -684,11 +732,14 @@ export default {
         lastName: "",
         firstName: "",
         middleName: "",
+
         employmentDtl: {
           DteStarted: "",
           DteEnded: "",
           Designation: "",
           Charges: "",
+          EmpStatus: "",
+          Drate: "",
         },
 
         resumeLink: "",

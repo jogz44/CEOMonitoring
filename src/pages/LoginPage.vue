@@ -14,6 +14,7 @@
               label="Username"
               dense
               class="input-field"
+              @keydown.enter.prevent="next()"
             />
           </q-card-section>
           <q-card-section>
@@ -24,6 +25,7 @@
               type="password"
               dense
               class="input-field"
+              @keydown.enter.prevent="submit()"
             />
           </q-card-section>
           <q-card-actions align="right">
@@ -49,6 +51,9 @@ export default {
     };
   },
   methods: {
+    next() {
+      this.$refs['password'].focus()
+    },
     login() {
       // You can add your login logic here
       console.log("Logged in with:", this.username, this.password);

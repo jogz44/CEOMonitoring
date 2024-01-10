@@ -190,7 +190,7 @@
 
         <q-table
           title="Module Names"
-          :rows="ModuleRows"
+          :rows="loadCreds"
           :columns="ModuleColumn"
           row-key="id"
           flat
@@ -212,124 +212,12 @@
                 flat
                 round
                 color="deep-orange"
-                @click="deleteItem(row)"
+                @click="deleteCredentials(row)"
               >
               </q-btn>
-              <!-- <q-btn
-            icon="security"
-            flat
-            round
-            color="primary"
-            @click="accessItem(row)"
-          >
-          </q-btn> -->
             </div>
           </template>
         </q-table>
-
-        <!-- <q-table
-          :rows="rowAccess"
-          row-key="id"
-          :selection="selection"
-          @selection="onSelectionChange"
-          :columns="columnAccess"
-        >
-          <template v-slot:body="props">
-            <q-tr :props="props">
-              <q-td :props="props">
-                <custom-checkbox
-                  :value="props.row.selectedCheckbox1"
-                  @input="toggleCheckbox1"
-                />
-                <custom-checkbox
-                  :value="props.row.selectedCheckbox2"
-                  @input="toggleCheckbox2"
-                />
-
-              </q-td>
-              <q-td v-for="col in props.cols" :key="col.name" :props="props">
-                {{ props.row[col.name] }}
-              </q-td>
-            </q-tr>
-          </template>
-        </q-table> -->
-
-        <!-- <q-table
-          flat
-          bordered
-          title="Treats"
-          :rows="rows"
-          :columns="columns"
-          row-key="name"
-          selection="multiple"
-          v-model:selected="selected"
-        >
-          <template v-slot:header-selection="scope">
-            <q-checkbox v-model="scope.selected" />
-          </template>
-
-          <template v-slot:body-selection="scope">
-            <q-checkbox  v-model="scope.selected" />
-          </template>
-        </q-table> -->
-
-        <!-- <q-table
-          :rows="rows"
-          :columns="columnsS"
-          row-key="id"
-          :selection="selection"
-          virtual-scroll
-          v-model:selected="selectedRows"
-        >
-          <template v-slot:body-cell-create="props">
-            <q-td :props="props">
-              <q-checkbox v-model="props.row.createPermission" />
-            </q-td>
-          </template>
-          <template v-slot:body-cell-read="props">
-            <q-td :props="props">
-              <q-checkbox v-model="props.row.readPermission" />
-            </q-td>
-          </template>
-          <template v-slot:body-cell-update="props">
-            <q-td :props="props">
-              <q-checkbox v-model="props.row.updatePermission" />
-            </q-td>
-          </template>
-          <template v-slot:body-cell-delete="props">
-            <q-td :props="props">
-              <q-checkbox v-model="props.row.deletePermission" />
-            </q-td>
-          </template>
-        </q-table> -->
-
-        <!-- MAO NI TUNAY
-        <q-table
-          :rows="storeAccess.user"
-          :columns="columnsS"
-          row-key="id"
-          :rows-per-page-options="[10, 25, 50]"
-          v-model:pagination="pagination"
-          v-model:selected="selectedRows"
-        >
-          <template v-slot:body-cell="props">
-            <q-td :props="props">
-              <q-checkbox
-                v-if="
-                  props.col.field === 'selected' ||
-                  props.col.field === 'createPermission' ||
-                  props.col.field === 'readPermission' ||
-                  props.col.field === 'updatePermission' ||
-                  props.col.field === 'deletePermission'
-                "
-                v-model="props.row[props.col.field]"
-              />
-              <span v-else>
-                {{ props.row[props.col.field] }}
-              </span>
-            </q-td>
-          </template>
-        </q-table> -->
 
         <q-card-actions align="right">
           <q-btn flat label="Cancel" color="primary" v-close-popup size="md" />
@@ -338,7 +226,7 @@
             color="secondary"
             size="md"
             v-close-popup
-            @click="saved"
+            @click="save"
           />
         </q-card-actions>
       </q-card>
@@ -355,54 +243,42 @@
           <q-form>
             <div class="row">
               <div class="col-lg-12 col-md-12 col-sm-12">
-                <q-input label="Module Name" filled dense class="q-pa-md" />
+                <q-input
+                  label="Module Name"
+                  filled
+                  dense
+                  class="q-pa-md"
+                  v-model="editedItem.Credentials.Module"
+                />
               </div>
               <div class="q-ml-md">
                 <p>USER MODULE ACCESS</p>
                 <q-separator></q-separator>
               </div>
               <div class="col-lg-12 col-md-12 col-sm-12 q-gutter-sm q-ml-sm">
-                <!-- <q-checkbox
-                  v-model="selected"
-                  val="Create"
+                <q-checkbox
+                  v-model="editedItem.Credentials.Create"
+                  val="True"
                   label="Create"
                   color="teal"
-                /> -->
-                <p class="q-mb-sm">Create </p>
-                <q-checkbox
-                  v-model="selected"
-                  val="Create"
-                  label="Create {{ this.ModuleName }}"
-                  color="teal"
-                  class="q-ml-lg"
-                />
-                <br />
-                <q-checkbox
-                  v-model="selected"
-                  val="Create"
-                  label="Create {{ this.ModuleName }} History"
-                  color="teal"
-                  class="q-ml-lg"
                 />
                 <br />
 
                 <q-checkbox
-                  v-model="selected"
-                  val="Edit"
+                  v-model="editedItem.Credentials.Update"
                   label="Edit"
                   color="teal"
                 />
                 <br />
                 <q-checkbox
-                  v-model="selected"
-                  val="Delete"
+                  v-model="editedItem.Credentials.Remove"
                   label="Delete"
                   color="teal"
                 />
                 <br />
                 <q-checkbox
-                  v-model="selected"
-                  val="View"
+                  v-model="editedItem.Credentials.Display"
+                  val="True"
                   label="View"
                   color="teal"
                 />
@@ -423,7 +299,7 @@
               color="secondary"
               size="md"
               v-close-popup
-              @click="saved"
+              @click="saveCreds(this.selectedid, this.selectedCredID)"
             />
           </q-card-actions>
         </q-card-section>
@@ -439,19 +315,17 @@ import { useStoreUserInfo } from "../stores/UserStore";
 export default {
   data() {
     return {
+      loadCreds: [],
+      selectedid: "",
+      selectedCredID: "",
       selected: [],
-      ModuleRows: [
-        {
-          id: 1,
-          name: "Module 1",
-        },
-      ],
+      ModuleRows: [{}],
       ModuleColumn: [
         {
           name: "Module Name",
           align: "left",
           label: "MODULE NAME",
-          field: "name",
+          field: "Module",
         },
         {
           name: "actions",
@@ -460,109 +334,26 @@ export default {
           align: "left",
         },
       ],
+
+      // defaultCreds: {
+      //   Module: "",
+      //   Create: false,
+      //   Remove: false,
+      //   Update: false,
+      //   Display: false,
+      // },
+      // editedCreds: {
+      //   Module: "",
+      //   Create: false,
+      //   Remove: false,
+      //   Update: false,
+      //   Display: false,
+      // },
+
       ModuleEditDialog: false,
       createPermission: false,
-      columnsS: [
-        {
-          name: "Module Name",
-          required: true,
-          align: "left",
-          label: "MODULE NAME",
-          field: (row) => row.Credentials.Create,
-          sortable: true,
-        },
-        // {
-        //   name: "Checkbox",
-        //   required: true,
-        //   align: "center",
-        //   label: "Checkbox",
-        //   field: "selected",
-        //   sortable: false,
-        // },
-        {
-          name: "CREATE",
-          align: "left",
-          label: "CREATE",
-          field: "createPermission",
-          sortable: true,
-        },
-        {
-          name: "READ",
-          align: "left",
-          label: "READ",
-          field: "readPermission",
-          sortable: true,
-        },
-        {
-          name: "UPDATE",
-          align: "left",
-          label: "UPDATE",
-          field: "updatePermission",
-          sortable: true,
-        },
-        {
-          name: "DELETE",
-          align: "left",
-          label: "DELETE",
-          field: "deletePermission",
-          sortable: true,
-        },
-      ],
-
-      rows: [
-        {
-          id: 1,
-          name: "Employee",
-          // selected: true,
-          createPermission: this.Create,
-          readPermission: true,
-          updatePermission: false,
-          deletePermission: true,
-        },
-        {
-          id: 2,
-          name: "Machine Equipment",
-          // selected: true,
-          createPermission: true,
-          readPermission: true,
-          updatePermission: false,
-          deletePermission: true,
-        },
-        {
-          id: 3,
-          name: "IT Equipment",
-          // selected: false,
-          createPermission: true,
-          readPermission: true,
-          updatePermission: true,
-          deletePermission: true,
-        },
-        {
-          id: 4,
-          name: "Project",
-          // selected: false,
-          createPermission: true,
-          readPermission: true,
-          updatePermission: false,
-          deletePermission: true,
-        },
-        // Add more rows as needed
-      ],
-      selection: "multiple",
-      pagination: {
-        page: 1,
-        rowsPerPage: 10,
-      },
       selectedRows: [],
 
-      // tableData: [
-      //   { name: "Row 1", selected: false },
-      //   { name: "Row 2", selected: false },
-      //   { name: "Row 3", selected: false },
-      //   { name: "Row 4", selected: false },
-      //   { name: "Row 5", selected: false },
-      //   // Add more rows if needed
-      // ],
       myEquipments: [],
       filter: "",
       dialogVisible: false,
@@ -579,6 +370,15 @@ export default {
         LastName: "",
         Designation: "",
         Office: "",
+        Credentials: {
+          0: {
+            Module: "",
+            Create: false,
+            Remove: false,
+            Update: false,
+            Display: false,
+          },
+        },
       },
       defaultItem: {
         id: null,
@@ -590,93 +390,16 @@ export default {
         LastName: "",
         Designation: "",
         Office: "",
+        Credentials: {
+          Module: "",
+          Create: false,
+          Remove: false,
+          Update: false,
+          Display: false,
+        },
       },
       UserAccess: false,
-      columnAccess: [
-        {
-          name: "Modulename",
-          required: true,
-          label: "MODULE NAME",
-          align: "left",
-          field: (row) => row.Modulename,
-          format: (val) => `${val}`,
-          sortable: true,
-        },
-        {
-          name: "Add",
-          required: true,
-          label: "ADD",
-          align: "left",
-          field: (row) => row.add,
-          format: (val) => `${val}`,
-          sortable: true,
-        },
-        {
-          name: "Edit",
-          required: true,
-          label: "EDIT",
-          align: "left",
-          field: (row) => row.edit,
-          format: (val) => `${val}`,
-          sortable: true,
-        },
-        {
-          name: "Delete",
-          required: true,
-          label: "DELETE",
-          align: "left",
-          field: (row) => row.delete,
-          format: (val) => `${val}`,
-          sortable: true,
-        },
-        {
-          name: "View",
-          required: true,
-          label: "VIEW",
-          align: "left",
-          field: (row) => row.view,
-          format: (val) => `${val}`,
-          sortable: true,
-        },
-      ],
-      rowAccess: [
-        {
-          Modulename: "Employee List",
-          selectedCheckbox1: false,
-          selectedCheckbox2: false,
-          add: false,
-          edit: false,
-          delete: false,
-          view: false,
-        },
-        {
-          Modulename: "Machine Equipment List",
-          // selectedCheckbox1: false,
-          // selectedCheckbox2: false,
-          // add: false,
-          // edit: false,
-          // delete: false,
-          // view: false,
-        },
-        {
-          Modulename: "IT Equipment List",
-          // selectedCheckbox1: false,
-          // selectedCheckbox2: false,
-          // add: false,
-          // edit: false,
-          // delete: false,
-          // view: false,
-        },
-        {
-          Modulename: "Project List",
-          // selectedCheckbox1: false,
-          // selectedCheckbox2: false,
-          // add: false,
-          // edit: false,
-          // delete: false,
-          // view: false,
-        },
-      ],
+
       columns: [
         {
           name: "Username",
@@ -717,9 +440,6 @@ export default {
     };
   },
   methods: {
-    saved() {
-      this.UserAccess = false;
-    },
     onSelectionChange(selected) {
       this.selection = selected;
     },
@@ -740,6 +460,15 @@ export default {
         LastName: "",
         Designation: "",
         Office: "",
+        // Credentials: {
+        //   0: {
+        //     Module: "",
+        //     Create: false,
+        //     Remove: false,
+        //     Update: false,
+        //     Display: false,
+        //   },
+        // },
       };
       this.dialogVisible = true;
     },
@@ -755,7 +484,17 @@ export default {
       return `${year}-${month}-${day}`;
     },
     async accessItem(item) {
+      this.loadCreds = [];
       console.log("selectedID :", item);
+      this.selectedid = item._id;
+      console.log("selectedID :", item._id);
+      await this.storeCredsFetch
+        .GetUserCredentials(this.selectedid)
+        .then((res) => {
+          this.loadCreds = this.storeCreds.user;
+        });
+
+      console.log("creds: ", this.loadCreds);
       // const storeAccess = useStoreUserInfo();
       // await storeAccess.GetUserCredentials(item._id).then((res) => {
 
@@ -776,7 +515,12 @@ export default {
 
     // FOR USER MODULE ACCESS EDIT
     editModule(item) {
+      // const store = useStoreUserInfo();
+      // store.GetUserCredentialsSpec(item._id,item.Credentials._id);
+      this.selectedCredID = item._id;
       this.ModuleEditDialog = true;
+      this.editedItem.Credentials = item;
+      console.log("imong mama =", item.Module);
     },
 
     deleteItem(id) {
@@ -785,6 +529,67 @@ export default {
       store.DeleteUser(id._id).then((res) => {
         store.fetchUser();
       });
+    },
+
+    saveCreds(id, cid) {
+      const store = useStoreUserInfo();
+      console.log("pass userID=", id);
+      console.log("pass credentialID=", cid);
+
+      // store.UpdateCredentialsSpec(id,cid)
+      const editedCredsCopy = { ...this.editedItem.Credentials };
+      console.log("pass credentialID=", editedCredsCopy);
+
+      if (editedCredsCopy._id) {
+        store.UpdateCredentialsSpec(id, cid, editedCredsCopy).then((res) => {
+          console.log("Credentials updated successfully:", res);
+          this.editedItem.Credentials = {
+            Module: "",
+            Create: false,
+            Update: false,
+            Remove: false,
+            Display: false,
+          };
+        });
+      } else {
+        store.AddCred(this.selectedid, editedCredsCopy).then((res2) => {
+          this.editedItem.Credentials = {
+            Module: "",
+            Create: false,
+            Update: false,
+            Remove: false,
+            Display: false,
+          };
+          this.storeCredsFetch
+            .GetUserCredentials(this.selectedid)
+            .then((res) => {
+              this.loadCreds = this.storeCreds.user;
+            });
+        });
+        // store.fetchUser().then((res) => {
+        //   store.GetUser(this.selectedid).then((res1) => {
+        //     this.editedCreds = store.user;
+        //     store.fetchUser();
+        //   });
+        // });
+      }
+    },
+
+    deleteCredentials(item) {
+      const store = useStoreUserInfo();
+      try {
+        store.DeleteCredentialsSpec(this.selectedid, item._id).then(() => {
+          console.log("Successfuly Deleted");
+          // store.GetUserCredentials(this.selectedid);
+          this.storeCredsFetch
+            .GetUserCredentials(this.selectedid)
+            .then((res) => {
+              this.loadCreds = this.storeCreds.user;
+            });
+        });
+      } catch (error) {
+        console.log("Unable to Delete: ", error);
+      }
     },
 
     save() {
@@ -849,45 +654,25 @@ export default {
       return Math.max(...ids) + 1;
     },
   },
-  // components: {
-  //   CustomCheckbox: {
-  //     props: {
-  //       value: Boolean,
-  //     },
-  //     template: '<q-checkbox v-model="value" />',
-  //   },
-  // },
+  created() {},
 
   setup() {
     const store = useStoreUserInfo();
     const storeAccess = useStoreUserInfo();
+    const storeCreds = useStoreUserInfo();
+    const storeCredsFetch = useStoreUserInfo();
 
     store.fetchUser();
-    storeAccess.GetUser();
+    //storeAccess.GetUser();
+    storeCreds.AddCred();
 
     return {
       store,
       storeAccess,
+      storeCreds,
+      storeCredsFetch,
       model: ref(null),
       group: ref(["display"]),
-      options: [
-        {
-          label: "Create",
-          value: "create",
-        },
-        {
-          label: "Remove",
-          value: "remove",
-        },
-        {
-          label: "Update",
-          value: "update",
-        },
-        {
-          label: "Display",
-          value: "display",
-        },
-      ],
     };
   },
 };
@@ -899,7 +684,4 @@ export default {
   max-width: 250px;
   margin: 10px;
 }
-/* .actionsbtn {
-  margin-left: 90px;
-} */
 </style>
