@@ -41,7 +41,7 @@ export const useStoreUserInfo = defineStore("userinfo", {
         const response = await axios.post(
           "http://10.0.1.23:5000/api/Users/usr/" + id + "/creds", payload
         );
-         this.creds.push(response.data);
+        this.creds.push(response.data);
       } catch (error ){
         console.log(`Error fetching creds: ${error}`);
       }
@@ -78,7 +78,6 @@ export const useStoreUserInfo = defineStore("userinfo", {
           `http://10.0.1.23:5000/api/Users/` + id + `/creds`
         );
         this.user = response.data;
-        // console.log("store=",this.user)
       } catch (error) {
         console.log("Unable to retrieve=", error);
       }
@@ -90,46 +89,6 @@ export const useStoreUserInfo = defineStore("userinfo", {
           `http://10.0.1.23:5000/api/Users/` + id
         );
         this.user = response.data;
-      } catch (error) {
-        console.log("Unable to retrieve=", error);
-      }
-    },
-
-    // Specific User Credential
-    async GetUserCredentialsSpec(id, cid) {
-      console.log("getuser=", id);
-      try {
-        const response = await axios.get(
-          `http://10.0.1.23:5000/api/Users/` + id + `/creds/` + cid
-        );
-        this.creds = response.data;
-      } catch (error) {
-        console.log("Unable to retrieve=", error);
-      }
-    },
-
-    async UpdateCredentialsSpec(id, cid, payload) {
-      console.log("getuser4UPDT=", id);
-      try {
-        const response = await axios.put(
-          `http://10.0.1.23:5000/api/Users/` + id + `/creds/` + cid,payload
-        );
-        this.creds = response.data;
-        console.log("Updated successfully:", this.creds);
-      } catch (error) {
-        console.log("Unable to retrieve=", error);
-      }
-    },
-
-    async DeleteCredentialsSpec(id, cid) {
-      console.log("getuser4UPDT=", id);
-      try {
-        const response = await axios.delete(
-          `http://10.0.1.23:5000/api/Users/` + id + `/creds/` + cid
-        );
-       this.creds = response.data;
-        console.log("Credential Deleted successfully:", this.creds);
-        // alert(`Credential Deleted successfully`)
       } catch (error) {
         console.log("Unable to retrieve=", error);
       }

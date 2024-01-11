@@ -1,6 +1,8 @@
 <template>
   <q-layout>
-    <q-header elevated class="bg-secondary text-white q-pa-lg"> ENGINEERING SYSTEM </q-header>
+    <q-header elevated class="bg-secondary text-white q-pa-lg">
+      ENGINEERING SYSTEM
+    </q-header>
     <q-page-container>
       <q-page class="login-page q-pa-md">
         <q-card class="login-card">
@@ -8,31 +10,39 @@
             <h2 class="text-h6 text-center">Login Page</h2>
           </q-card-section>
           <q-card-section class="q-pt-sm">
-            <q-input
-              filled
-              v-model="username"
-              label="Username"
-              dense
-              class="input-field"
-              @keydown.enter.prevent="next()"
-            />
-          </q-card-section>
-          <q-card-section>
-            <q-input
-              filled
-              v-model="password"
-              label="Password"
-              type="password"
-              dense
-              class="input-field"
-              @keydown.enter.prevent="submit()"
-            />
+            <q-form class="q-px-sm">
+              <q-input
+                ref="username"
+                filled
+                v-model="username"
+                label="Username"
+                dense
+                class="input-field"
+                lazy-rules
+                type="username"
+                :rules="[this.required]"
+                @keydown.enter.prevent="next()"
+              />
+
+              <q-input
+                ref="password"
+                filled
+                v-model="password"
+                label="Password"
+                :type="passwordFieldType"
+                lazy-rules
+                :rules="[this.required]"
+                dense
+                class="input-field"
+                @keydown.enter.prevent="submit()"
+              />
+            </q-form>
           </q-card-section>
           <q-card-actions align="right">
             <q-btn
               color="secondary"
               label="Login"
-              @click="login"
+              @click="submit()"
               class="login-btn"
             />
           </q-card-actions>
@@ -43,27 +53,97 @@
 </template>
 
 <script>
-export default {
+import { useLoginStore } from "../stores/LoginStore";
+import { defineComponent } from "vue";
+import { useQuasar } from "quasar";
+
+export default defineComponent({
   data() {
     return {
       username: "",
       password: "",
+      passwordFieldType: "password",
+      btnLabel: "LOGIN",
+      visibility: false,
+      visibilityIcon: "visibility",
+    };
+  },
+  setup() {
+    const $q = useQuasar();
+
+    return {
+      showNotif() {
+        $q.notify({
+          icon: "error",
+          color: "negative",
+          message: "Login Failed",
+          position: "center",
+          timeout: "1000",
+        });
+      },
+
+      // showLoading() {
+      //   $q.loading.show({
+      //     message: "Please Wait",
+      //   });
+      // },
+      // hideLoading() {
+      //   $q.loading.hide();
+      // },
     };
   },
   methods: {
+    // switchVisibility() {
+    //   this.visibility = !this.visibility;
+    //   this.passwordFieldType = this.visibility ? "text" : "password";
+    //   this.visibilityIcon = this.visibility ? "visibility_off" : "visibility";
+    // },
     next() {
-      this.$refs['password'].focus()
+      this.$refs["password"].focus();
     },
-    login() {
-      // You can add your login logic here
-      console.log("Logged in with:", this.username, this.password);
-      // if (this.username === "yourUsername" && this.password === "yourPassword") {
-      //   this.$router.push("/dashboard");
-      // }
-      this.$router.push("/main");
+    short(val) {
+      return (val && val.length > 5) || "UserId must be 6 digits ex:`011790`";
+    },
+    required(val) {
+      return (val && val.length > 0) || "Field must be filled in";
+    },
+    // login() {
+    //   // You can add your login logic here
+    //   console.log("Logged in with:", this.username, this.password);
+    //   // if (this.username === "yourUsername" && this.password === "yourPassword") {
+    //   //   this.$router.push("/dashboard");
+    //   // }
+    //   this.$router.push("/main");
+    // },
+    submit() {
+      this.$refs.username.validate();
+      this.$refs.password.validate();
+      if (!this.$refs.username.hasError && !this.$refs.password.hasError) {
+        // this.showLoading();
+        const store = useLoginStore();
+        const data = new FormData();
+        data.append("username", this.username);
+        data.append("password", this.password);
+
+        store.userlogin(data).then((e) => {
+          // this.hideLoading();
+          if (e == 0 || e == 2 || e == 3) {
+            console.log("failed!");
+            //   $q.notify({
+            //   icon: 'done',
+            //   color: 'positive',
+            //   message: 'Авторизация'
+            // })
+            this.showNotif();
+          } else {
+            // console.log("Success!")
+            this.$router.push("/main");
+          }
+        });
+      }
     },
   },
-};
+});
 </script>
 
 <style scoped>
