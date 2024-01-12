@@ -14,7 +14,7 @@
               <q-input
                 ref="username"
                 filled
-                v-model="username"
+                v-model="userlogin.Username"
                 label="Username"
                 dense
                 class="input-field"
@@ -27,7 +27,7 @@
               <q-input
                 ref="password"
                 filled
-                v-model="password"
+                v-model="userlogin.Password"
                 label="Password"
                 :type="passwordFieldType"
                 lazy-rules
@@ -60,27 +60,30 @@ import { useQuasar } from "quasar";
 export default defineComponent({
   data() {
     return {
-      username: "",
-      password: "",
       passwordFieldType: "password",
       btnLabel: "LOGIN",
       visibility: false,
       visibilityIcon: "visibility",
+      userlogin: {
+        Username: "",
+        Password: "",
+      },
+      UserCredentials:[{}]
     };
   },
   setup() {
     const $q = useQuasar();
 
     return {
-      showNotif() {
-        $q.notify({
-          icon: "error",
-          color: "negative",
-          message: "Login Failed",
-          position: "center",
-          timeout: "1000",
-        });
-      },
+      // showNotif() {
+      //   $q.notify({
+      //     icon: "error",
+      //     color: "negative",
+      //     message: "Login Failed",
+      //     position: "center",
+      //     timeout: "1000",
+      //   });
+      // },
 
       // showLoading() {
       //   $q.loading.show({
@@ -121,24 +124,31 @@ export default defineComponent({
       if (!this.$refs.username.hasError && !this.$refs.password.hasError) {
         // this.showLoading();
         const store = useLoginStore();
-        const data = new FormData();
-        data.append("username", this.username);
-        data.append("password", this.password);
+        // const data = new FormData();
+        // data.append("username", this.username);
+        // data.append("password", this.password);
 
-        store.userlogin(data).then((e) => {
+
+        store.userlogin(this.userlogin).then((res) => {
+
+           if (res.status === 200 ){
+
+            this.UserCredentials = res.data.Credentials
+            console.log("Credentials =>", this.UserCredentials)
+            this.$router.push("/main");
+           }
           // this.hideLoading();
-          if (e == 0 || e == 2 || e == 3) {
-            console.log("failed!");
+
             //   $q.notify({
             //   icon: 'done',
             //   color: 'positive',
             //   message: 'Авторизация'
             // })
-            this.showNotif();
-          } else {
+            // this.showNotif();
+
             // console.log("Success!")
-            this.$router.push("/main");
-          }
+
+
         });
       }
     },
