@@ -26,7 +26,7 @@
         <q-space />
 
         <div class="q-gutter-sm row items-center no-wrap">
-          
+
           <q-btn round flat>
             <q-avatar size="26px">
               <img src="https://cdn.quasar.dev/img/boy-avatar.png" />
@@ -189,6 +189,27 @@
                   User</q-item-label
                 >
               </q-item-section>
+
+            </q-item>
+            <q-item
+              clickable
+              v-ripple
+              @click="toggleSection('view')"
+              :class="{ 'active-item': selectedSection === 'view' }"
+            >
+              <q-item-section class="q-ml-sm">
+                <q-item-label>
+                  <q-icon
+                    :style="{
+                      color: selectedSection === 'view' ? '#006400' : 'inherit',
+                    }"
+                    name="people"
+                    class="q-ml-md q-mr-md"
+                  />
+                  User View</q-item-label
+                >
+              </q-item-section>
+
             </q-item>
           </q-expansion-item>
         </q-list>
@@ -216,6 +237,9 @@
     <q-page-container v-if="showUser">
       <UserTable />
     </q-page-container>
+    <q-page-container v-if="showView">
+      <UserView />
+    </q-page-container>
   </q-layout>
 </template>
 
@@ -227,6 +251,7 @@ import MachineTable from "components/MachineTable.vue";
 import ItTable from "components/ItTable.vue";
 import ProjectTable from "components/ProjectTable.vue";
 import UserTable from "components/UserTable.vue";
+import UserView from "components/UserView.vue";
 import DashboardView from "src/components/DashboardView.vue";
 
 const linksList = [
@@ -254,6 +279,7 @@ export default defineComponent({
     MachineTable,
     ProjectTable,
     UserTable,
+    UserView,
     ItTable,
     DashboardView,
   },
@@ -278,6 +304,7 @@ export default defineComponent({
       showProject: false,
       showUser: false,
       showIt: false,
+      showView: false,
       DashboardView: true,
       management: false,
       settings: false,
@@ -301,6 +328,7 @@ export default defineComponent({
       this.showMachine = section === "machine";
       this.showProject = section === "project";
       this.showUser = section === "user";
+      this.showView = section === "view";
       this.DashboardView = section === "dashboard";
       if (section === "dashboard") {
         this.management = false; // Close management expansion item

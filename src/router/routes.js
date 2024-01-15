@@ -26,6 +26,10 @@ const routes = [
     path: '/testing',
     component: () => import ('pages/TestPage.vue'),
   },
+  {
+    path: '/view',
+    component: () => import ('components/UserView.vue'),
+  },
 
   // Always leave this as last one,
   // but you can also remove it
@@ -33,6 +37,8 @@ const routes = [
     path: '/:catchAll(.*)*',
     component: () => import('pages/ErrorNotFound.vue')
   },
+
+
 
 
 ]

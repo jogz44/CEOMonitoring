@@ -39,10 +39,11 @@ export const useStoreUserInfo = defineStore("userinfo", {
     async AddCred(id, payload) {
       try {
         const response = await axios.post(
-          "http://10.0.1.23:5000/api/Users/usr/" + id + "/creds", payload
+          "http://10.0.1.23:5000/api/Users/" + id + "/creds",
+          payload
         );
         this.creds.push(response.data);
-      } catch (error ){
+      } catch (error) {
         console.log(`Error fetching creds: ${error}`);
       }
     },
@@ -94,6 +95,28 @@ export const useStoreUserInfo = defineStore("userinfo", {
       }
     },
 
+    async UpdateCredentialsSpec(id, cid, payload) {
+      try {
+        const response = await axios.put(
+          `http://10.0.1.23:5000/api/Users/` + id + `/creds/` + cid,
+          payload
+        );
+      } catch (error) {
+        console.log("Unable to retrieve=", error);
+      }
+    },
 
+    async DeleteCredentialsSpec(id, cid) {
+      // console.log("UserID====" + id + "===== CredID======" + cid)
+      try {
+      const CredsToDelete =  await axios.delete(
+          `http://10.0.1.23:5000/api/Users/` + id + `/creds/` + cid
+        );
+        //this.user = this.user.Credentials.filter((e) => e.id !== id);
+        console.log(CredsToDelete)
+      } catch (error) {
+        console.log(`Unable to Delete ${error}`);
+      }
+    },
   },
 });

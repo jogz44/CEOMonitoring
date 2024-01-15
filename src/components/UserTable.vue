@@ -58,7 +58,7 @@
     </q-table>
 
     <q-dialog v-model="dialogVisible" persistent>
-      <q-card style="width: 50%; height: 50%">
+      <q-card style="width: 50%; height: 45%">
         <q-card-section>
           <div class="text-h6">User Details</div>
         </q-card-section>
@@ -154,6 +154,7 @@
                   class="q-pa-sm"
                 />
               </div>
+              <q-toggle v-model="AdminValue" color="green" label="Set as Admin" />
             </div>
           </q-form>
         </q-card-section>
@@ -212,7 +213,7 @@
                 flat
                 round
                 color="deep-orange"
-                @click="deleteCredentials(row)"
+                @click="deleteCredentials(this.selectedid,row._id)"
               >
               </q-btn>
             </div>
@@ -243,12 +244,20 @@
           <q-form>
             <div class="row">
               <div class="col-lg-12 col-md-12 col-sm-12">
-                <q-input
+                <!-- <q-input
                   label="Module Name"
                   filled
                   dense
                   class="q-pa-md"
                   v-model="editedItem.Credentials.Module"
+                /> -->
+                <q-select
+                  filled
+                  v-model="editedItem.Credentials.Module"
+                  dense
+                  class="q-pa-sm"
+                  :options="options"
+                  label="Module Name"
                 />
               </div>
               <div class="q-ml-md">
@@ -315,6 +324,7 @@ import { useStoreUserInfo } from "../stores/UserStore";
 export default {
   data() {
     return {
+      AdminValue: false,
       loadCreds: [],
       selectedid: "",
       selectedCredID: "",
@@ -334,6 +344,8 @@ export default {
           align: "left",
         },
       ],
+
+      options: ["Employee", "Machine Equipment", "IT Equipment", "Project"],
 
       // defaultCreds: {
       //   Module: "",
@@ -575,14 +587,16 @@ export default {
       }
     },
 
-    deleteCredentials(item) {
+    deleteCredentials(id, cid) {
+
       const store = useStoreUserInfo();
+      // console.log("USES TABLE  == UserID====" + id + "===== CredID======" + cid)
       try {
-        store.DeleteCredentialsSpec(this.selectedid, item._id).then(() => {
+        store.DeleteCredentialsSpec(id, cid).then(() => {
           console.log("Successfuly Deleted");
           // store.GetUserCredentials(this.selectedid);
           this.storeCredsFetch
-            .GetUserCredentials(this.selectedid)
+            .GetUserCredentials(id)
             .then((res) => {
               this.loadCreds = this.storeCreds.user;
             });
@@ -664,7 +678,7 @@ export default {
 
     store.fetchUser();
     //storeAccess.GetUser();
-    storeCreds.AddCred();
+    // storeCreds.AddCred();
 
     return {
       store,
