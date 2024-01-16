@@ -209,6 +209,24 @@
                   User View</q-item-label
                 >
               </q-item-section>
+            </q-item>
+
+
+            <q-item
+              clickable
+              v-ripple
+              @click="$router.push('/')"
+            >
+              <q-item-section class="q-ml-sm">
+                <q-item-label>
+                  <q-icon
+
+                    name="logout"
+                    class="q-ml-md q-mr-md"
+                  />
+                  Logout</q-item-label
+                >
+              </q-item-section>
 
             </q-item>
           </q-expansion-item>

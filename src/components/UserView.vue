@@ -1,6 +1,6 @@
 <template>
-  <div >
-    <q-card style="width: 50%; height: 45%; align-self: center;">
+  <div class="q-pa-lg">
+    <q-card style="width: 100%; height: 45%; align-self: center;" class="q-pa-sm">
       <q-card-section>
         <div class="text-h6">User Details</div>
       </q-card-section>
@@ -13,7 +13,7 @@
             <div class="col-lg-6 col-md-6 col-sm-12">
               <q-input
                 filled
-                v-model="editedItem.IdNo"
+                v-model="IdNo"
                 label="ID Number"
                 dense
                 class="q-pa-sm"
@@ -23,7 +23,7 @@
             <div class="col-lg-6 col-md-6 col-sm-12">
               <q-input
                 filled
-                v-model="editedItem.LastName"
+                v-model="LastName"
                 label="Lastname"
                 dense
                 class="q-pa-sm"
@@ -35,7 +35,7 @@
             <div class="col-lg-6 col-md-6 col-sm-12">
               <q-input
                 filled
-                v-model="editedItem.FirstName"
+                v-model="FirstName"
                 label="Firstname"
                 dense
                 class="q-pa-sm"
@@ -45,7 +45,7 @@
             <div class="col-lg-6 col-md-6 col-sm-12">
               <q-input
                 filled
-                v-model="editedItem.MiddleName"
+                v-model="MiddleName"
                 label="Middlename"
                 dense
                 class="q-pa-sm"
@@ -57,7 +57,7 @@
             <div class="col-lg-6 col-md-6 col-sm-12">
               <q-input
                 filled
-                v-model="editedItem.Designation"
+                v-model="Designation"
                 label="Designation"
                 dense
                 class="q-pa-sm"
@@ -67,7 +67,7 @@
             <div class="col-lg-6 col-md-6 col-sm-12">
               <q-input
                 filled
-                v-model="editedItem.Office"
+                v-model="Office"
                 label="Office"
                 dense
                 class="q-pa-sm"
@@ -75,12 +75,12 @@
             </div>
           </div>
           <q-separator class="q-mb-sm"></q-separator>
-          <div class="text-title">Login Credentials</div>
+          <div class="text-h6 q-pa-sm">Login Credentials</div>
           <div class="row">
             <div class="col-lg-6 col-md-6 col-sm-12">
               <q-input
                 filled
-                v-model="editedItem.Username"
+                v-model="Username"
                 label="Username"
                 dense
                 class="q-pa-sm"
@@ -90,24 +90,25 @@
             <div class="col-lg-6 col-md-6 col-sm-12">
               <q-input
                 filled
-                v-model="editedItem.Password"
+                v-model="Password"
                 label="Password"
                 dense
                 class="q-pa-sm"
               />
             </div>
-            <q-toggle v-model="AdminValue" color="green" label="Set as Admin" />
+            <!-- <q-toggle v-model="AdminValue" color="green" label="Set as Admin" /> -->
           </div>
         </q-form>
       </q-card-section>
       <q-card-actions align="right">
-        <q-btn flat label="Cancel" color="primary" v-close-popup size="md" />
+        <!-- <q-btn flat label="Cancel" color="primary" v-close-popup size="md" /> -->
         <q-btn
-          label="Save"
-          color="secondary"
+          label="EDIT"
+          color="green"
           size="md"
           v-close-popup
           @click="save"
+          class="q-mr-md q-pa-sm"
         />
       </q-card-actions>
     </q-card>
@@ -117,6 +118,7 @@
 <script>
 import { ref } from "vue";
 import { useStoreUserInfo } from "../stores/UserStore";
+import {useLoginStore} from "../stores/LoginStore"
 
 export default {
   data() {
@@ -162,6 +164,19 @@ export default {
       },
     };
   },
+
+  created() {
+    const loginstore = useLoginStore();
+    this.LastName = loginstore.user.LastName;
+    this.IdNo = loginstore.user.IdNo;
+    this.FirstName = loginstore.user.FirstName;
+    this.MiddleName = loginstore.user.MiddleName;
+    this.Designation = loginstore.user.Designation;
+    this.Office = loginstore.user.Office;
+    this.Username = loginstore.user.Username;
+    this.Password = loginstore.user.Password;
+  },
+
   setup() {
     const store = useStoreUserInfo();
     const storeAccess = useStoreUserInfo();
@@ -183,3 +198,7 @@ export default {
   },
 };
 </script>
+
+<style>
+
+</style>
