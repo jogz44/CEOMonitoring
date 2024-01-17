@@ -1,6 +1,11 @@
 <template>
   <div class="q-pa-md">
-    <q-btn label="Add" @click="Rowclick" class="q-mb-sm" />
+    <q-btn
+      label="Add"
+      @click="Rowclick"
+      class="q-mb-sm"
+      v-if="create('Project')"
+    />
     <q-btn
       label="Convert to Excel"
       flat
@@ -53,6 +58,7 @@
       <template v-slot:body-cell-actions="{ row }">
         <div class="actionsbtn">
           <q-btn
+            v-if="update('Project')"
             icon="add"
             size="sm"
             round
@@ -61,6 +67,7 @@
           >
           </q-btn>
           <q-btn
+            v-if="update('Project')"
             icon="edit"
             flat
             round
@@ -69,6 +76,7 @@
           >
           </q-btn>
           <q-btn
+            v-if="remove('Project')"
             icon="delete"
             flat
             round
@@ -330,8 +338,11 @@
               <!-- Display details from the selected row in the dialog -->
               <p><b>DATE:</b> {{ formatDate(selectedUpdate.DateUpdate) }}</p>
               <p class="q-mb-sm"><b>PROOF:</b></p>
-              <q-img style="height: auto; max-width: auto" :src="selectedUpdate.ImageUpdate" />
-              <p class="q-mt-lg "><b>DESCRIPTION: </b> </p>
+              <q-img
+                style="height: auto; max-width: auto"
+                :src="selectedUpdate.ImageUpdate"
+              />
+              <p class="q-mt-lg"><b>DESCRIPTION: </b></p>
               <p class="q-ml-md">{{ selectedUpdate.UpdateDescription }}</p>
               <!-- Add more details as needed -->
             </div>
@@ -411,6 +422,7 @@
 <script>
 import { ref } from "vue";
 import { useStoreProjectInfo } from "../stores/ProjectStore";
+import { useLoginStore } from "src/stores/LoginStore";
 import * as XLSX from "xlsx";
 
 export default {
@@ -786,8 +798,51 @@ export default {
   setup() {
     const store = useStoreProjectInfo();
     store.fetchProject();
+    const loginstore = useLoginStore();
 
+    //REMOVE FUNCTION
+    function remove(module) {
+      const userCredentials = loginstore.user.Credentials;
+      const moduleCredentials = userCredentials.find(
+        (cred) => cred.Module === module
+      );
+      // console.log("credentials=", moduleCredentials);
+      if (moduleCredentials.Remove) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+    //EDIT FUNCTION
+    function update(module) {
+      const userCredentials = loginstore.user.Credentials;
+      const moduleCredentials = userCredentials.find(
+        (cred) => cred.Module === module
+      );
+      // console.log("credentials=", moduleCredentials);
+      if (moduleCredentials.Update) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+    //CREATE FUNCTION
+    function create(module) {
+      const userCredentials = loginstore.user.Credentials;
+      const moduleCredentials = userCredentials.find(
+        (cred) => cred.Module === module
+      );
+      // console.log("credentials=", moduleCredentials);
+      if (moduleCredentials.Create) {
+        return true;
+      } else {
+        return false;
+      }
+    }
     return {
+      remove,
+      update,
+      create,
       store,
       model: ref(null),
     };

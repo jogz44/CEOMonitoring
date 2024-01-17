@@ -26,7 +26,6 @@
         <q-space />
 
         <div class="q-gutter-sm row items-center no-wrap">
-
           <q-btn round flat>
             <q-avatar size="26px">
               <img src="https://cdn.quasar.dev/img/boy-avatar.png" />
@@ -90,6 +89,7 @@
             </template>
 
             <q-item
+              v-if="view('Employee')"
               clickable
               v-ripple
               @click="toggleSection('employee')"
@@ -109,7 +109,12 @@
                 >
               </q-item-section>
             </q-item>
-            <q-item clickable v-ripple @click="toggleSection('machine')">
+            <q-item
+              v-if="view('Machine Equipment')"
+              clickable
+              v-ripple
+              @click="toggleSection('machine')"
+            >
               <q-item-section class="q-ml-sm">
                 <q-item-label>
                   <q-icon
@@ -123,7 +128,12 @@
                 >
               </q-item-section>
             </q-item>
-            <q-item clickable v-ripple @click="toggleSection('it')">
+            <q-item
+              v-if="view('IT Equipment')"
+              clickable
+              v-ripple
+              @click="toggleSection('it')"
+            >
               <q-item-section class="q-ml-sm">
                 <q-item-label>
                   <q-icon
@@ -136,7 +146,12 @@
                 >
               </q-item-section>
             </q-item>
-            <q-item clickable v-ripple @click="toggleSection('project')">
+            <q-item
+              v-if="view('Project')"
+              clickable
+              v-ripple
+              @click="toggleSection('project')"
+            >
               <q-item-section class="q-ml-sm">
                 <q-item-label>
                   <q-icon
@@ -172,6 +187,7 @@
               </q-item-section>
             </template>
             <q-item
+              v-if="store.user.isAdmin == true"
               clickable
               v-ripple
               @click="toggleSection('user')"
@@ -186,10 +202,9 @@
                     name="people"
                     class="q-ml-md q-mr-md"
                   />
-                  User</q-item-label
+                  User List</q-item-label
                 >
               </q-item-section>
-
             </q-item>
             <q-item
               clickable
@@ -211,23 +226,13 @@
               </q-item-section>
             </q-item>
 
-
-            <q-item
-              clickable
-              v-ripple
-              @click="$router.push('/')"
-            >
+            <q-item clickable v-ripple @click="$router.push('/')">
               <q-item-section class="q-ml-sm">
                 <q-item-label>
-                  <q-icon
-
-                    name="logout"
-                    class="q-ml-md q-mr-md"
-                  />
+                  <q-icon name="logout" class="q-ml-md q-mr-md" />
                   Logout</q-item-label
                 >
               </q-item-section>
-
             </q-item>
           </q-expansion-item>
         </q-list>
@@ -263,6 +268,7 @@
 
 <script>
 import { defineComponent, ref } from "vue";
+import { useLoginStore } from "../stores/LoginStore";
 // import EssentialLink from "components/EssentialLink.vue";
 import CenterTable from "components/CenterTable.vue";
 import MachineTable from "components/MachineTable.vue";
@@ -304,8 +310,28 @@ export default defineComponent({
 
   setup() {
     const leftDrawerOpen = ref(false);
+    const store = useLoginStore();
+
+    function view(module) {
+      const userCredentials = store.user.Credentials;
+      const moduleCredentials = userCredentials.find(
+        (cred) => cred.Module === module
+      );
+      // console.log("credentials=", moduleCredentials);
+      if (moduleCredentials) {
+        if (moduleCredentials.Display) {
+          return true;
+        } else {
+          return false;
+        }
+      } else {
+        return false;
+      }
+    }
 
     return {
+      view,
+      store,
       essentialLinks: linksList,
       leftDrawerOpen,
       toggleLeftDrawer() {

@@ -73,8 +73,8 @@
           <q-item clickable v-ripple @click="toggleSection('dashboard')">
             <q-icon name="dashboard" size="24px" class="q-mr-md" /> HOME
           </q-item>
-          <q-expansion-item label="MANAGEMENT" expand-separator icon="list">
-            <q-item clickable v-ripple @click="toggleSection('employee')">
+          <q-expansion-item label="MANAGEMENT" expand-separator icon="list" @click="managedisplay()">
+            <q-item v-if="showEmployee" clickable v-ripple @click="toggleSection('employee')">
               <q-item-section class="q-ml-sm">
                 <!-- Icon added here -->
                 <q-item-label>
@@ -151,7 +151,7 @@
 
 <script>
 import { defineComponent, ref } from "vue";
-
+import { useLoginStore } from "src/stores/LoginStore";
 // import { fasEarthAmericas, fasFlask } from "@quasar/extras/fontawesome-v6";
 import CenterTable from "components/CenterTable.vue";
 import MachineTable from "components/MachineTable.vue";
@@ -166,12 +166,30 @@ export default {
   setup() {
     const leftDrawerOpen = ref(false);
     const search = ref("");
+    const store = useLoginStore();
 
     function toggleLeftDrawer() {
       leftDrawerOpen.value = !leftDrawerOpen.value;
     }
+    function view(module) {
+      // Assuming store.user is the user object you provided
+      const userCredentials = store.user.Credentials;
 
+      // Find the credentials for the specified module
+      const moduleCredentials = userCredentials.find(
+        (cred) => cred.Module === module
+      );
+      // console.log("credentials=",moduleCredentials)
+      if (moduleCredentials.Display) {
+        // Do something with moduleCredentials
+        return true;
+      } else {
+        return false;
+      }
+    }
     return {
+      view,
+      store,
       leftDrawerOpen,
       search,
       toggleLeftDrawer,
@@ -186,10 +204,20 @@ export default {
       showProject: false,
       showUser: false,
       showIt: false,
-      DashboardView: true,
+      DashboardView: false,
     };
   },
+  // created(){
+  //   console.log("created navbar");
+  // },
   methods: {
+    managedisplay(){
+      if(this.view("Employee")){
+        this.showEmployee=true
+        }else{
+          this.showEmployee=false
+        }
+    },
     toggleSubMenu() {
       this.submenuOpen = !this.submenuOpen;
     },

@@ -154,7 +154,7 @@
                   class="q-pa-sm"
                 />
               </div>
-              <q-toggle v-model="AdminValue" color="green" label="Set as Admin" />
+              <q-toggle v-model="editedItem.isAdmin" color="green" label="Set as Admin" />
             </div>
           </q-form>
         </q-card-section>
@@ -382,6 +382,7 @@ export default {
         LastName: "",
         Designation: "",
         Office: "",
+        isAdmin: false,
         Credentials: {
           0: {
             Module: "",
@@ -402,6 +403,7 @@ export default {
         LastName: "",
         Designation: "",
         Office: "",
+        isAdmin: false,
         Credentials: {
           Module: "",
           Create: false,
@@ -472,6 +474,7 @@ export default {
         LastName: "",
         Designation: "",
         Office: "",
+        isAdmin: false,
         // Credentials: {
         //   0: {
         //     Module: "",
@@ -554,7 +557,7 @@ export default {
 
       if (editedCredsCopy._id) {
         store.UpdateCredentialsSpec(id, cid, editedCredsCopy).then((res) => {
-          console.log("Credentials updated successfully:", res);
+          // console.log("Credentials updated successfully:", res);
           this.editedItem.Credentials = {
             Module: "",
             Create: false,
@@ -622,6 +625,7 @@ export default {
             LastName: "",
             Designation: "",
             Office: "",
+            isAdmin: false,
           };
           store.fetchUser().then((res) => {
             this.closeDialog();
@@ -640,6 +644,7 @@ export default {
             LastName: "",
             Designation: "",
             Office: "",
+            isAdmin: false,
           };
           store.fetchUser().then((res) => {
             this.closeDialog();
@@ -660,6 +665,7 @@ export default {
         LastName: "",
         Designation: "",
         Office: "",
+        isAdmin: false,
       };
       this.dialogVisible = false;
     },

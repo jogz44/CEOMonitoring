@@ -16,8 +16,8 @@ export const useStoreUserInfo = defineStore("userinfo", {
 
         this.users = response.data;
         this.usersCount = response.data.length;
-        console.log("res=", this.users);
-        console.log("count =>", this.usersCount);
+        // console.log("res=", this.users);
+        // console.log("count =>", this.usersCount);
       } catch (error) {
         console.log(`Error fetching tasks: ${error}`);
       }

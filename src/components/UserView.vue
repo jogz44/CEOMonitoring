@@ -1,6 +1,9 @@
 <template>
   <div class="q-pa-lg">
-    <q-card style="width: 100%; height: 45%; align-self: center;" class="q-pa-sm">
+    <q-card
+      style="width: 100%; height: 45%; align-self: center"
+      class="q-pa-sm"
+    >
       <q-card-section>
         <div class="text-h6">User Details</div>
       </q-card-section>
@@ -18,6 +21,7 @@
                 dense
                 class="q-pa-sm"
                 type="number"
+                disable=""
               />
             </div>
             <div class="col-lg-6 col-md-6 col-sm-12">
@@ -27,6 +31,7 @@
                 label="Lastname"
                 dense
                 class="q-pa-sm"
+                :disable="!isEditMode"
               />
             </div>
           </div>
@@ -39,6 +44,7 @@
                 label="Firstname"
                 dense
                 class="q-pa-sm"
+                :disable="!isEditMode"
               />
             </div>
 
@@ -49,6 +55,7 @@
                 label="Middlename"
                 dense
                 class="q-pa-sm"
+                :disable="!isEditMode"
               />
             </div>
           </div>
@@ -61,6 +68,7 @@
                 label="Designation"
                 dense
                 class="q-pa-sm"
+                :disable="!isEditMode"
               />
             </div>
 
@@ -71,6 +79,7 @@
                 label="Office"
                 dense
                 class="q-pa-sm"
+                :disable="!isEditMode"
               />
             </div>
           </div>
@@ -84,6 +93,7 @@
                 label="Username"
                 dense
                 class="q-pa-sm"
+                :disable="!isEditMode"
               />
             </div>
 
@@ -94,6 +104,7 @@
                 label="Password"
                 dense
                 class="q-pa-sm"
+                :disable="!isEditMode"
               />
             </div>
             <!-- <q-toggle v-model="AdminValue" color="green" label="Set as Admin" /> -->
@@ -103,11 +114,15 @@
       <q-card-actions align="right">
         <!-- <q-btn flat label="Cancel" color="primary" v-close-popup size="md" /> -->
         <q-btn
-          label="EDIT"
+          :label="isEditMode ? 'SAVE' : 'EDIT'"
           color="green"
           size="md"
           v-close-popup
-          @click="save"
+          @click="
+            async () => {
+              await (isEditMode ? save() : toggleEditMode());
+            }
+          "
           class="q-mr-md q-pa-sm"
         />
       </q-card-actions>
@@ -118,13 +133,13 @@
 <script>
 import { ref } from "vue";
 import { useStoreUserInfo } from "../stores/UserStore";
-import {useLoginStore} from "../stores/LoginStore"
+import { useLoginStore } from "../stores/LoginStore";
 
 export default {
   data() {
     return {
-      dialogVisible: true,
-      editedItem: {
+      isEditMode: false,
+
         id: null,
         Username: "",
         Password: "",
@@ -134,6 +149,7 @@ export default {
         LastName: "",
         Designation: "",
         Office: "",
+        isAdmin: ref(false),
         Credentials: {
           0: {
             Module: "",
@@ -143,7 +159,6 @@ export default {
             Display: false,
           },
         },
-      },
       defaultItem: {
         id: null,
         Username: "",
@@ -165,6 +180,48 @@ export default {
     };
   },
 
+  methods: {
+    toggleEditMode() {
+      console.log("toggleEditMode called");
+      this.isEditMode = !this.isEditMode;
+    },
+    save() {
+      const loginstore=useLoginStore()
+      const store = useStoreUserInfo();
+      // const editedItemCopy = { ...this.editedItem };
+      let editedItemCopy={
+        Username: this.Username,
+          Password: this.Password,
+          IdNo: this.IdNo,
+          FirstName: this.FirstName,
+          MiddleName: this.MiddleName,
+          LastName: this.LastName,
+          Designation: this.Designation,
+          Office: this.Office,
+          isAdmin: this.isAdmin,
+      };
+      console.log("edited item =>", editedItemCopy);
+
+      store.UpdateUser(loginstore.user._id, editedItemCopy).then((res) => {
+        this.editedItem = {
+          Username: "",
+          Password: "",
+          IdNo: "",
+          FirstName: "",
+          MiddleName: "",
+          LastName: "",
+          Designation: "",
+          Office: "",
+          isAdmin: false,
+        };
+        store.fetchUser().then((res) => {
+          // this.closeDialog();
+        });
+      });
+      console.log("Item Updated: ", editedItemCopy);
+    },
+  },
+
   created() {
     const loginstore = useLoginStore();
     this.LastName = loginstore.user.LastName;
@@ -183,9 +240,9 @@ export default {
     const storeCreds = useStoreUserInfo();
     const storeCredsFetch = useStoreUserInfo();
 
-    store.fetchUser();
+    // store.fetchUser();
     //storeAccess.GetUser();
-    storeCreds.AddCred();
+    // storeCreds.AddCred();
 
     return {
       store,
@@ -199,6 +256,4 @@ export default {
 };
 </script>
 
-<style>
-
-</style>
+<style></style>

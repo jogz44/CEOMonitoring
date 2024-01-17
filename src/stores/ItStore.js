@@ -18,8 +18,8 @@ export const useITEquipmentInfo = defineStore("itequipmentinfo", {
 
         this.itequipments = response.data;
         this.itequipmentsCount = response.data.length;
-        console.log("resItEquipment=", this.itequipments);
-        console.log("resEquipment=", this.itequipmentsCount);
+        // console.log("resItEquipment=", this.itequipments);
+        // console.log("resEquipment=", this.itequipmentsCount);
       } catch (error) {
         console.log(`Error fetching tasks: ${error}`);
       }
@@ -116,7 +116,7 @@ export const useITEquipmentInfo = defineStore("itequipmentinfo", {
         // this.itequipments = response.data;
         // this.itequipmentsCount = response.data.length;
         // console.log("resItEquipment=", this.itequipments);
-        console.log("resEquipment=", response.data);
+        // console.log("resEquipment=", response.data);
           this.itequipmenttype=response.data
 
       } catch (error) {

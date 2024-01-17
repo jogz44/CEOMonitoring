@@ -1,6 +1,11 @@
 <template>
   <div class="q-pa-md">
-    <q-btn label="Add" @click="Rowclick" class="q-mb-sm" />
+    <q-btn
+      label="Add"
+      @click="Rowclick"
+      class="q-mb-sm"
+      v-if="create('Machine Equipment')"
+    />
     <q-btn
       label="Convert to Excel"
       flat
@@ -65,6 +70,7 @@
       <template v-slot:body-cell-actions="{ row }">
         <div class="actionsbtn">
           <q-btn
+            v-if="update('Machine Equipment')"
             icon="add"
             size="sm"
             round
@@ -73,6 +79,7 @@
           >
           </q-btn>
           <q-btn
+            v-if="update('Machine Equipment')"
             icon="edit"
             flat
             round
@@ -81,6 +88,7 @@
           >
           </q-btn>
           <q-btn
+            v-if="remove('Machine Equipment')"
             icon="delete"
             flat
             round
@@ -278,13 +286,13 @@
       </q-card>
     </q-dialog>
 
-     <!-- Dialog for VIEWING EACH MACHINE MAINTENANCE HISTORY -->
-     <q-dialog
+    <!-- Dialog for VIEWING EACH MACHINE MAINTENANCE HISTORY -->
+    <q-dialog
       v-model="viewUpdateId"
       transition-show="scale"
       transition-hide="scale"
     >
-      <q-card class="" style="min-width: 50%;">
+      <q-card class="" style="min-width: 50%">
         <q-card-section style="max-height: 50vh" class="scroll">
           <div class="row text-h6">
             <div class="col-11">MAINTENANCE HISTORY VIEW</div>
@@ -304,13 +312,18 @@
           <div class="row">
             <div class="col-12">
               <!-- Display details from the selected row in the dialog -->
-              <p><b>DATE:</b> {{ formatDate(selectedUpdate.MaintenanceDate) }}</p>
+              <p>
+                <b>DATE:</b> {{ formatDate(selectedUpdate.MaintenanceDate) }}
+              </p>
               <p class="q-mb-sm"><b>TYPE: </b></p>
               <p class="q-ml-md">{{ selectedUpdate.MaintenanceType }}</p>
               <p class="q-mb-sm"><b>DESCRIPTION: </b></p>
               <p class="q-ml-md">{{ selectedUpdate.MaintenanceDesc }}</p>
               <p class="q-mb-sm"><b>PROOF:</b></p>
-              <q-img style="max-height: auto; max-width: auto" :src="selectedUpdate.MaintenanceImageProof" />
+              <q-img
+                style="max-height: auto; max-width: auto"
+                :src="selectedUpdate.MaintenanceImageProof"
+              />
 
               <!-- Add more details as needed -->
             </div>
@@ -422,6 +435,7 @@
 <script>
 import { ref } from "vue";
 import { useEquipmentInfo } from "../stores/EquipmentsStore";
+import { useLoginStore } from "src/stores/LoginStore";
 import * as XLSX from "xlsx";
 
 export default {
@@ -878,8 +892,52 @@ export default {
   setup() {
     const store = useEquipmentInfo();
     store.fetchEquipment();
+    const loginstore = useLoginStore();
+
+    //REMOVE FUNCTION
+    function remove(module) {
+      const userCredentials = loginstore.user.Credentials;
+      const moduleCredentials = userCredentials.find(
+        (cred) => cred.Module === module
+      );
+      // console.log("credentials=", moduleCredentials);
+      if (moduleCredentials.Remove) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+    //EDIT FUNCTION
+    function update(module) {
+      const userCredentials = loginstore.user.Credentials;
+      const moduleCredentials = userCredentials.find(
+        (cred) => cred.Module === module
+      );
+      // console.log("credentials=", moduleCredentials);
+      if (moduleCredentials.Update) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+    //CREATE FUNCTION
+    function create(module) {
+      const userCredentials = loginstore.user.Credentials;
+      const moduleCredentials = userCredentials.find(
+        (cred) => cred.Module === module
+      );
+      // console.log("credentials=", moduleCredentials);
+      if (moduleCredentials.Create) {
+        return true;
+      } else {
+        return false;
+      }
+    }
 
     return {
+      remove,
+      update,
+      create,
       store,
       model: ref(null),
     };

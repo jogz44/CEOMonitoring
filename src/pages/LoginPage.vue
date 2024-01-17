@@ -134,7 +134,7 @@ export default defineComponent({
            if (res.status === 200 ){
 
             this.UserCredentials = res.data.Credentials
-            console.log("Credentials =>", this.UserCredentials)
+            // console.log("Credentials =>", this.UserCredentials)
             this.$router.push("/main");
            }
           // this.hideLoading();

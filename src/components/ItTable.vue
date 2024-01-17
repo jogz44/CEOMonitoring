@@ -1,6 +1,6 @@
 <template>
   <div class="q-pa-md">
-    <q-btn label="Add" @click="Rowclick" class="q-mb-sm" />
+    <q-btn label="Add" @click="Rowclick" class="q-mb-sm"  v-if="create('IT Equipment')" />
     <q-btn
       label="Convert to Excel"
       flat
@@ -64,6 +64,7 @@
       <template v-slot:body-cell-actions="{ row }">
         <div class="actionsbtn">
           <q-btn
+          v-if="update('IT Equipment')"
             icon="add"
             size="sm"
             round
@@ -72,6 +73,7 @@
           >
           </q-btn>
           <q-btn
+          v-if="update('IT Equipment')"
             icon="edit"
             flat
             round
@@ -80,6 +82,7 @@
           >
           </q-btn>
           <q-btn
+          v-if="remove('IT Equipment')"
             icon="delete"
             flat
             round
@@ -420,6 +423,7 @@
 <script>
 import { ref } from "vue";
 import { useITEquipmentInfo } from "../stores/ItStore";
+import { useLoginStore } from "src/stores/LoginStore";
 import * as XLSX from "xlsx";
 
 export default {
@@ -832,8 +836,52 @@ export default {
   setup() {
     const store = useITEquipmentInfo();
     store.fetchITEquipment();
+    const loginstore = useLoginStore();
+
+    //REMOVE FUNCTION
+    function remove(module) {
+      const userCredentials = loginstore.user.Credentials;
+      const moduleCredentials = userCredentials.find(
+        (cred) => cred.Module === module
+      );
+      // console.log("credentials=", moduleCredentials);
+      if (moduleCredentials.Remove) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+    //EDIT FUNCTION
+    function update(module) {
+      const userCredentials = loginstore.user.Credentials;
+      const moduleCredentials = userCredentials.find(
+        (cred) => cred.Module === module
+      );
+      // console.log("credentials=", moduleCredentials);
+      if (moduleCredentials.Update) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+    //CREATE FUNCTION
+    function create(module) {
+      const userCredentials = loginstore.user.Credentials;
+      const moduleCredentials = userCredentials.find(
+        (cred) => cred.Module === module
+      );
+      // console.log("credentials=", moduleCredentials);
+      if (moduleCredentials.Create) {
+        return true;
+      } else {
+        return false;
+      }
+    }
 
     return {
+      remove,
+      update,
+      create,
       store,
       model: ref(null),
     };

@@ -48,11 +48,11 @@ export const useEquipmentInfo = defineStore("equipmentinfo", {
         ).length;
         // Count the occurrences of the selected equipment type
 
-        console.log("Filtered equipments:", this.filteredEquipments);
-        console.log("Heavy equipments count:", this.heavyEquipmentsCount);
-        console.log("Light equipments count:", this.lightEquipmentsCount);
-        console.log("res=", this.equipments);
-        console.log("res=", this.equipmentsCount);
+        // console.log("Filtered equipments:", this.filteredEquipments);
+        // console.log("Heavy equipments count:", this.heavyEquipmentsCount);
+        // console.log("Light equipments count:", this.lightEquipmentsCount);
+        // console.log("res=", this.equipments);
+        // console.log("res=", this.equipmentsCount);
       } catch (error) {
         console.log(`Error fetching tasks: ${error}`);
       }

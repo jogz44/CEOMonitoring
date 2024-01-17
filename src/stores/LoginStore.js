@@ -3,11 +3,11 @@ import axios from "axios";
 
 export const useLoginStore = defineStore("LoginStore", {
   state: () => ({
-    user: {},
+    user: [],
   }),
   actions: {
     async userlogin(payload) {
-      console.log("Payload =", payload);
+      // console.log("Payload =", payload);
       try {
         let res = await axios.post(
           "http://10.0.1.23:5000/api/auth/login",

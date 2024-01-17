@@ -38,8 +38,8 @@ export const useStorePersonnelInfo = defineStore("personnelinfo", {
         this.personnelsCount = response.data.length;
 
 
-        console.log("res=", this.personnels);
-        console.log("count =>", this.personnelsCount)
+        // console.log("res=", this.personnels);
+        // console.log("count =>", this.personnelsCount)
       } catch (error) {
         console.log(`Error fetching tasks: ${error}`);
       }
@@ -129,7 +129,7 @@ export const useStorePersonnelInfo = defineStore("personnelinfo", {
         // this.itequipments = response.data;
         // this.itequipmentsCount = response.data.length;
         // console.log("resItEquipment=", this.itequipments);
-        console.log("resDesignation=", response.data);
+        // console.log("resDesignation=", response.data);
           this.designationtype=response.data
 
       } catch (error) {
