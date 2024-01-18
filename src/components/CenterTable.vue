@@ -106,7 +106,7 @@
     </q-table>
 
     <q-dialog v-model="dialogVisible" persistent>
-      <q-card style="width: 40%; height: 50%">
+      <q-card style="width: 40%; height: 40%">
         <q-card-section>
           <div class="text-h6">Employee Details</div>
         </q-card-section>
@@ -182,7 +182,7 @@
           <q-btn label="Save" color="secondary" v-close-popup @click="save" />
         </q-card-actions>
       </q-card>
-      <q-card style="width: 50%; height: 50%" v-show="employmenthistory">
+      <q-card style="width: 50%; height: 40%" v-show="employmenthistory">
         <q-card-section style="max-height: 50vh" class="scroll">
           <div class="text-h6">
             Employment History

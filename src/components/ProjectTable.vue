@@ -215,7 +215,7 @@
     </q-dialog>
 
     <q-dialog v-model="UpdateProjectDialog">
-      <q-card style="width: 50%; height: 60%">
+      <q-card style="width: 50%; height: 70%">
         <q-card-section style="max-height: 50vh" class="scroll">
           <div class="row text-h6">
             <div class="col-11">PROJECT UPDATE HISTORY</div>
@@ -293,7 +293,7 @@
           </template>
         </q-table>
         <q-separator />
-        <div style="position: absolute; bottom: 10px; right: 10px">
+        <div style="position: absolute; bottom: 10px; right: 10px; ;" >
           <q-btn
             label=""
             size="15px"

@@ -191,7 +191,7 @@
 
     <!-- DIALOG FOR MAINTENANCE -->
     <q-dialog v-model="MaintenanceDialog" persistent="">
-      <q-card style="width: 50%; height: 60%">
+      <q-card style="width: 50%; height: 45%">
         <q-card-section style="max-height: 50vh" class="scroll">
           <div class="row text-h6">
             <div class="col-11">MACHINE MAINTENANCE HISTORY</div>
