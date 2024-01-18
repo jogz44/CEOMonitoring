@@ -4,6 +4,7 @@ import axios from "axios";
 export const useLoginStore = defineStore("LoginStore", {
   state: () => ({
     user: [],
+    // isAuthenticated: false,
   }),
   actions: {
     async userlogin(payload) {
@@ -24,4 +25,5 @@ export const useLoginStore = defineStore("LoginStore", {
       }
     },
   },
+  persist: true
 });

@@ -154,7 +154,11 @@
                   class="q-pa-sm"
                 />
               </div>
-              <q-toggle v-model="editedItem.isAdmin" color="green" label="Set as Admin" />
+              <q-toggle
+                v-model="editedItem.isAdmin"
+                color="green"
+                label="Set as Admin"
+              />
             </div>
           </q-form>
         </q-card-section>
@@ -213,7 +217,7 @@
                 flat
                 round
                 color="deep-orange"
-                @click="deleteCredentials(this.selectedid,row._id)"
+                @click="deleteCredentials(this.selectedid, row._id)"
               >
               </q-btn>
             </div>
@@ -222,13 +226,13 @@
 
         <q-card-actions align="right">
           <q-btn flat label="Cancel" color="primary" v-close-popup size="md" />
-          <q-btn
+          <!-- <q-btn
             label="Save"
             color="secondary"
             size="md"
             v-close-popup
             @click="save"
-          />
+          /> -->
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -256,8 +260,9 @@
                   v-model="editedItem.Credentials.Module"
                   dense
                   class="q-pa-sm"
-                  :options="options"
+                  :options="filteredOptions"
                   label="Module Name"
+
                 />
               </div>
               <div class="q-ml-md">
@@ -453,7 +458,18 @@ export default {
       ],
     };
   },
+  computed: {
+    filteredOptions() {
+      return this.options.filter(option => !this.moduleExistsInCredentials(option));
+    },
+  },
   methods: {
+    moduleExistsInCredentials(module) {
+      // Check if the selected module already exists in credentials
+      const credentialsModules = this.loadCreds.map(cred => cred.Module);
+      return credentialsModules.includes(module);
+    },
+
     onSelectionChange(selected) {
       this.selection = selected;
     },
@@ -591,18 +607,15 @@ export default {
     },
 
     deleteCredentials(id, cid) {
-
       const store = useStoreUserInfo();
       // console.log("USES TABLE  == UserID====" + id + "===== CredID======" + cid)
       try {
         store.DeleteCredentialsSpec(id, cid).then(() => {
           console.log("Successfuly Deleted");
           // store.GetUserCredentials(this.selectedid);
-          this.storeCredsFetch
-            .GetUserCredentials(id)
-            .then((res) => {
-              this.loadCreds = this.storeCreds.user;
-            });
+          this.storeCredsFetch.GetUserCredentials(id).then((res) => {
+            this.loadCreds = this.storeCreds.user;
+          });
         });
       } catch (error) {
         console.log("Unable to Delete: ", error);

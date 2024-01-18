@@ -226,7 +226,7 @@
               </q-item-section>
             </q-item>
 
-            <q-item clickable v-ripple @click="$router.push('/')">
+            <q-item clickable v-ripple @click="logout()">
               <q-item-section class="q-ml-sm">
                 <q-item-label>
                   <q-icon name="logout" class="q-ml-md q-mr-md" />
@@ -354,7 +354,16 @@ export default defineComponent({
       settings: false,
     };
   },
+
   methods: {
+    logout() {
+      window.localStorage.clear();
+      window.localStorage.removeItem("authToken");
+      window.history.replaceState({}, document.title, "/login");
+      window.history.go(-(window.history.length - 0));
+      this.$router.replace("/");
+    },
+
     handleItemClick() {
       // Call both functions here
       this.toggleSection("dashboard");
