@@ -39,6 +39,18 @@
         </q-input>
       </template>
 
+      <template v-slot:body-cell-EmpStatus="{ row }">
+        <q-td>
+          {{ row.employmentDtl[0] ? row.employmentDtl[0].EmpStatus : null }}
+        </q-td>
+      </template>
+      
+      <template v-slot:body-cell-Drate="{ row }">
+        <q-td>
+          {{ row.employmentDtl[0] ? row.employmentDtl[0].Drate : null }}
+        </q-td>
+      </template>
+
       <template v-slot:body-cell-DteStarted="{ row }">
         <q-td>
           {{ row.employmentDtl[0] ? row.employmentDtl[0].DteStarted : null }}
@@ -325,7 +337,7 @@
             <div class="col">
               <q-input
                 filled
-                v-model="editedItem.Drate"
+                v-model="editedItem.employmentDtl.Drate"
                 label="Employee Status"
                 class="q-pa-sm"
                 dense
@@ -334,7 +346,7 @@
             <div class="col">
               <q-input
                 filled
-                v-model="editedItem.EmpStatus"
+                v-model="editedItem.employmentDtl.EmpStatus"
                 label="Salary Rate"
                 class="q-pa-sm"
                 dense
@@ -439,14 +451,14 @@ export default {
           name: "EmpStatus",
           align: "center",
           label: "EMP STATUS",
-          field: "EmpStatus",
+          field: "employmentDtl[0].EmpStatus",
           sortable: true,
         },
         {
           name: "Drate",
           align: "center",
           label: "RATE",
-          field: "Drate",
+          field: "employmentDtl[0].Drate",
           sortable: true,
         },
         {
@@ -550,6 +562,12 @@ export default {
         const charges = employmentDtl.Charges
           ? employmentDtl.Charges.toLowerCase()
           : "";
+        const Drate = employmentDtl.Drate
+          ? employmentDtl.Drate.toLowerCase()
+          : "";
+        const EmpStatus = employmentDtl.EmpStatus
+          ? employmentDtl.EmpStatus.toLowerCase()
+          : "";
 
         return (
           lastName.includes(searchTerm) ||
@@ -558,7 +576,9 @@ export default {
           dteStarted.includes(searchTerm) ||
           dteEnded.includes(searchTerm) ||
           designation.includes(searchTerm) ||
-          charges.includes(searchTerm)
+          charges.includes(searchTerm) ||
+          Drate.includes(searchTerm) ||
+          EmpStatus.includes(searchTerm)
         );
       });
     },
