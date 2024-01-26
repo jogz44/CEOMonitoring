@@ -1,6 +1,11 @@
 <template>
   <div class="q-pa-md">
-    <q-btn label="Add" @click="Rowclick" class="q-mb-sm"  v-if="create('IT Equipment')" />
+    <q-btn
+      label="Add"
+      @click="Rowclick"
+      class="q-mb-sm"
+      v-if="create('IT Equipment')"
+    />
     <q-btn
       label="Convert to Excel"
       flat
@@ -64,7 +69,7 @@
       <template v-slot:body-cell-actions="{ row }">
         <div class="actionsbtn">
           <q-btn
-          v-if="update('IT Equipment')"
+            v-if="update('IT Equipment')"
             icon="add"
             size="sm"
             round
@@ -73,7 +78,7 @@
           >
           </q-btn>
           <q-btn
-          v-if="update('IT Equipment')"
+            v-if="update('IT Equipment')"
             icon="edit"
             flat
             round
@@ -82,7 +87,7 @@
           >
           </q-btn>
           <q-btn
-          v-if="remove('IT Equipment')"
+            v-if="remove('IT Equipment')"
             icon="delete"
             flat
             round
@@ -98,7 +103,12 @@
     <q-dialog v-model="dialogVisible" persistent>
       <q-card style="width: 40%; height: auto">
         <q-card-section>
-          <div class="text-h6">IT EQUIPMENT DETAILS</div>
+          <div class="row">
+            <div class="col-11 text-h6">IT EQUIPMENT DETAILS</div>
+            <div class="col-1">
+              <q-btn flat round color="orange" icon="close" v-close-popup />
+            </div>
+          </div>
         </q-card-section>
         <q-separator />
         <q-card-section style="max-height: 50vh" class="scroll">
@@ -307,13 +317,18 @@
         <q-card-section>
           <div class="row">
             <div class="col-12">
-              <p><b>DATE:</b> {{ formatDate(selectedUpdate.MaintenanceDate) }}</p>
+              <p>
+                <b>DATE:</b> {{ formatDate(selectedUpdate.MaintenanceDate) }}
+              </p>
               <p class="q-mb-sm"><b>TYPE: </b></p>
               <p class="q-ml-md">{{ selectedUpdate.MaintenanceType }}</p>
               <p class="q-mb-sm"><b>DESCRIPTION: </b></p>
               <p class="q-ml-md">{{ selectedUpdate.MaintenanceDesc }}</p>
               <p class="q-mb-sm"><b>PROOF:</b></p>
-              <q-img style="height: auto; max-width: auto" :src="selectedUpdate.MaintenanceImage" />
+              <q-img
+                style="height: auto; max-width: auto"
+                :src="selectedUpdate.MaintenanceImage"
+              />
             </div>
           </div>
         </q-card-section>

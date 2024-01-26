@@ -7,7 +7,7 @@
       v-if="create('Employee')"
     />
     <q-btn
-      label="Convert to Excel"
+      label="Download CSV"
       flat
       class="q-mb-sm"
       style="color: green"
@@ -44,7 +44,7 @@
           {{ row.employmentDtl[0] ? row.employmentDtl[0].EmpStatus : null }}
         </q-td>
       </template>
-      
+
       <template v-slot:body-cell-Drate="{ row }">
         <q-td>
           {{ row.employmentDtl[0] ? row.employmentDtl[0].Drate : null }}
@@ -97,13 +97,24 @@
         <div class="actionsbtn">
           <q-btn
             v-if="update('Employee')"
-            icon="edit"
+            icon="visibility"
             flat
             round
             color="secondary"
             @click="editItem(row)"
           >
           </q-btn>
+          <q-btn
+            v-if="update('Employee')"
+            icon="add"
+            size="sm"
+            round
+            color="green"
+            @click="viewItem(row)"
+          >
+            <q-tooltip class="">Create Appointment</q-tooltip>
+          </q-btn>
+
           <q-btn
             v-if="remove('Employee')"
             icon="delete"
@@ -118,15 +129,20 @@
     </q-table>
 
     <q-dialog v-model="dialogVisible" persistent>
-      <q-card style="width: 40%; height: 40%">
+      <q-card style="width: 40%; height: auto">
         <q-card-section>
-          <div class="text-h6">Employee Details</div>
+          <div class="row">
+            <div class="col-11 text-h6">Employee Details</div>
+            <div class="col-1">
+              <q-btn flat round color="orange" icon="close" v-close-popup />
+            </div>
+          </div>
         </q-card-section>
 
         <q-separator />
 
         <q-card-section style="max-height: 50vh" class="scroll">
-          <q-form>
+          <q-form @submit="onSubmit">
             <div class="row">
               <div class="col-12">
                 <q-input
@@ -135,6 +151,21 @@
                   label="Lastname"
                   dense
                   class="q-pa-sm"
+                  :disable="employmenthistory === !isEditMode"
+                  lazy-rules
+                  :rules="[ val => val && val.length > 0 || 'Please type something']"
+                />
+              </div>
+              <div class="col-12">
+                <q-input
+                  filled
+                  v-model="editedItem.firstName"
+                  label="Firstname"
+                  class="q-pa-sm"
+                  dense
+                  :disable="employmenthistory === !isEditMode"
+                  lazy-rules
+                  :rules="[ val => val && val.length > 0 || 'Please type something']"
                 />
               </div>
               <div class="col-12">
@@ -144,21 +175,10 @@
                   label="Middlename"
                   class="q-pa-sm"
                   dense
+                  :disable="employmenthistory === !isEditMode"
                 />
               </div>
             </div>
-            <div class="row">
-              <div class="col">
-                <q-input
-                  filled
-                  v-model="editedItem.firstName"
-                  label="Firstname"
-                  class="q-pa-sm"
-                  dense
-                />
-              </div>
-            </div>
-
             <div class="row">
               <div class="col">
                 <q-file
@@ -169,6 +189,7 @@
                   label="Resume"
                   class="q-ma-sm"
                   icon="file"
+                  lazy-rules
                 >
                   <template v-slot:prepend>
                     <q-icon name="attach_file" />
@@ -181,27 +202,62 @@
           </q-form>
         </q-card-section>
 
-        <q-separator />
-
         <q-card-actions align="right">
           <q-btn
             flat
-            label="Cancel"
-            color="primary"
-            v-close-popup
-            @click="cancel"
+            round
+            color="orange"
+            icon="edit"
+            @click="toggleEditMode()"
+            v-show="employmenthistory"
           />
-          <q-btn label="Save" color="secondary" v-close-popup @click="save" />
+          <q-btn
+          type="submit"
+            label="Save"
+            color="green"
+            v-close-popup
+            @click="save"
+            class="q-mr-md"
+            :disable="employmenthistory === !isEditMode"
+
+          />
         </q-card-actions>
+        <q-card class="q-px-lg q-pt-sm q-mb-md">
+          <q-btn
+            style="width: 100%"
+            class="btn-fixed-width"
+            color="green-10"
+            label="VIEW EMPLOYMENT HISTORY"
+            icon="lightbulb_outline"
+            @click="EmpHistoryDialog = true"
+            v-show="employmenthistory"
+          />
+        </q-card>
       </q-card>
+    </q-dialog>
+
+    <!-- DIALOG FOR MAINTENANCE -->
+    <q-dialog v-model="EmpHistoryDialog" persistent="">
       <q-card style="width: 50%; height: 40%" v-show="employmenthistory">
         <q-card-section style="max-height: 50vh" class="scroll">
-          <div class="text-h6">
-            Employment History
-            <q-btn
+          <div class="row">
+            <div class="col-11 text-h6">
+              Employment History
+              <!-- <q-btn
               label="Add Employment Details"
               @click="secondDialog = true"
-            ></q-btn>
+            ></q-btn> -->
+              <q-btn
+                round
+                color="green-10"
+                @click="secondDialog = true"
+                icon="add"
+                size="small"
+              />
+            </div>
+            <div class="col-1">
+              <q-btn flat round color="orange" icon="close" v-close-popup />
+            </div>
           </div>
         </q-card-section>
 
@@ -382,6 +438,8 @@ const stringOptions = ["Active", "End of Contract"];
 export default {
   data() {
     return {
+      isEditMode: false,
+      EmpHistoryDialog: false,
       employmenthistory: true,
       filter: "",
       filters: "",
@@ -584,6 +642,10 @@ export default {
     },
   },
   methods: {
+    toggleEditMode() {
+      console.log("toggleEditMode called");
+      this.isEditMode = !this.isEditMode;
+    },
     getStatusClass(status) {
       const mydate = new Date(status);
       const currentdate = new Date();
@@ -644,6 +706,18 @@ export default {
       const day = date.getDate().toString().padStart(2, "0");
 
       return `${year}-${month}-${day}`;
+    },
+
+    viewItem(item) {
+      this.EmpHistoryDialog = true;
+      const store = useEquipmentInfo();
+
+      store.GetPersonnel(item._id).then((res) => {
+        this.editedItem = store.personnel;
+        // store.fetchEquipment();
+        console.log("sdasda=", this.editedItem);
+      });
+      // this.dialogVisible = false;
     },
 
     editItem(item) {
@@ -716,6 +790,7 @@ export default {
             };
             store.fetchPersonnel().then((res) => {
               this.closeDialog();
+              this.isEditMode = false;
             });
           });
         console.log("Item Updated: ", editedItemCopy);

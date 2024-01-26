@@ -91,7 +91,12 @@
     <q-dialog v-model="dialogVisible" persistent>
       <q-card style="width: 50%; height: auto">
         <q-card-section>
-          <div class="text-h6">PROJECT DETAILS</div>
+          <div class="row">
+            <div class="col-11 text-h6">PROJECT DETAILS</div>
+            <div class="col-1">
+              <q-btn flat round color="orange" icon="close" v-close-popup />
+            </div>
+          </div>
         </q-card-section>
 
         <q-separator />
@@ -293,7 +298,7 @@
           </template>
         </q-table>
         <q-separator />
-        <div style="position: absolute; bottom: 10px; right: 10px; ;" >
+        <div style="position: absolute; bottom: 10px; right: 10px">
           <q-btn
             label=""
             size="15px"

@@ -7,7 +7,7 @@
       v-if="create('Machine Equipment')"
     />
     <q-btn
-      label="Convert to Excel"
+      label="Download CSV"
       flat
       class="q-mb-sm"
       style="color: green"
@@ -103,7 +103,12 @@
     <q-dialog v-model="dialogVisible" persistent>
       <q-card style="width: 40%; height: auto">
         <q-card-section>
-          <div class="text-h6">MACHINE DETAILS</div>
+          <div class="row">
+            <div class="col-11 text-h6">MACHINE DETAILS</div>
+            <div class="col-1">
+              <q-btn flat round color="orange" icon="close" v-close-popup />
+            </div>
+          </div>
         </q-card-section>
         <q-separator />
         <q-card-section style="max-height: 50vh" class="scroll">
@@ -165,7 +170,14 @@
           </q-form>
         </q-card-section>
         <q-card-actions align="right" lass="q-mr-md">
-          <q-btn flat label="Cancel" color="orange" v-close-popup size="md" />
+          <q-btn
+            flat
+            label="Edit"
+            color="orange"
+            v-close-popup
+            size="md"
+            v-show="maintenancehistory"
+          />
           <q-btn
             label="Save"
             color="green-5"

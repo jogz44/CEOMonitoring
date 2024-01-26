@@ -227,7 +227,7 @@
           <q-card-section>
             <q-card>
               <q-card-section>
-                <p><b style="font-size: 14px">Total Project Cost : </b></p>
+                <p><b style="font-size: 14px">Total Ongoing Projects Cost : </b></p>
               </q-card-section>
             </q-card>
 
@@ -245,26 +245,74 @@
               </q-card-section>
             </q-card>
 
-            <q-card class="q-mt-sm">
-              <q-card-section>
-                <p>
-                  <b style="font-size: 14px"
-                    >Engineering Projects : <br />
+            <div class="row">
+              <div class="col q-mr-sm">
+                <q-card class="q-mt-sm ">
+                  <q-card-section>
                     <p>
-                      <b
-                        style="
-                          font-size: 20px;
-                          color: #057407;
-                          text-align: center;
-                          display: block;
-                        "
-                        >{{ storeProjectInfo.projectsCount }}</b
+                      <b style="font-size: 14px"
+                        >Total Projects for 2024 : <br />
+                        <p>
+                          <b
+                            style="
+                              font-size: 20px;
+                              color: #057407;
+                              text-align: center;
+                              display: block;
+                            "
+                            >{{ storeProjectInfo.projectsCount }}</b
+                          >
+                        </p></b
                       >
-                    </p></b
-                  >
-                </p>
-              </q-card-section>
-            </q-card>
+                    </p>
+                  </q-card-section>
+                </q-card>
+              </div>
+              <div class="col">
+                <q-card class="q-mt-sm">
+                  <q-card-section>
+                    <p>
+                      <b style="font-size: 14px"
+                        >Ongoing Projects : <br />
+                        <p>
+                          <b
+                            style="
+                              font-size: 20px;
+                              color: #057407;
+                              text-align: center;
+                              display: block;
+                            "
+                            >{{ storeProjectInfo.projectsCount }}</b
+                          >
+                        </p></b
+                      >
+                    </p>
+                  </q-card-section>
+                </q-card>
+              </div>
+              <div class="col q-ml-sm">
+                <q-card class="q-mt-sm">
+                  <q-card-section>
+                    <p>
+                      <b style="font-size: 14px"
+                        >Completed Projects : <br />
+                        <p>
+                          <b
+                            style="
+                              font-size: 20px;
+                              color: #057407;
+                              text-align: center;
+                              display: block;
+                            "
+                            >{{ storeProjectInfo.projectsCount }}</b
+                          >
+                        </p></b
+                      >
+                    </p>
+                  </q-card-section>
+                </q-card>
+              </div>
+            </div>
           </q-card-section>
         </q-card>
       </div>
