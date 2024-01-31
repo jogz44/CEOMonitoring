@@ -11,15 +11,17 @@ export const useStorePersonnelInfo = defineStore("personnelinfo", {
     EmpDesignation: [],
   }),
   persist: true,
-  getters:{
-    ActiveCount(){
-      return this.personnels.reduce((p,c)=>{
+  getters: {
+    ActiveCount() {
+      return this.personnels.reduce((p, c) => {
         if (c.employmentDtl[0] && c.employmentDtl[0].DteEnded) {
-        return new Date(c.employmentDtl[0].DteEnded) >= new Date() ? p+1:p
-        }else{
+          return new Date(c.employmentDtl[0].DteEnded) >= new Date()
+            ? p + 1
+            : p;
+        } else {
           return p;
         }
-      },0)
+      }, 0);
     },
     // EndCount(){
     //   return this.personnels.reduce((p,c)=>{
@@ -37,7 +39,6 @@ export const useStorePersonnelInfo = defineStore("personnelinfo", {
 
         this.personnels = response.data;
         this.personnelsCount = response.data.length;
-
 
         // console.log("res=", this.personnels);
         // console.log("count =>", this.personnelsCount)
@@ -81,7 +82,6 @@ export const useStorePersonnelInfo = defineStore("personnelinfo", {
         console.log(`Cannot Update ${error}`);
       }
     },
-
 
     // For the Employment History
 
@@ -131,13 +131,11 @@ export const useStorePersonnelInfo = defineStore("personnelinfo", {
         // this.itequipmentsCount = response.data.length;
         // console.log("resItEquipment=", this.itequipments);
         // console.log("resDesignation=", response.data);
-          this.designationtype=response.data
-
+        this.designationtype = response.data;
       } catch (error) {
         console.log(`Error fetching tasks: ${error}`);
       }
     },
-
 
     // Employee Designation
     async fetchDesignation() {
@@ -145,10 +143,11 @@ export const useStorePersonnelInfo = defineStore("personnelinfo", {
         const response = await axios.get(
           "http://10.0.1.23:5000/api/library/designation"
         );
-        this.EmpDesignation=response.data
-      }catch (error) {
+        this.EmpDesignation = response.data;
+        console.log("Empppp", EmpDesignation);
+      } catch (error) {
         console.log(`Error fetching tasks: ${error}`);
       }
-    }
+    },
   },
 });

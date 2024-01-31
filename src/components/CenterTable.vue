@@ -456,6 +456,8 @@
                 label="Designation"
                 dense
                 :options="store.EmpDesignation"
+                :option-label="(val)=>val.Designation"
+                :option-value="(val)=>val.Designation"
                 class="q-pa-sm"
               />
             </div>
@@ -1100,6 +1102,7 @@ export default {
     }
 
     store.fetchPersonnel();
+    store.fetchDesignation();
     return {
       // lastNameRef,
       // nameRules: [(val) => (val && val.length > 0) || "Please type something"],
