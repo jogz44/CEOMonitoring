@@ -128,6 +128,41 @@
       </template>
     </q-table>
 
+    <!-- For the Delete of the Employee -->
+    <q-dialog
+      v-model="EmployeeDelete"
+      persistent
+      transition-show="scale"
+      transition-hide="scale"
+    >
+      <q-card class="bg-red text-white" style="width: 400px">
+        <q-card-section>
+          <div class="text-h6">Delete Employee</div>
+        </q-card-section>
+
+        <q-card-section class="q-pt-none">
+          Do you want to delete this Employee?
+        </q-card-section>
+
+        <q-card-actions align="right" class="bg-white text-teal">
+          <q-btn
+            flat
+            label="Cancel"
+            size="small"
+            color="orange"
+            v-close-popup
+          />
+          <q-btn
+            label="OK"
+            flat
+            color="green-5"
+            v-close-popup
+            @click="deleteItemConfirm()"
+          />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+
     <q-dialog v-model="dialogVisible" persistent>
       <q-card style="width: 40%; height: auto">
         <q-card-section>
@@ -142,7 +177,7 @@
         <q-separator />
 
         <q-card-section style="max-height: 50vh" class="scroll">
-          <q-form @submit="onSubmit">
+          <q-form @submit.prevent.stop="onSubmit" ref="formRef">
             <div class="row">
               <div class="col-12">
                 <q-input
@@ -150,10 +185,11 @@
                   v-model="editedItem.lastName"
                   label="Lastname"
                   dense
-                  class="q-pa-sm"
+                  class="q-pa-md"
                   :disable="employmenthistory === !isEditMode"
+                  ref="lastNameRef"
                   lazy-rules
-                  :rules="[ val => val && val.length > 0 || 'Please type something']"
+                  :rules="nameRules"
                 />
               </div>
               <div class="col-12">
@@ -161,11 +197,12 @@
                   filled
                   v-model="editedItem.firstName"
                   label="Firstname"
-                  class="q-pa-sm"
+                  class="q-pa-md"
                   dense
                   :disable="employmenthistory === !isEditMode"
+                  ref="firstNameRef"
                   lazy-rules
-                  :rules="[ val => val && val.length > 0 || 'Please type something']"
+                  :rules="nameRules"
                 />
               </div>
               <div class="col-12">
@@ -173,7 +210,7 @@
                   filled
                   v-model="editedItem.middleName"
                   label="Middlename"
-                  class="q-pa-sm"
+                  class="q-pa-md"
                   dense
                   :disable="employmenthistory === !isEditMode"
                 />
@@ -212,14 +249,13 @@
             v-show="employmenthistory"
           />
           <q-btn
-          type="submit"
+            type="submit"
             label="Save"
             color="green"
             v-close-popup
             @click="save"
             class="q-mr-md"
             :disable="employmenthistory === !isEditMode"
-
           />
         </q-card-actions>
         <q-card class="q-px-lg q-pt-sm q-mb-md">
@@ -242,18 +278,11 @@
         <q-card-section style="max-height: 50vh" class="scroll">
           <div class="row">
             <div class="col-11 text-h6">
-              Employment History
+              EMPLOYMENT HISTORY
               <!-- <q-btn
               label="Add Employment Details"
               @click="secondDialog = true"
             ></q-btn> -->
-              <q-btn
-                round
-                color="green-10"
-                @click="secondDialog = true"
-                icon="add"
-                size="small"
-              />
             </div>
             <div class="col-1">
               <q-btn flat round color="orange" icon="close" v-close-popup />
@@ -324,12 +353,64 @@
                 flat
                 round
                 color="deep-orange"
-                @click="deleteEmployment(editedItem._id, row._id)"
+                @click="deleteEmployment(row._id)"
               >
               </q-btn>
             </div>
           </template>
         </q-table>
+
+        <!-- For the Delete of the Employee -->
+        <q-dialog
+          v-model="EmployeeDeleteHistory"
+          persistent
+          transition-show="scale"
+          transition-hide="scale"
+        >
+          <q-card class="bg-red text-white" style="width: 400px">
+            <q-card-section>
+              <div class="text-h6">Delete Employment History</div>
+            </q-card-section>
+
+            <q-card-section class="q-pt-none">
+              Do you want to delete this Employee Employment History?
+            </q-card-section>
+
+            <q-card-actions align="right" class="bg-white text-teal">
+              <q-btn
+                flat
+                label="Cancel"
+                size="small"
+                color="orange"
+                v-close-popup
+              />
+              <q-btn
+                label="OK"
+                flat
+                color="green-5"
+                size="small"
+                v-close-popup
+                @click="deleteEmploymentHistory()"
+              />
+            </q-card-actions>
+          </q-card>
+        </q-dialog>
+
+        <q-separator />
+        <div style="position: absolute; bottom: 10px; right: 10px">
+          <q-btn
+            label=""
+            size="SMALL"
+            @click="secondDialog = true"
+            icon="add"
+            color="green-10"
+            round
+            style="position: absolute; bottom: 0; right: 0"
+            ><q-tooltip class="white"
+              >Create new Maintenance History</q-tooltip
+            ></q-btn
+          >
+        </div>
       </q-card>
     </q-dialog>
 
@@ -341,7 +422,7 @@
     >
       <q-card class="" style="width: 500px">
         <q-card-section>
-          <div class="text-h6">Add Employment</div>
+          <div class="text-h6">ADD EMPLOYMENT</div>
         </q-card-section>
         <q-separator />
         <q-card-section>
@@ -369,11 +450,12 @@
           </div>
           <div class="row">
             <div class="col">
-              <q-input
+              <q-select
                 filled
                 v-model="editedItem.employmentDtl.Designation"
                 label="Designation"
                 dense
+                :options="store.EmpDesignation"
                 class="q-pa-sm"
               />
             </div>
@@ -391,9 +473,10 @@
           </div>
           <div class="row">
             <div class="col">
-              <q-input
+              <q-select
                 filled
-                v-model="editedItem.employmentDtl.Drate"
+                v-model="editedItem.employmentDtl.EmpStatus"
+                :options="EmpStatus"
                 label="Employee Status"
                 class="q-pa-sm"
                 dense
@@ -402,7 +485,7 @@
             <div class="col">
               <q-input
                 filled
-                v-model="editedItem.employmentDtl.EmpStatus"
+                v-model="editedItem.employmentDtl.Drate"
                 label="Salary Rate"
                 class="q-pa-sm"
                 dense
@@ -412,13 +495,13 @@
         </q-card-section>
 
         <q-card-actions align="right">
-          <q-btn flat label="Cancel" color="primary" v-close-popup size="md" />
+          <q-btn flat label="Cancel" color="orange" v-close-popup size="md" />
           <q-btn
             label="Save"
-            color="secondary"
+            color="green-5"
             size="md"
             v-close-popup
-            @click="savehistory(editedItem)"
+            @click="savehistory(editedItem.id)"
           />
         </q-card-actions>
       </q-card>
@@ -427,6 +510,7 @@
 </template>
 
 <script>
+import { useQuasar } from 'quasar';
 import { ref } from "vue";
 import { useStorePersonnelInfo } from "../stores/personnelStore";
 import { useLoginStore } from "src/stores/LoginStore";
@@ -437,7 +521,18 @@ const stringOptions = ["Active", "End of Contract"];
 
 export default {
   data() {
+    const $q = useQuasar();
     return {
+      EmpStatus: ["Regular", "Casual", "Job Order"],
+      isFormValid: false,
+      $q,
+      nameRules: [(val) => (val && val.length > 0) || "Please type something"],
+
+      EmployeeDeleteHistory: false,
+      selectedID: ref(""),
+      DeleteId: "",
+      DeleteHistoryId: "",
+      EmployeeDelete: false,
       isEditMode: false,
       EmpHistoryDialog: false,
       employmenthistory: true,
@@ -641,7 +736,37 @@ export default {
       });
     },
   },
+  watch: {
+    // editedItem: {
+    //   handler() {
+    //     this.validateForm();
+    //   },
+    //   deep: true,
+    // },
+  },
   methods: {
+    async onSubmit() {
+      // Validate the form before submission
+      await this.$refs.formRef.validate();
+
+      // Check for validation errors
+      if (this.$refs.lastNameRef.hasError || this.$refs.firstNameRef.hasError) {
+        // Handle form validation errors
+        this.$q.notify({
+          color: "negative",
+          message: "Please fill in all required fields.",
+        });
+      } else {
+        // Continue with the form submission logic
+        this.save();
+      }
+    },
+    // validateForm() {
+    //   // Check if the required fields are filled
+    //   this.isFormValid =
+    //     this.editedItem.lastName.trim().length > 0 &&
+    //     this.editedItem.firstName.trim().length > 0;
+    // },
     toggleEditMode() {
       console.log("toggleEditMode called");
       this.isEditMode = !this.isEditMode;
@@ -709,10 +834,13 @@ export default {
     },
 
     viewItem(item) {
+      console.log("EmployeeInfo", item);
+      this.editedItem = "";
+      this.selectedID = item._id;
       this.EmpHistoryDialog = true;
-      const store = useEquipmentInfo();
+      const store = useStorePersonnelInfo();
 
-      store.GetPersonnel(item._id).then((res) => {
+      store.GetPersonnel(this.selectedID).then((res) => {
         this.editedItem = store.personnel;
         // store.fetchEquipment();
         console.log("sdasda=", this.editedItem);
@@ -733,21 +861,50 @@ export default {
 
     deleteItem(id) {
       console.log("Delete Item ID => ", id._id);
+      this.DeleteId = id._id;
+      this.EmployeeDelete = true;
+    },
+
+    deleteItemConfirm() {
+      console.log("Delete Item ID => ", this.DeleteId);
       const store = useStorePersonnelInfo();
-      store.DeletePersonnel(id._id).then((res) => {
+      store.DeletePersonnel(this.DeleteId).then((res) => {
         store.fetchPersonnel();
       });
       console.log("row click=", id);
     },
 
-    deleteEmployment(id, contractid) {
-      console.log("Contract ID =>", id + "----" + contractid);
-      const store = useStorePersonnelInfo();
-      store.DeleteEmployment(id, contractid).then((req) => {
-        store.fetchPersonnel();
-        store.GetPersonnel(id);
-      });
+    // deleteItemConfirmHistory() {
+    //   console.log("Delete Item ID => ", this.DeleteId);
+    //   const store = useStorePersonnelInfo();
+    //   store.DeletePersonnel(this.DeleteId).then((res) => {
+    //     store.fetchPersonnel();
+    //   });
+    //   console.log("row click=", id);
+    // },
+
+    deleteEmployment(contractid) {
+      // console.log("Contract ID =>", id + "----" + contractid);
+      this.DeleteHistoryId = contractid;
+      this.EmployeeDeleteHistory = true;
+      // const store = useStorePersonnelInfo();
+      // store.DeleteEmployment(id, contractid).then((req) => {
+      //   store.fetchPersonnel();
+      //   store.GetPersonnel(id);
+      // });
     },
+
+    deleteEmploymentHistory() {
+      console.log("Contract ID =>", this.DeleteHistoryId);
+      const store = useStorePersonnelInfo();
+      store
+        .DeleteEmployment(this.selectedID, this.DeleteHistoryId)
+        .then((req) => {
+          store.fetchPersonnel();
+          store.GetPersonnel(this.selectedID);
+        });
+    },
+
     cancel() {
       this.editedItem = {
         lastName: "",
@@ -770,6 +927,16 @@ export default {
       const store = useStorePersonnelInfo();
       const editedItemCopy = { ...this.editedItem };
       console.log("edited item =>", editedItemCopy._id);
+      if (
+        this.editedItem.lastName.trim().length === 0 ||
+        this.editedItem.firstName.trim().length === 0
+      ) {
+        this.$q.notify({
+          color: 'negative',
+          message: 'Please fill in all required fields.',
+        });
+        return; // Do not proceed with saving
+      }
 
       if (editedItemCopy._id) {
         store
@@ -818,15 +985,16 @@ export default {
         console.log("save=", editedItemCopy);
       }
     },
-    savehistory(id) {
+    savehistory() {
+      console.log("ID NKO", this.selectedID);
       const store = useStorePersonnelInfo();
       const editedItemCopy = { ...this.editedItem.employmentDtl };
-      store.AddEmployment(id._id, editedItemCopy);
-      store.fetchPersonnel().then((res) => {
-        store.GetPersonnel(id._id).then((res1) => {
-          this.editedItem = store.personnel;
-          store.fetchPersonnel();
-        });
+      store.AddEmployment(this.selectedID, editedItemCopy);
+      //store.fetchPersonnel().then((res) => {
+      store.GetPersonnel(this.selectedID).then((res1) => {
+        this.editedItem = store.personnel;
+        //store.fetchPersonnel();
+        //  });
       });
     },
     closeDialog() {
@@ -933,6 +1101,12 @@ export default {
 
     store.fetchPersonnel();
     return {
+      // lastNameRef,
+      // nameRules: [(val) => (val && val.length > 0) || "Please type something"],
+      // onSubmit() {
+      //   lastNameRef.value.validate();
+      //   firstNameRef.value.validate();
+      // },
       remove,
       update,
       create,

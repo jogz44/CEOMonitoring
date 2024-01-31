@@ -8,6 +8,7 @@ export const useStorePersonnelInfo = defineStore("personnelinfo", {
     personnel: [],
     personnelsCount: 0,
     designationtype: [],
+    EmpDesignation: [],
   }),
   persist: true,
   getters:{
@@ -136,5 +137,18 @@ export const useStorePersonnelInfo = defineStore("personnelinfo", {
         console.log(`Error fetching tasks: ${error}`);
       }
     },
+
+
+    // Employee Designation
+    async fetchDesignation() {
+      try {
+        const response = await axios.get(
+          "http://10.0.1.23:5000/api/library/designation"
+        );
+        this.EmpDesignation=response.data
+      }catch (error) {
+        console.log(`Error fetching tasks: ${error}`);
+      }
+    }
   },
 });
