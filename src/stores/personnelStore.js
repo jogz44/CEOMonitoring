@@ -144,7 +144,7 @@ export const useStorePersonnelInfo = defineStore("personnelinfo", {
           "http://10.0.1.23:5000/api/library/designation"
         );
         this.EmpDesignation = response.data;
-        console.log("Empppp", EmpDesignation);
+        console.log("Empppp", this.EmpDesignation);
       } catch (error) {
         console.log(`Error fetching tasks: ${error}`);
       }

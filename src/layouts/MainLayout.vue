@@ -30,7 +30,37 @@
             <q-avatar size="26px">
               <img src="https://cdn.quasar.dev/img/boy-avatar.png" />
             </q-avatar>
-            <q-tooltip>Account</q-tooltip>
+            <!-- <q-tooltip>Account</q-tooltip> -->
+            <q-menu>
+          <q-list style="min-width: 100px">
+            <q-item
+              clickable
+              v-ripple
+              @click="toggleSection('view')"
+              :class="{ 'active-item': selectedSection === 'view' }"
+            >
+              <q-item-section>
+                <q-item-label>
+                  <q-icon
+                    :style="{
+                      color: selectedSection === 'view' ? '#006400' : 'inherit',
+                    }"
+                    name="person"
+                    class=" q-mr-md"
+                  />
+                  My Profile</q-item-label
+                >
+              </q-item-section>
+            </q-item>
+            <q-separator></q-separator>
+            <q-item clickable v-ripple @click="logout()">
+              <q-item-section><q-item-label>
+                  <q-icon name="logout" class=" q-mr-md" />
+                  Logout</q-item-label
+                ></q-item-section>
+            </q-item>
+          </q-list>
+        </q-menu>
           </q-btn>
         </div>
       </q-toolbar>
@@ -206,7 +236,7 @@
                 >
               </q-item-section>
             </q-item>
-            <q-item
+            <!-- <q-item
               clickable
               v-ripple
               @click="toggleSection('view')"
@@ -233,7 +263,7 @@
                   Logout</q-item-label
                 >
               </q-item-section>
-            </q-item>
+            </q-item> -->
           </q-expansion-item>
         </q-list>
       </q-scroll-area>

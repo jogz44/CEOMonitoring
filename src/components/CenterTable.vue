@@ -422,7 +422,14 @@
     >
       <q-card class="" style="width: 500px">
         <q-card-section>
-          <div class="text-h6">ADD EMPLOYMENT</div>
+          <div class="row">
+            <div class="col-11 text-h6">
+              ADD EMPLOYMENT
+            </div>
+            <div class="col-1">
+              <q-btn flat round color="orange" icon="close" v-close-popup />
+            </div>
+          </div>
         </q-card-section>
         <q-separator />
         <q-card-section>
@@ -453,11 +460,16 @@
               <q-select
                 filled
                 v-model="editedItem.employmentDtl.Designation"
+                use-input
+                hide-selected
+                fill-input
+                input-debounce="0"
+                :options="optionsD"
+                :option-label="(val) => val.Designation"
+
+                @filter="filterFns"
                 label="Designation"
                 dense
-                :options="store.EmpDesignation"
-                :option-label="(val)=>val.Designation"
-                :option-value="(val)=>val.Designation"
                 class="q-pa-sm"
               />
             </div>
@@ -512,18 +524,21 @@
 </template>
 
 <script>
-import { useQuasar } from 'quasar';
+import { useQuasar } from "quasar";
 import { ref } from "vue";
 import { useStorePersonnelInfo } from "../stores/personnelStore";
 import { useLoginStore } from "src/stores/LoginStore";
 import * as XLSX from "xlsx";
+import { store } from "quasar/wrappers";
 
 const stringOptions = ["Active", "End of Contract"];
+
 //const API_URL ='http://10.0.1.23:5000/api/Personnels/'
 
 export default {
   data() {
     const $q = useQuasar();
+
     return {
       EmpStatus: ["Regular", "Casual", "Job Order"],
       isFormValid: false,
@@ -747,6 +762,7 @@ export default {
     // },
   },
   methods: {
+
     async onSubmit() {
       // Validate the form before submission
       await this.$refs.formRef.validate();
@@ -844,7 +860,7 @@ export default {
 
       store.GetPersonnel(this.selectedID).then((res) => {
         this.editedItem = store.personnel;
-        // store.fetchEquipment();
+        // store.GetPersonnel(this.selectedID);
         console.log("sdasda=", this.editedItem);
       });
       // this.dialogVisible = false;
@@ -934,8 +950,8 @@ export default {
         this.editedItem.firstName.trim().length === 0
       ) {
         this.$q.notify({
-          color: 'negative',
-          message: 'Please fill in all required fields.',
+          color: "negative",
+          message: "Please fill in all required fields.",
         });
         return; // Do not proceed with saving
       }
@@ -988,16 +1004,22 @@ export default {
       }
     },
     savehistory() {
-      console.log("ID NKO", this.selectedID);
+      console.log("ID NKO", this.editedItem.employmentDtl.Designation);
       const store = useStorePersonnelInfo();
-      const editedItemCopy = { ...this.editedItem.employmentDtl };
-      store.AddEmployment(this.selectedID, editedItemCopy);
-      //store.fetchPersonnel().then((res) => {
-      store.GetPersonnel(this.selectedID).then((res1) => {
+
+      let editedItemCopy = { ...this.editedItem.employmentDtl };
+      editedItemCopy.Designation=this.editedItem.employmentDtl.Designation.Designation
+      console.log("item=",editedItemCopy);
+      store.AddEmployment(this.selectedID, editedItemCopy).then(()=>{
+        store.GetPersonnel(this.selectedID).then((res1) => {
         this.editedItem = store.personnel;
+        store.fetchPersonnel();
         //store.fetchPersonnel();
         //  });
       });
+      });
+      //store.fetchPersonnel().then((res) => {
+
     },
     closeDialog() {
       this.editedItem = {
@@ -1103,6 +1125,10 @@ export default {
 
     store.fetchPersonnel();
     store.fetchDesignation();
+    const optionsD = ref([]);
+    const origdata = ref([]);
+    origdata.value = store.EmpDesignation;
+
     return {
       // lastNameRef,
       // nameRules: [(val) => (val && val.length > 0) || "Please type something"],
@@ -1118,6 +1144,18 @@ export default {
       model: ref(null),
       stringOptions,
       options,
+      optionsD,
+
+      filterFns(val, update, abort) {
+        const needle = (val || "").toLowerCase();
+        const filteredItems = origdata.value.filter((item) =>
+          item.Designation.toLowerCase().includes(needle)
+        );
+
+        update(() => {
+          optionsD.value = filteredItems;
+        });
+      },
 
       filterFn(val, update) {
         if (val === "") {
