@@ -86,7 +86,7 @@ export const useEquipmentInfo = defineStore("equipmentinfo", {
     },
     async DeleteEquipment(id) {
       try {
-        await axios.delete(`http://10.0.1.23:5000/api/Equipments/` + id);
+        await axios.put(`http://10.0.1.23:5000/api/Equipments/remove/` + id);
         this.equipments = this.equipments.filter((e) => e.id !== id);
       } catch (error) {
         console.log(`Unable to Delete ${error}`);

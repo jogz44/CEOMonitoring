@@ -71,22 +71,24 @@
         <div class="actionsbtn">
           <q-btn
             v-if="update('Machine Equipment')"
-            icon="add"
-            size="sm"
-            round
-            color="green"
-            @click="viewItem(row)"
-          >
-          </q-btn>
-          <q-btn
-            v-if="update('Machine Equipment')"
-            icon="edit"
+            icon="visibility"
             flat
             round
             color="secondary"
             @click="editItem(row)"
           >
           </q-btn>
+          <q-btn
+            v-if="update('Machine Equipment')"
+            icon="add"
+            size="sm"
+            round
+            color="green"
+            @click="viewItem(row)"
+          >
+            <q-tooltip class="">Create Maintenance</q-tooltip>
+          </q-btn>
+
           <q-btn
             v-if="remove('Machine Equipment')"
             icon="delete"
@@ -100,13 +102,56 @@
       </template>
     </q-table>
 
+    <!-- For the Delete of the Maintenance History -->
+    <q-dialog
+      v-model="MaintenanceDelete"
+      persistent
+      transition-show="scale"
+      transition-hide="scale"
+    >
+      <q-card class="bg-red text-white" style="width: 400px">
+        <q-card-section>
+          <div class="text-h6">Delete Maintenance History</div>
+        </q-card-section>
+
+        <q-card-section class="q-pt-none">
+          Do you want to delete this Maintenance Hisytory?
+        </q-card-section>
+
+        <q-card-actions align="right" class="bg-white text-teal">
+          <q-btn
+            flat
+            label="Cancel"
+            size="small"
+            color="orange"
+            autofocus
+            v-close-popup
+          />
+          <q-btn
+            label="OK"
+            flat
+            color="green-5"
+            v-close-popup
+            @click="deleteItemConfirm(row)"
+          />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+
     <q-dialog v-model="dialogVisible" persistent>
       <q-card style="width: 40%; height: auto">
         <q-card-section>
           <div class="row">
             <div class="col-11 text-h6">MACHINE DETAILS</div>
             <div class="col-1">
-              <q-btn flat round color="orange" icon="close" v-close-popup />
+              <q-btn
+                flat
+                round
+                color="orange"
+                icon="close"
+                v-close-popup
+                @click="this.isEditMode = false"
+              />
             </div>
           </div>
         </q-card-section>
@@ -118,6 +163,7 @@
                 <q-input
                   filled
                   v-model="editedItem.MachineName"
+                  :disable="maintenancehistory === !isEditMode"
                   label="Machine Name"
                   dense
                   class="q-pa-sm"
@@ -128,6 +174,7 @@
                   <q-select
                     filled
                     v-model="editedItem.EquipmentType"
+                    :disable="maintenancehistory === !isEditMode"
                     dense
                     class="q-pa-sm"
                     :options="options"
@@ -141,6 +188,7 @@
                 <q-input
                   filled
                   v-model="editedItem.PropertyCustodian"
+                  :disable="maintenancehistory === !isEditMode"
                   label="Property Custodian"
                   dense
                   class="q-pa-sm"
@@ -152,6 +200,7 @@
                 <q-input
                   filled
                   v-model="editedItem.PlateNo"
+                  :disable="maintenancehistory === !isEditMode"
                   label="Plate Number"
                   dense
                   class="q-pa-sm"
@@ -161,8 +210,10 @@
                 <q-input
                   filled
                   v-model="editedItem.Remarks"
+                  :disable="maintenancehistory === !isEditMode"
                   label="Remarks"
                   dense
+                  autogrow=""
                   class="q-pa-sm"
                 />
               </div>
@@ -172,10 +223,10 @@
         <q-card-actions align="right" lass="q-mr-md">
           <q-btn
             flat
-            label="Edit"
+            icon="edit"
             color="orange"
-            v-close-popup
             size="md"
+            @click="toggleEditMode()"
             v-show="maintenancehistory"
           />
           <q-btn
@@ -185,6 +236,7 @@
             v-close-popup
             @click="save"
             class="q-mr-md"
+            :disable="maintenancehistory === !isEditMode"
           />
         </q-card-actions>
         <q-card class="q-px-lg q-pt-sm q-mb-md">
@@ -203,7 +255,7 @@
 
     <!-- DIALOG FOR MAINTENANCE -->
     <q-dialog v-model="MaintenanceDialog" persistent="">
-      <q-card style="width: 50%; height: 45%">
+      <q-card style="width: 50%; height: 45%" v-show="maintenancehistory">
         <q-card-section style="max-height: 50vh" class="scroll">
           <div class="row text-h6">
             <div class="col-11">MACHINE MAINTENANCE HISTORY</div>
@@ -333,7 +385,13 @@
               <p class="q-ml-md">{{ selectedUpdate.MaintenanceDesc }}</p>
               <p class="q-mb-sm"><b>PROOF:</b></p>
               <q-img
-                style="max-height: auto; max-width: auto"
+                style="
+                  height: 200px;
+                  max-width: 200px;
+                  text-align: center;
+                  align-items: center;
+                  align-self: center;
+                "
                 :src="selectedUpdate.MaintenanceImageProof"
               />
 
@@ -352,7 +410,12 @@
     >
       <q-card class="" style="width: 500px">
         <q-card-section>
-          <div class="text-h6">Add Maintenance</div>
+          <div class="row text-h6">
+            <div class="col-11">ADD MAINTENANCE</div>
+            <div class="col-1">
+              <q-btn flat round color="orange" icon="close" v-close-popup />
+            </div>
+          </div>
         </q-card-section>
         <q-separator />
         <q-card-section>
@@ -453,12 +516,15 @@ import * as XLSX from "xlsx";
 export default {
   data() {
     return {
+      DeletedItem: [],
+      DeleteId: "",
       viewUpdateId: false,
       selectedUpdate: null,
       maintenancehistory: true,
       myEquipments: [],
       filter: "",
       filters: "",
+      isEditMode: false,
       MaintenanceDialog: false,
       dialogVisible: false,
       secondDialog: false,
@@ -623,6 +689,10 @@ export default {
     },
   },
   methods: {
+    toggleEditMode() {
+      console.log("toggleEditMode called");
+      this.isEditMode = !this.isEditMode;
+    },
     Rowclick() {
       this.maintenancehistory = false;
       this.editedItem = {
@@ -676,8 +746,22 @@ export default {
 
     deleteItem(id) {
       console.log("Delete Item ID => ", id._id);
+      // const store = useEquipmentInfo();
+      // store.DeleteEquipment(id._id).then((res) => {
+      //   store.fetchEquipment();
+      // });
+      this.DeletedItem = id;
+      this.DeleteId = id._id;
+      this.MaintenanceDelete = true;
+    },
+
+    deleteItemConfirm() {
+      const editedItemCopy = { ...this.editedItem };
+      console.log("Delete Item ID => ", this.DeleteId);
       const store = useEquipmentInfo();
-      store.DeleteEquipment(id._id).then((res) => {
+      editedItemCopy.isDeleted = true;
+
+      store.DeleteEquipment(this.DeleteId, this.DeletedItem).then((res) => {
         store.fetchEquipment();
       });
     },
@@ -726,6 +810,7 @@ export default {
             };
             store.fetchEquipment().then((res) => {
               this.closeDialog();
+              this.isEditMode = false;
             });
           });
         console.log("Item Updated: ", editedItemCopy);

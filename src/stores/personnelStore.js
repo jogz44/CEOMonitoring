@@ -59,10 +59,9 @@ export const useStorePersonnelInfo = defineStore("personnelinfo", {
       }
     },
 
-    async DeletePersonnel(id) {
+    async DeletePersonnel(id, payload) {
       try {
-        await axios.delete(`http://10.0.1.23:5000/api/Personnels/` + id);
-        this.personnels = this.personnels.filter((e) => e.id !== id);
+        await axios.put(`http://10.0.1.23:5000/api/Personnels/delete/` + id, payload);
       } catch (error) {
         console.log(`Unable to Delete ${error}`);
       }
@@ -84,6 +83,19 @@ export const useStorePersonnelInfo = defineStore("personnelinfo", {
     },
 
     // For the Employment History
+    async DeleteEmployment(id, contractid,payload) {
+      await console.log("employee ID =>" +  id + " and Contract ID=>" + contractid );
+      try {
+        await axios.put(
+          `http://10.0.1.23:5000/api/Personnels/` +
+            id +
+            `/contracts/` +
+            contractid + `/remove`, payload
+        );
+      } catch (error) {
+        console.log(`Unable to Delete ${error}`);
+      }
+    },
 
     async GetPersonnel(id) {
       console.log("getpersonnel=", id);
@@ -109,18 +121,7 @@ export const useStorePersonnelInfo = defineStore("personnelinfo", {
       }
     },
 
-    async DeleteEmployment(id, contractid) {
-      try {
-        await axios.delete(
-          `http://10.0.1.23:5000/api/Personnels/` +
-            id +
-            `/contracts/` +
-            contractid
-        );
-      } catch (error) {
-        console.log(`Unable to Delete ${error}`);
-      }
-    },
+
     async fetchDashboard() {
       try {
         const response = await axios.get(

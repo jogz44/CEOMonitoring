@@ -150,6 +150,7 @@
             label="Cancel"
             size="small"
             color="orange"
+            autofocus
             v-close-popup
           />
           <q-btn
@@ -157,7 +158,7 @@
             flat
             color="green-5"
             v-close-popup
-            @click="deleteItemConfirm()"
+            @click="deleteItemConfirm(row)"
           />
         </q-card-actions>
       </q-card>
@@ -169,7 +170,14 @@
           <div class="row">
             <div class="col-11 text-h6">Employee Details</div>
             <div class="col-1">
-              <q-btn flat round color="orange" icon="close" v-close-popup />
+              <q-btn
+                flat
+                round
+                color="orange"
+                icon="close"
+                v-close-popup
+                @click="this.isEditMode = false"
+              />
             </div>
           </div>
         </q-card-section>
@@ -295,6 +303,7 @@
           flat
           bordered
           title=""
+          wrap-cells=""
           dense
           :rows="store.personnel.employmentDtl"
           :columns="history"
@@ -324,6 +333,12 @@
           <template v-slot:body-cell-de="{ row }">
             <q-td>
               {{ row.DteEnded }}
+            </q-td>
+          </template>
+
+          <template v-slot:body-cell-DteReceived="{ row }">
+            <q-td>
+              {{ row.DteReceived }}
             </q-td>
           </template>
 
@@ -383,6 +398,7 @@
                 size="small"
                 color="orange"
                 v-close-popup
+                autofocus
               />
               <q-btn
                 label="OK"
@@ -423,9 +439,7 @@
       <q-card class="" style="width: 500px">
         <q-card-section>
           <div class="row">
-            <div class="col-11 text-h6">
-              ADD EMPLOYMENT
-            </div>
+            <div class="col-11 text-h6">ADD EMPLOYMENT</div>
             <div class="col-1">
               <q-btn flat round color="orange" icon="close" v-close-popup />
             </div>
@@ -455,6 +469,18 @@
               />
             </div>
           </div>
+          <div row>
+            <div class="col">
+              <q-input
+                filled
+                v-model="editedItem.employmentDtl.DteReceived"
+                label="Date Received"
+                dense
+                class="q-pa-sm"
+                type="date"
+              />
+            </div>
+          </div>
           <div class="row">
             <div class="col">
               <q-select
@@ -466,7 +492,6 @@
                 input-debounce="0"
                 :options="optionsD"
                 :option-label="(val) => val.Designation"
-
                 @filter="filterFns"
                 label="Designation"
                 dense
@@ -540,7 +565,13 @@ export default {
     const $q = useQuasar();
 
     return {
-      EmpStatus: ["Regular", "Casual", "Job Order"],
+      DeletedItem: [],
+      EmpStatus: [
+        "Regular",
+        "Casual",
+        "Job Order (Program-Based)",
+        "Job Order (Project-Based)",
+      ],
       isFormValid: false,
       $q,
       nameRules: [(val) => (val && val.length > 0) || "Please type something"],
@@ -563,11 +594,12 @@ export default {
         lastName: "",
         firstName: "",
         middleName: "",
-
+        isDeleted: false,
         employmentDtl: {
           0: {
             DteStarted: "",
             DteEnded: "",
+            DteReceived: "",
             Designation: "",
             Charges: "",
             EmpStatus: "",
@@ -585,6 +617,7 @@ export default {
         employmentDtl: {
           DteStarted: "",
           DteEnded: "",
+          DteReceived: "",
           Designation: "",
           Charges: "",
           EmpStatus: "",
@@ -644,6 +677,13 @@ export default {
           field: "employmentDtl[0].DteEnded",
           align: "center",
         },
+        // {
+        //   name: "DteReceived",
+        //   label: "DATE RECEIVED",
+        //   field: "employmentDtl[0].DteReceived",
+        //   sortable: true,
+        //   align: "center",
+        // },
         {
           name: "designation",
           label: "DESIGNATION",
@@ -684,6 +724,13 @@ export default {
           align: "left",
         },
         {
+          name: "DteReceived",
+          label: "Date Received",
+          field: "DteReceived",
+          sortable: true,
+          align: "left",
+        },
+        {
           name: "designation",
           label: "Designation",
           field: "Designation",
@@ -704,6 +751,28 @@ export default {
         },
       ],
     };
+  },
+  created() {
+    this.editedItem = {
+      id: null,
+      lastName: "",
+      firstName: "",
+      middleName: "",
+      isDeleted: false,
+      employmentDtl: {
+        0: {
+          DteStarted: "",
+          DteEnded: "",
+          DteReceived: "",
+          Designation: "",
+          Charges: "",
+          EmpStatus: "",
+          Drate: "",
+        },
+      },
+      resumeLink: "",
+    };
+    console.log("sge=", this.editedItem);
   },
   computed: {
     filteredEmployees() {
@@ -726,6 +795,9 @@ export default {
         const dteEnded = employmentDtl.DteEnded
           ? employmentDtl.DteEnded.toLowerCase()
           : "";
+        const dteReceived = employmentDtl.DteReceived
+          ? employmentDtl.DteReceived.toLowerCase()
+          : "";
         const designation = employmentDtl.Designation
           ? employmentDtl.Designation.toLowerCase()
           : "";
@@ -745,6 +817,7 @@ export default {
           middleName.includes(searchTerm) ||
           dteStarted.includes(searchTerm) ||
           dteEnded.includes(searchTerm) ||
+          dteReceived.includes(searchTerm) ||
           designation.includes(searchTerm) ||
           charges.includes(searchTerm) ||
           Drate.includes(searchTerm) ||
@@ -762,7 +835,6 @@ export default {
     // },
   },
   methods: {
-
     async onSubmit() {
       // Validate the form before submission
       await this.$refs.formRef.validate();
@@ -828,6 +900,7 @@ export default {
         lastName: "",
         firstName: "",
         middleName: "",
+        isDeleted: false,
 
         // employmentDtl: {
         //   DteStarted: "",
@@ -879,17 +952,25 @@ export default {
 
     deleteItem(id) {
       console.log("Delete Item ID => ", id._id);
+      this.DeletedItem = id;
       this.DeleteId = id._id;
       this.EmployeeDelete = true;
     },
 
     deleteItemConfirm() {
+      const editedItemCopy = { ...this.editedItem };
       console.log("Delete Item ID => ", this.DeleteId);
       const store = useStorePersonnelInfo();
-      store.DeletePersonnel(this.DeleteId).then((res) => {
+      editedItemCopy.isDeleted = true;
+
+      store.DeletePersonnel(this.DeleteId, this.DeletedItem).then((res) => {
         store.fetchPersonnel();
       });
-      console.log("row click=", id);
+
+      // store.DeletePersonnel(this.DeleteId).then((res) => {
+      //   store.fetchPersonnel();
+      // });
+      // console.log("row click=", id);
     },
 
     // deleteItemConfirmHistory() {
@@ -915,12 +996,11 @@ export default {
     deleteEmploymentHistory() {
       console.log("Contract ID =>", this.DeleteHistoryId);
       const store = useStorePersonnelInfo();
-      store
-        .DeleteEmployment(this.selectedID, this.DeleteHistoryId)
-        .then((req) => {
-          store.fetchPersonnel();
-          store.GetPersonnel(this.selectedID);
-        });
+      store.DeleteEmployment(this.selectedID, this.DeleteHistoryId, );
+      // .then((req) => {
+      //     store.fetchPersonnel();
+      //     store.GetPersonnel(this.selectedID);
+      //   });
     },
 
     cancel() {
@@ -932,6 +1012,7 @@ export default {
         employmentDtl: {
           DteStarted: "",
           DteEnded: "",
+          DteReceived: "",
           Designation: "",
           Charges: "",
           EmpStatus: "",
@@ -944,7 +1025,7 @@ export default {
     save() {
       const store = useStorePersonnelInfo();
       const editedItemCopy = { ...this.editedItem };
-      console.log("edited item =>", editedItemCopy._id);
+      console.log("edited item =>", editedItemCopy);
       if (
         this.editedItem.lastName.trim().length === 0 ||
         this.editedItem.firstName.trim().length === 0
@@ -1008,18 +1089,18 @@ export default {
       const store = useStorePersonnelInfo();
 
       let editedItemCopy = { ...this.editedItem.employmentDtl };
-      editedItemCopy.Designation=this.editedItem.employmentDtl.Designation.Designation
-      console.log("item=",editedItemCopy);
-      store.AddEmployment(this.selectedID, editedItemCopy).then(()=>{
+      editedItemCopy.Designation =
+        this.editedItem.employmentDtl.Designation.Designation;
+      console.log("item=", editedItemCopy);
+      store.AddEmployment(this.selectedID, editedItemCopy).then(() => {
         store.GetPersonnel(this.selectedID).then((res1) => {
-        this.editedItem = store.personnel;
-        store.fetchPersonnel();
-        //store.fetchPersonnel();
-        //  });
-      });
+          this.editedItem = store.personnel;
+          store.fetchPersonnel();
+          //store.fetchPersonnel();
+          //  });
+        });
       });
       //store.fetchPersonnel().then((res) => {
-
     },
     closeDialog() {
       this.editedItem = {
@@ -1031,6 +1112,7 @@ export default {
         employmentDtl: {
           DteStarted: "",
           DteEnded: "",
+          DteReceived: "",
           Designation: "",
           Charges: "",
           EmpStatus: "",
@@ -1053,6 +1135,7 @@ export default {
           "Middlename",
           "Date Started",
           "Date Ended",
+          "Date Received",
           "Designation",
           "Charges",
           "Status",
@@ -1063,6 +1146,7 @@ export default {
           row.middleName || "",
           this.formatDate(row.employmentDtl[0]?.DteStarted) || "",
           this.formatDate(row.employmentDtl[0]?.DteEnded) || "",
+          this.formatDate(row.employmentDtl[0]?.DteReceived) || "",
           row.employmentDtl[0]?.Designation || "",
           row.employmentDtl[0]?.Charges || "",
           this.getStatusClass2(row.employmentDtl[0]?.DteEnded || "").status ||
