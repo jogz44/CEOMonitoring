@@ -755,16 +755,16 @@ export default {
       this.MaintenanceDelete = true;
     },
 
-    deleteItemConfirm() {
-      const editedItemCopy = { ...this.editedItem };
-      console.log("Delete Item ID => ", this.DeleteId);
-      const store = useEquipmentInfo();
-      editedItemCopy.isDeleted = true;
+    // deleteItemConfirm() {
+    //   const editedItemCopy = { ...this.editedItem };
+    //   console.log("Delete Item ID => ", this.DeleteId);
+    //   const store = useEquipmentInfo();
+    //   editedItemCopy.isDeleted = true;
 
-      store.DeleteEquipment(this.DeleteId, this.DeletedItem).then((res) => {
-        store.fetchEquipment();
-      });
-    },
+    //   store.DeleteEquipment(this.DeleteId, this.DeletedItem).then((res) => {
+    //     store.fetchEquipment();
+    //   });
+    // },
 
     deleteMaintenance(maintenanceid) {
       console.log("editeditem=", this.editedItem);

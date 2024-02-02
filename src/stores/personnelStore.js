@@ -9,6 +9,7 @@ export const useStorePersonnelInfo = defineStore("personnelinfo", {
     personnelsCount: 0,
     designationtype: [],
     EmpDesignation: [],
+    EmpDtls: [],
   }),
   persist: true,
   getters: {
@@ -61,7 +62,10 @@ export const useStorePersonnelInfo = defineStore("personnelinfo", {
 
     async DeletePersonnel(id, payload) {
       try {
-        await axios.put(`http://10.0.1.23:5000/api/Personnels/delete/` + id, payload);
+        await axios.put(
+          `http://10.0.1.23:5000/api/Personnels/delete/` + id,
+          payload
+        );
       } catch (error) {
         console.log(`Unable to Delete ${error}`);
       }
@@ -83,15 +87,18 @@ export const useStorePersonnelInfo = defineStore("personnelinfo", {
     },
 
     // For the Employment History
-    async DeleteEmployment(id, contractid,payload) {
-      await console.log("employee ID =>" +  id + " and Contract ID=>" + contractid );
+    async DeleteEmployment(id, contractid) {
+      await console.log(
+        "employee ID =>" + id + " and Contract ID=>" + contractid
+      );
       try {
-        await axios.put(
+        let res = await axios.put(
           `http://10.0.1.23:5000/api/Personnels/` +
             id +
-            `/contracts/` +
-            contractid + `/remove`, payload
+            `/contracts/remove/` +
+            contractid
         );
+        console.log("res =", res.data);
       } catch (error) {
         console.log(`Unable to Delete ${error}`);
       }
@@ -109,6 +116,18 @@ export const useStorePersonnelInfo = defineStore("personnelinfo", {
       }
     },
 
+    async GetPersonnelHistory(id) {
+      console.log("getpersonnelhistory=", id);
+      try {
+        const response = await axios.get(
+          `http://10.0.1.23:5000/api/Personnels/contracts/` + id
+        );
+        this.EmpDtls = response.data;
+      } catch (error) {
+        console.log("Unable to retrieve=", error);
+      }
+    },
+
     async AddEmployment(id, payload) {
       try {
         const response = await axios.post(
@@ -120,7 +139,6 @@ export const useStorePersonnelInfo = defineStore("personnelinfo", {
         console.log(`Error fetching tasks: ${error}`);
       }
     },
-
 
     async fetchDashboard() {
       try {

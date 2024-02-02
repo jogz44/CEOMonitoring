@@ -13,120 +13,122 @@
       style="color: green"
       @click="exportToExcel"
     ></q-btn>
-
-    <q-table
-      class="my-sticky-header-table"
-      flat
-      bordered
-      title="EMPLOYEE LIST"
-      dense
-      :rows="filteredEmployees"
-      :columns="columns"
-      row-key="id"
-      :rows-per-page-options="[20]"
-    >
-      <template v-slot:top-right>
-        <q-input
-          borderless
-          dense
-          debounce="300"
-          v-model="filter"
-          placeholder="Search"
-        >
-          <template v-slot:append>
-            <q-icon name="search" />
-          </template>
-        </q-input>
-      </template>
-
-      <template v-slot:body-cell-EmpStatus="{ row }">
-        <q-td>
-          {{ row.employmentDtl[0] ? row.employmentDtl[0].EmpStatus : null }}
-        </q-td>
-      </template>
-
-      <template v-slot:body-cell-Drate="{ row }">
-        <q-td>
-          {{ row.employmentDtl[0] ? row.employmentDtl[0].Drate : null }}
-        </q-td>
-      </template>
-
-      <template v-slot:body-cell-DteStarted="{ row }">
-        <q-td>
-          {{ row.employmentDtl[0] ? row.employmentDtl[0].DteStarted : null }}
-        </q-td>
-      </template>
-
-      <template v-slot:body-cell-de="{ row }">
-        <q-td>
-          {{ row.employmentDtl[0] ? row.employmentDtl[0].DteEnded : null }}
-        </q-td>
-      </template>
-
-      <template v-slot:body-cell-designation="{ row }">
-        <q-td>
-          {{ row.employmentDtl[0] ? row.employmentDtl[0].Designation : null }}
-        </q-td>
-      </template>
-
-      <template v-slot:body-cell-charges="{ row }">
-        <q-td>
-          {{ row.employmentDtl[0] ? row.employmentDtl[0].Charges : null }}
-        </q-td>
-      </template>
-
-      <template v-slot:body-cell-status="{ row }">
-        <q-td
-          ><q-chip
-            :class="
-              getStatusClass(
-                row.employmentDtl[0] ? row.employmentDtl[0].DteEnded : null
-              )
-            "
+    <div style="width: auto">
+      <q-table
+        class="my-sticky-header-table"
+        flat
+        bordered
+        title="EMPLOYEE LIST"
+        dense
+        virtual-scroll
+        :rows="filteredEmployees"
+        :columns="columns"
+        row-key="id"
+        :rows-per-page-options="[20]"
+      >
+        <template v-slot:top-right>
+          <q-input
+            borderless
+            dense
+            debounce="300"
+            v-model="filter"
+            placeholder="Search"
           >
-            {{
-              getStatusClass2(
-                row.employmentDtl[0] ? row.employmentDtl[0].DteEnded : null
-              ).status
-            }}
-          </q-chip></q-td
-        >
-      </template>
+            <template v-slot:append>
+              <q-icon name="search" />
+            </template>
+          </q-input>
+        </template>
 
-      <template v-slot:body-cell-actions="{ row }">
-        <div class="actionsbtn">
-          <q-btn
-            v-if="update('Employee')"
-            icon="visibility"
-            flat
-            round
-            color="secondary"
-            @click="editItem(row)"
-          >
-          </q-btn>
-          <q-btn
-            v-if="update('Employee')"
-            icon="add"
-            size="sm"
-            round
-            color="green"
-            @click="viewItem(row)"
-          >
-            <q-tooltip class="">Create Appointment</q-tooltip>
-          </q-btn>
+        <template v-slot:body-cell-EmpStatus="{ row }">
+          <q-td>
+            {{ row.employmentDtl[0] ? row.employmentDtl[0].EmpStatus : null }}
+          </q-td>
+        </template>
 
-          <q-btn
-            v-if="remove('Employee')"
-            icon="delete"
-            flat
-            round
-            color="deep-orange"
-            @click="deleteItem(row)"
+        <template v-slot:body-cell-Drate="{ row }">
+          <q-td>
+            {{ row.employmentDtl[0] ? row.employmentDtl[0].Drate : null }}
+          </q-td>
+        </template>
+
+        <template v-slot:body-cell-DteStarted="{ row }">
+          <q-td>
+            {{ row.employmentDtl[0] ? row.employmentDtl[0].DteStarted : null }}
+          </q-td>
+        </template>
+
+        <template v-slot:body-cell-de="{ row }">
+          <q-td>
+            {{ row.employmentDtl[0] ? row.employmentDtl[0].DteEnded : null }}
+          </q-td>
+        </template>
+
+        <template v-slot:body-cell-designation="{ row }">
+          <q-td>
+            {{ row.employmentDtl[0] ? row.employmentDtl[0].Designation : null }}
+          </q-td>
+        </template>
+
+        <template v-slot:body-cell-charges="{ row }">
+          <q-td>
+            {{ row.employmentDtl[0] ? row.employmentDtl[0].Charges : null }}
+          </q-td>
+        </template>
+
+        <template v-slot:body-cell-status="{ row }">
+          <q-td
+            ><q-chip
+              :class="
+                getStatusClass(
+                  row.employmentDtl[0] ? row.employmentDtl[0].DteEnded : null
+                )
+              "
+            >
+              {{
+                getStatusClass2(
+                  row.employmentDtl[0] ? row.employmentDtl[0].DteEnded : null
+                ).status
+              }}
+            </q-chip></q-td
           >
-          </q-btn>
-        </div>
-      </template>
-    </q-table>
+        </template>
+
+        <template v-slot:body-cell-actions="{ row }">
+          <div class="actionsbtn">
+            <q-btn
+              v-if="update('Employee')"
+              icon="visibility"
+              flat
+              round
+              color="secondary"
+              @click="editItem(row)"
+            >
+            </q-btn>
+            <q-btn
+              v-if="update('Employee')"
+              icon="add"
+              size="sm"
+              round
+              color="green"
+              @click="viewItem(row)"
+            >
+              <q-tooltip class="">Create Appointment</q-tooltip>
+            </q-btn>
+
+            <q-btn
+              v-if="remove('Employee')"
+              icon="delete"
+              flat
+              round
+              color="deep-orange"
+              @click="deleteItem(row)"
+            >
+            </q-btn>
+          </div>
+        </template>
+      </q-table>
+    </div>
 
     <!-- For the Delete of the Employee -->
     <q-dialog
@@ -282,7 +284,7 @@
 
     <!-- DIALOG FOR MAINTENANCE -->
     <q-dialog v-model="EmpHistoryDialog" persistent="">
-      <q-card style="width: 50%; height: 40%" v-show="employmenthistory">
+      <q-card style="width: 50%; height: auto" v-show="employmenthistory">
         <q-card-section style="max-height: 50vh" class="scroll">
           <div class="row">
             <div class="col-11 text-h6">
@@ -305,23 +307,32 @@
           title=""
           wrap-cells=""
           dense
-          :rows="store.personnel.employmentDtl"
+          :rows="store.EmpDtls"
           :columns="history"
           :filter="filters"
           row-key="id"
         >
           <template v-slot:top-right>
             <q-input
-              borderless
               dense
               debounce="300"
               v-model="filters"
               placeholder="Search"
+              color="green-10"
             >
               <template v-slot:append>
                 <q-icon name="search" />
               </template>
             </q-input>
+          </template>
+          <template v-slot:top-left>
+            <q-btn
+              label="Create Appointment"
+              size="x-small"
+              icon="add"
+              @click="secondDialog = true"
+              color="green-10"
+            ></q-btn>
           </template>
 
           <template v-slot:body-cell-DteStarted="{ row }">
@@ -368,11 +379,16 @@
                 flat
                 round
                 color="deep-orange"
-                @click="deleteEmployment(row._id)"
+                @click="deleteEmployment(row)"
               >
               </q-btn>
             </div>
           </template>
+          <!-- <template v-slot:body-cell="{ row, charges }">
+            <q-td class="custom-table-cell">
+              {{ row[charges.name] }}
+            </q-td>
+          </template> -->
         </q-table>
 
         <!-- For the Delete of the Employee -->
@@ -413,20 +429,7 @@
         </q-dialog>
 
         <q-separator />
-        <div style="position: absolute; bottom: 10px; right: 10px">
-          <q-btn
-            label=""
-            size="SMALL"
-            @click="secondDialog = true"
-            icon="add"
-            color="green-10"
-            round
-            style="position: absolute; bottom: 0; right: 0"
-            ><q-tooltip class="white"
-              >Create new Maintenance History</q-tooltip
-            ></q-btn
-          >
-        </div>
+        <div style="position: absolute; bottom: 5px; left: 10%"></div>
       </q-card>
     </q-dialog>
 
@@ -451,7 +454,7 @@
             <div class="col">
               <q-input
                 filled
-                v-model="editedItem.employmentDtl.DteStarted"
+                v-model="EmpDtl.DteStarted"
                 label="Date Started"
                 dense
                 class="q-pa-sm"
@@ -461,7 +464,7 @@
             <div class="col">
               <q-input
                 filled
-                v-model="editedItem.employmentDtl.DteEnded"
+                v-model="EmpDtl.DteEnded"
                 label="Date Ended"
                 dense
                 class="q-pa-sm"
@@ -473,7 +476,7 @@
             <div class="col">
               <q-input
                 filled
-                v-model="editedItem.employmentDtl.DteReceived"
+                v-model="EmpDtl.DteReceived"
                 label="Date Received"
                 dense
                 class="q-pa-sm"
@@ -485,7 +488,7 @@
             <div class="col">
               <q-select
                 filled
-                v-model="editedItem.employmentDtl.Designation"
+                v-model="EmpDtl.Designation"
                 use-input
                 hide-selected
                 fill-input
@@ -503,7 +506,7 @@
             <div class="col">
               <q-input
                 filled
-                v-model="editedItem.employmentDtl.Charges"
+                v-model="EmpDtl.Charges"
                 label="Charges"
                 dense
                 class="q-pa-sm"
@@ -514,7 +517,7 @@
             <div class="col">
               <q-select
                 filled
-                v-model="editedItem.employmentDtl.EmpStatus"
+                v-model="EmpDtl.EmpStatus"
                 :options="EmpStatus"
                 label="Employee Status"
                 class="q-pa-sm"
@@ -524,7 +527,7 @@
             <div class="col">
               <q-input
                 filled
-                v-model="editedItem.employmentDtl.Drate"
+                v-model="EmpDtl.Drate"
                 label="Salary Rate"
                 class="q-pa-sm"
                 dense
@@ -604,10 +607,21 @@ export default {
             Charges: "",
             EmpStatus: "",
             Drate: "",
+            isDeleted: false,
           },
         },
         resumeLink: "",
       },
+      EmpDtl:[{
+            DteStarted: "",
+            DteEnded: "",
+            DteReceived: "",
+            Designation: "",
+            Charges: "",
+            EmpStatus: "",
+            Drate: "",
+            isDeleted: false,
+      }],
       defaultItem: {
         id: null,
         lastName: "",
@@ -768,6 +782,7 @@ export default {
           Charges: "",
           EmpStatus: "",
           Drate: "",
+          isDeleted: false,
         },
       },
       resumeLink: "",
@@ -931,8 +946,8 @@ export default {
       this.EmpHistoryDialog = true;
       const store = useStorePersonnelInfo();
 
-      store.GetPersonnel(this.selectedID).then((res) => {
-        this.editedItem = store.personnel;
+      store.GetPersonnelHistory(this.selectedID).then((res) => {
+        this.editedItem = store.EmpDtls;
         // store.GetPersonnel(this.selectedID);
         console.log("sdasda=", this.editedItem);
       });
@@ -996,11 +1011,12 @@ export default {
     deleteEmploymentHistory() {
       console.log("Contract ID =>", this.DeleteHistoryId);
       const store = useStorePersonnelInfo();
-      store.DeleteEmployment(this.selectedID, this.DeleteHistoryId, );
-      // .then((req) => {
-      //     store.fetchPersonnel();
-      //     store.GetPersonnel(this.selectedID);
-      //   });
+      store
+        .DeleteEmployment(this.selectedID, this.DeleteHistoryId._id)
+        .then((req) => {
+          store.fetchPersonnel();
+          store.GetPersonnelHistory(this.selectedID);
+        });
     },
 
     cancel() {
@@ -1085,17 +1101,18 @@ export default {
       }
     },
     savehistory() {
-      console.log("ID NKO", this.editedItem.employmentDtl.Designation);
+     // console.log("ID NKO", this.editedItem.employmentDtl.Designation);
       const store = useStorePersonnelInfo();
 
-      let editedItemCopy = { ...this.editedItem.employmentDtl };
+      let editedItemCopy = { ...this.EmpDtl };
       editedItemCopy.Designation =
-        this.editedItem.employmentDtl.Designation.Designation;
+        this.EmpDtl.Designation.Designation;
       console.log("item=", editedItemCopy);
       store.AddEmployment(this.selectedID, editedItemCopy).then(() => {
         store.GetPersonnel(this.selectedID).then((res1) => {
           this.editedItem = store.personnel;
-          store.fetchPersonnel();
+          store.GetPersonnelHistory(this.selectedID);
+          this.EmpDtl="";
           //store.fetchPersonnel();
           //  });
         });
@@ -1279,4 +1296,8 @@ export default {
   position: sticky;
   z-index: 1;
 } */
+.custom-table-cell {
+  white-space: normal; /* Allow text to wrap onto the next line */
+  word-wrap: break-word; /* Break long words onto the next line */
+}
 </style>
