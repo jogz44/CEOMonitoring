@@ -27,7 +27,8 @@
     >
       <template v-slot:top-right>
         <q-input
-          borderless
+          color="green"
+          style="margin-bottom: 20px"
           dense
           debounce="300"
           v-model="filter"
@@ -71,14 +72,15 @@
         <div class="actionsbtn">
           <q-btn
             v-if="update('Machine Equipment')"
-            icon="visibility"
+            icon="edit"
             flat
             round
-            color="secondary"
+            color="green-5"
+            style="margin-right: -10px"
             @click="editItem(row)"
           >
           </q-btn>
-          <q-btn
+          <!-- <q-btn
             v-if="update('Machine Equipment')"
             icon="add"
             size="sm"
@@ -87,7 +89,7 @@
             @click="viewItem(row)"
           >
             <q-tooltip class="">Create Maintenance</q-tooltip>
-          </q-btn>
+          </q-btn> -->
 
           <q-btn
             v-if="remove('Machine Equipment')"
@@ -139,7 +141,7 @@
     </q-dialog>
 
     <q-dialog v-model="dialogVisible" persistent>
-      <q-card style="width: 40%; height: auto">
+      <q-card style="width: 30%; max-width: 80vw; height: 56%">
         <q-card-section>
           <div class="row">
             <div class="col-11 text-h6">MACHINE DETAILS</div>
@@ -151,6 +153,7 @@
                 icon="close"
                 v-close-popup
                 @click="this.isEditMode = false"
+                v-show="exitBtn"
               />
             </div>
           </div>
@@ -239,7 +242,7 @@
             :disable="maintenancehistory === !isEditMode"
           />
         </q-card-actions>
-        <q-card class="q-px-lg q-pt-sm q-mb-md">
+        <!-- <q-card class="q-px-lg q-pt-sm q-mb-md">
           <q-btn
             style="width: 100%"
             class="btn-fixed-width"
@@ -249,13 +252,10 @@
             @click="MaintenanceDialog = true"
             v-show="maintenancehistory"
           />
-        </q-card>
+        </q-card> -->
       </q-card>
-    </q-dialog>
-
-    <!-- DIALOG FOR MAINTENANCE -->
-    <q-dialog v-model="MaintenanceDialog" persistent="">
-      <q-card style="width: 50%; height: 45%" v-show="maintenancehistory">
+      <!-- DIALOG FOR MAINTENANCE -->
+      <q-card style="width: 40%; max-width: 80vw; height: 56%" v-show="maintenancehistory">
         <q-card-section style="max-height: 50vh" class="scroll">
           <div class="row text-h6">
             <div class="col-11">MACHINE MAINTENANCE HISTORY</div>
@@ -265,7 +265,8 @@
                 round
                 color="orange"
                 icon="close"
-                @click="this.MaintenanceDialog = false"
+                v-close-popup
+                style="margin-bottom: -5px; margin-top: -5px;"
               />
             </div>
           </div>
@@ -293,6 +294,15 @@
                 <q-icon name="search" />
               </template>
             </q-input>
+          </template>
+          <template v-slot:top-left>
+            <q-btn
+              label="Create Appointment"
+              size="x-small"
+              icon="add"
+              @click="secondDialog = true"
+              color="green-10"
+            ></q-btn>
           </template>
 
           <template v-slot:body-cell-MaintenanceType="{ row }">
@@ -332,8 +342,7 @@
             </div>
           </template>
         </q-table>
-        <q-separator />
-        <div style="position: absolute; bottom: 10px; right: 10px">
+        <!-- <div style="position: absolute; bottom: 10px; right: 10px">
           <q-btn
             label=""
             size="15px"
@@ -346,9 +355,12 @@
               >Create new Maintenance History</q-tooltip
             ></q-btn
           >
-        </div>
+        </div> -->
       </q-card>
     </q-dialog>
+
+    <!-- DIALOG FOR MAINTENANCE -->
+    <q-dialog v-model="MaintenanceDialog" persistent=""> </q-dialog>
 
     <!-- Dialog for VIEWING EACH MACHINE MAINTENANCE HISTORY -->
     <q-dialog
@@ -516,6 +528,7 @@ import * as XLSX from "xlsx";
 export default {
   data() {
     return {
+      exitBtn: false,
       DeletedItem: [],
       DeleteId: "",
       viewUpdateId: false,
@@ -695,6 +708,7 @@ export default {
     },
     Rowclick() {
       this.maintenancehistory = false;
+      this.exitBtn = true;
       this.editedItem = {
         id: null,
         MachineName: "",
@@ -723,6 +737,7 @@ export default {
     },
     editItem(item) {
       this.maintenancehistory = true;
+      this.exitBtn = false;
       const store = useEquipmentInfo();
 
       store.GetEquipment(item._id).then((res) => {

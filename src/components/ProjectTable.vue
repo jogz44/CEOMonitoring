@@ -571,12 +571,16 @@ export default {
   },
   computed: {
     updatedetailsOptions() {
+      console.log("mao ni long= ",this.editedItem.ProjectUpdates )
       if (this.editedItem.ProjectUpdates) {
         return Object.values(this.editedItem.ProjectUpdates);
       } else {
         return {};
+
       }
+
     },
+
   },
   methods: {
     Rowclick() {
