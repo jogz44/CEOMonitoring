@@ -1,13 +1,15 @@
 <template>
   <div class="q-pa-md">
     <q-btn
-      label="Add"
+      icon="add"
+      color="green-10"
+      label="Add IT Equipment"
       @click="Rowclick"
       class="q-mb-sm"
       v-if="create('IT Equipment')"
     />
     <q-btn
-      label="Convert to Excel"
+      label="Download CSV"
       flat
       class="q-mb-sm"
       style="color: green"
@@ -26,7 +28,8 @@
     >
       <template v-slot:top-right>
         <q-input
-          borderless
+          color="green"
+          style="margin-bottom: 20px"
           dense
           debounce="300"
           v-model="filter"
@@ -68,7 +71,7 @@
 
       <template v-slot:body-cell-actions="{ row }">
         <div class="actionsbtn">
-          <q-btn
+          <!-- <q-btn
             v-if="update('IT Equipment')"
             icon="add"
             size="sm"
@@ -76,13 +79,14 @@
             color="green"
             @click="viewItem(row)"
           >
-          </q-btn>
+          </q-btn> -->
           <q-btn
             v-if="update('IT Equipment')"
-            icon="edit"
+            icon="visibility"
             flat
             round
-            color="secondary"
+            color="green-8"
+            style="margin-right: -10px"
             @click="editItem(row)"
           >
           </q-btn>
@@ -101,16 +105,25 @@
 
     <!-- DIALOG FOR DETAILS -->
     <q-dialog v-model="dialogVisible" persistent>
-      <q-card style="width: 40%; height: auto">
+      <q-card style="width: 30%; max-width: 80vw; height: 50%">
         <q-card-section>
           <div class="row">
             <div class="col-11 text-h6">IT EQUIPMENT DETAILS</div>
             <div class="col-1">
-              <q-btn flat round color="orange" icon="close" v-close-popup />
+              <q-btn
+                flat
+                round
+                color="orange"
+                icon="close"
+                v-close-popup
+                @click="this.isEditMode = false"
+                v-show="exitBtn"
+              />
             </div>
           </div>
         </q-card-section>
         <q-separator />
+
         <q-card-section style="max-height: 50vh" class="scroll">
           <q-form>
             <div class="row">
@@ -118,6 +131,7 @@
                 <q-input
                   filled
                   v-model="editedItem.MachineName"
+                  :disable="maintenancehistory === !isEditMode"
                   label="Equipment Name"
                   dense
                   class="q-pa-sm"
@@ -128,6 +142,7 @@
                   <q-select
                     filled
                     v-model="editedItem.EquipmentType"
+                    :disable="maintenancehistory === !isEditMode"
                     dense
                     use-input
                     class="q-pa-sm"
@@ -142,6 +157,7 @@
                 <q-input
                   filled
                   v-model="editedItem.PropertyCustodian"
+                  :disable="maintenancehistory === !isEditMode"
                   label="Property Custodian"
                   dense
                   class="q-pa-sm"
@@ -153,6 +169,7 @@
                 <q-input
                   filled
                   v-model="editedItem.SerialNo"
+                  :disable="maintenancehistory === !isEditMode"
                   label="Serial Number"
                   dense
                   class="q-pa-sm"
@@ -162,6 +179,7 @@
                 <q-input
                   filled
                   v-model="editedItem.Remarks"
+                  :disable="maintenancehistory === !isEditMode"
                   label="Remarks"
                   dense
                   class="q-pa-sm"
@@ -170,17 +188,27 @@
             </div>
           </q-form>
         </q-card-section>
+
         <q-card-actions align="right" class="q-mr-md">
-          <q-btn flat label="Cancel" color="orange" v-close-popup size="md" />
+          <q-btn
+            flat
+            icon="edit"
+            color="orange"
+            size="md"
+            @click="toggleEditMode()"
+            v-show="maintenancehistory"
+          />
           <q-btn
             label="Save"
             color="green-5"
             size="md"
             v-close-popup
             @click="save"
+            class="q-mr-md"
+            :disable="maintenancehistory === !isEditMode"
           />
         </q-card-actions>
-        <q-card class="q-px-lg q-pt-sm q-mb-md">
+        <!-- <q-card class="q-px-lg q-pt-sm q-mb-md">
           <q-btn
             style="width: 100%"
             class="btn-fixed-width"
@@ -190,23 +218,25 @@
             @click="ITMaintenanceDialog = true"
             v-show="maintenancehistory"
           />
-        </q-card>
+        </q-card> -->
       </q-card>
-    </q-dialog>
 
-    <!-- DIALOG FOR MAINTENANCE -->
-    <q-dialog v-model="ITMaintenanceDialog" persistent>
-      <q-card style="width: 50%; height: 45%">
+      <!-- DIALOG FOR MAINTENANCE -->
+      <q-card
+        style="width: 40%; max-width: 80vw; height: 50%"
+        v-show="maintenancehistory"
+      >
         <q-card-section class="scroll">
-          <div class="row text-h6">
-            <div class="col-11">IT MAINTENANCE HISTORY</div>
+          <div class="row">
+            <div class="col-11 text-h6">IT EQUIPMENT MAINTENANCE HISTORY</div>
             <div class="col-1">
               <q-btn
                 flat
                 round
                 color="orange"
                 icon="close"
-                @click="this.ITMaintenanceDialog = false"
+                v-close-popup
+                style="margin-bottom: -5px; margin-top: -5px"
               />
             </div>
           </div>
@@ -217,14 +247,14 @@
           bordered
           title=""
           dense
-          :rows="maintenancedetailsOptions"
+          :rows="store.itequipmenthistory"
           :columns="history"
           :filter="filter"
           row-key="id"
         >
           <template v-slot:top-right>
             <q-input
-              borderless
+              color="green"
               dense
               debounce="300"
               v-model="filter"
@@ -234,6 +264,15 @@
                 <q-icon name="search" />
               </template>
             </q-input>
+          </template>
+          <template v-slot:top-left>
+            <q-btn
+              label="Add Maintenance"
+              size="x-small"
+              icon="add"
+              @click="secondDialog = true"
+              color="green-10"
+            ></q-btn>
           </template>
 
           <template v-slot:body-cell-MaintenanceType="{ row }">
@@ -273,9 +312,7 @@
             </div>
           </template>
         </q-table>
-
-        <q-separator />
-        <div style="position: absolute; bottom: 10px; right: 10px">
+        <!-- <div style="position: absolute; bottom: 10px; right: 10px">
           <q-btn
             label=""
             size="15px"
@@ -288,9 +325,14 @@
               >Create new Maintenance History</q-tooltip
             ></q-btn
           >
-        </div>
+        </div> -->
       </q-card>
     </q-dialog>
+
+    <!-- DIALOG FOR MAINTENANCE -->
+    <!-- <q-dialog v-model="ITMaintenanceDialog" persistent>
+
+    </q-dialog> -->
 
     <!-- Dialog for vIEWING EACH IT EQUIPMENT MAINTENANCE HISTORY -->
     <q-dialog
@@ -326,7 +368,7 @@
               <p class="q-ml-md">{{ selectedUpdate.MaintenanceDesc }}</p>
               <p class="q-mb-sm"><b>PROOF:</b></p>
               <q-img
-                style="height: auto; max-width: auto"
+                style="height: 400px; max-width: 100%"
                 :src="selectedUpdate.MaintenanceImage"
               />
             </div>
@@ -444,6 +486,8 @@ import * as XLSX from "xlsx";
 export default {
   data() {
     return {
+      isEditMode: false,
+      exitBtn: false,
       viewUpdateId: false,
       selectedUpdate: null,
       maintenancehistory: true,
@@ -628,8 +672,15 @@ export default {
     //   console.log("Delete =>", id._id)
     // },
 
+    toggleEditMode() {
+      console.log("toggleEditMode called");
+      this.isEditMode = !this.isEditMode;
+    },
+
     Rowclick() {
       this.maintenancehistory = false;
+      this.exitBtn = true;
+
       this.editedItem = {
         id: null,
         MachineName: "",
@@ -643,7 +694,6 @@ export default {
         // },
         Remarks: "",
       };
-
       this.dialogVisible = true;
     },
     formatDate(value) {
@@ -658,6 +708,7 @@ export default {
       return `${year}-${month}-${day}`;
     },
     editItem(item) {
+      this.exitBtn = false;
       this.maintenancehistory = true;
       const store = useITEquipmentInfo();
 
@@ -736,6 +787,7 @@ export default {
             };
             store.fetchITEquipment().then((res) => {
               this.closeDialog();
+              this.isEditMode = false;
             });
           });
         console.log("Item Updated: ", editedItemCopy);
@@ -775,7 +827,7 @@ export default {
         this.editedItem.MaintenanceDtls.MaintenanceDate
       );
       formData.append("file", this.editedItem.MaintenanceDtls.MaintenanceImage);
-      formData.append("MaintenanceImageProof", "");
+      formData.append("MaintenanceImage", "");
       formData.append(
         "MaintenanceDesc",
         this.editedItem.MaintenanceDtls.MaintenanceDesc
@@ -784,6 +836,7 @@ export default {
         store.GetITEquipment(id._id).then((res) => {
           this.editedItem = store.itequipment;
         });
+        store.fetchITEquipment();
       });
     },
     // savehistory(id) {
@@ -808,6 +861,7 @@ export default {
         MaintenanceDtls: {
           MaintenanceType: "",
           MaintenanceDate: "",
+          MaintenanceImage: "",
           MaintenanceDesc: "",
         },
         Remarks: "",

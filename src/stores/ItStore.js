@@ -3,6 +3,7 @@ import axios from "axios";
 
 export const useITEquipmentInfo = defineStore("itequipmentinfo", {
   state: () => ({
+    itequipmenthistory:[],
     itequipments: [],
     itequipment: [],
     itequipmentsCount: 0,
@@ -62,12 +63,14 @@ export const useITEquipmentInfo = defineStore("itequipmentinfo", {
     // For the IT Maintenance History
 
     async GetITEquipment(id) {
-      console.log("getequipment=", id);
+      console.log("getitequipment=", id);
       try {
         const response = await axios.get(
           `http://10.0.1.23:5000/api/ITEquipments/` + id
         );
         this.itequipment = response.data;
+        this.itequipmenthistory = Object.values(response.data.MaintenanceDtls);
+        //  console.log("itequipment=",this.itequipmenthistory);
       } catch (error) {
         console.log("Unable to retrieve=", error);
       }

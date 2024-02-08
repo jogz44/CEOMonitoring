@@ -1,10 +1,19 @@
 <template>
   <div class="q-pa-md">
     <q-btn
-      label="Add"
+      icon="add"
+      color="green-10"
+      label="Add Employee"
       @click="Rowclick"
       class="q-mb-sm q-mr-md"
       v-if="create('Employee')"
+    />
+    <q-btn
+      icon="add"
+      color="green-8"
+      label="Receive Multiple J.O"
+      @click="AddJo"
+      class="q-mb-sm q-mr-md"
     />
     <q-btn
       label="Download CSV"
@@ -99,10 +108,10 @@
           <div class="actionsbtn">
             <q-btn
               v-if="update('Employee')"
-              icon="edit"
+              icon="visibility"
               flat
               round
-              color="green-5"
+              color="green-8"
               @click="editItem(row)"
               style="margin-right: -10px"
             >
@@ -170,7 +179,7 @@
 
     <!-- Mao ni gamita goooo bulok -->
     <q-dialog v-model="dialogVisibles" persistent="">
-      <q-card style="width: 30%; max-width: 80vw; height: 56%">
+      <q-card style="width: 30%; max-width: 80vw; height: 50%">
         <q-card-section class="">
           <div class="row">
             <div class="col-11 text-h6">EMPLOYEE DETAILS</div>
@@ -287,7 +296,7 @@
 
       <!-- EMPLOYMENT DETAIvisibilieditItemLS -->
       <q-card
-        style="width: 40%; max-width: 80vw; height: 56%"
+        style="width: 40%; max-width: 80vw; height: 50%"
         v-show="employmenthistory"
       >
         <q-card-section style="max-height: " class="scroll">
@@ -808,6 +817,10 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
+
+    <q-dialog v-model="ReceiveJO">
+      <q-card>test</q-card>
+    </q-dialog>
   </div>
 </template>
 
@@ -828,6 +841,7 @@ export default {
     const $q = useQuasar();
 
     return {
+      ReceiveJO: false,
       exitBtn: true,
       dialogVisibles: false,
       // EmpDetails: false,
@@ -1189,6 +1203,10 @@ export default {
       };
       this.dialogVisibles = true;
     },
+    //Add Received Job Order Dialog
+    AddJo() {
+      this.ReceiveJO = true;
+    },
     formatDate(value) {
       if (!value) return "";
 
@@ -1382,7 +1400,7 @@ export default {
           this.editedItem = store.personnel;
           store.GetPersonnelHistory(this.selectedID);
           this.EmpDtl = "";
-          //store.fetchPersonnel();
+          store.fetchPersonnel();
           //  });
         });
       });

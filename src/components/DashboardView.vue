@@ -214,8 +214,16 @@
     </div>
 
     <!-- chart viewing -->
+    <p class="text-h6 q-pa-xl" style="margin-bottom: -70px; color: green;">CEO PROJECTS UPDATES</p>
     <div class="row dashboard">
-      <div class="col-12 col-sm-6 col-md-6 col-lg-6">
+      <div class="col-12 col-sm-6 col-md-3 col-lg-3">
+        <q-card class="my-card" bordered>
+          <q-card-section>
+            <pie-chart :chart-data="ChartDatas()" class="pie" />
+          </q-card-section>
+        </q-card>
+      </div>
+      <div class="col-12 col-sm-6 col-md-3 col-lg-3">
         <q-card class="my-card" bordered>
           <q-card-section>
             <pie-chart :chart-data="ChartDatas()" class="pie" />

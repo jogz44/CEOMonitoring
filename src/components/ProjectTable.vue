@@ -1,13 +1,15 @@
 <template>
   <div class="q-pa-md">
     <q-btn
-      label="Add"
+    icon="add"
+      color="green-10"
+      label="Add Project"
       @click="Rowclick"
       class="q-mb-sm"
       v-if="create('Project')"
     />
     <q-btn
-      label="Convert to Excel"
+      label="Download CSV"
       flat
       class="q-mb-sm"
       style="color: green"
@@ -28,7 +30,8 @@
     >
       <template v-slot:top-right>
         <q-input
-          borderless
+        color="green"
+          style="margin-bottom: 20px"
           dense
           debounce="300"
           v-model="filter"
@@ -57,7 +60,7 @@
 
       <template v-slot:body-cell-actions="{ row }">
         <div class="actionsbtn">
-          <q-btn
+          <!-- <q-btn
             v-if="update('Project')"
             icon="add"
             size="sm"
@@ -65,13 +68,13 @@
             color="green"
             @click="viewItem(row)"
           >
-          </q-btn>
+          </q-btn> -->
           <q-btn
             v-if="update('Project')"
-            icon="edit"
+            icon="visibility"
             flat
             round
-            color="secondary"
+            color="green-8"
             @click="editItem(row)"
           >
           </q-btn>
@@ -88,13 +91,23 @@
       </template>
     </q-table>
 
+
+     <!-- the main dialog -->
     <q-dialog v-model="dialogVisible" persistent>
-      <q-card style="width: 50%; height: auto">
+      <q-card style="width: 30%; max-width: 80vw; height: 50%">
         <q-card-section>
           <div class="row">
             <div class="col-11 text-h6">PROJECT DETAILS</div>
             <div class="col-1">
-              <q-btn flat round color="orange" icon="close" v-close-popup />
+              <q-btn
+                flat
+                round
+                color="orange"
+                icon="close"
+                v-close-popup
+                @click="this.isEditMode = false"
+                v-show="exitBtn"
+              />
             </div>
           </div>
         </q-card-section>
@@ -108,6 +121,7 @@
                 <q-input
                   filled
                   v-model="editedItem.ProjectName"
+                  :disable="updateproject === !isEditMode"
                   label="Project Name"
                   dense
                   class="q-pa-sm"
@@ -117,6 +131,7 @@
                 <q-input
                   filled
                   v-model="editedItem.Location"
+                  :disable="updateproject === !isEditMode"
                   label="Location"
                   dense
                   class="q-pa-sm"
@@ -129,6 +144,7 @@
                 <q-input
                   filled
                   v-model="editedItem.ReferenceNo"
+                  :disable="updateproject === !isEditMode"
                   label="Reference Number"
                   dense
                   class="q-pa-sm"
@@ -139,6 +155,7 @@
                 <q-input
                   filled
                   v-model="editedItem.TotalProjectCost"
+                  :disable="updateproject === !isEditMode"
                   label="Total Project Cost"
                   dense
                   class="q-pa-sm"
@@ -151,6 +168,7 @@
                 <q-input
                   filled
                   v-model="editedItem.DateStarted"
+                  :disable="updateproject === !isEditMode"
                   label="Date Started"
                   dense
                   class="q-pa-sm"
@@ -161,6 +179,7 @@
                 <q-input
                   filled
                   v-model="editedItem.TargetAccomplished"
+                  :disable="updateproject === !isEditMode"
                   label="Target Accomplished"
                   dense
                   class="q-pa-sm"
@@ -174,6 +193,7 @@
                   v-if="editedItem._id"
                   filled
                   v-model="editedItem.DateAccomplished"
+                  :disable="updateproject === !isEditMode"
                   label="Actual Finished Date"
                   dense
                   class="q-pa-sm"
@@ -186,6 +206,7 @@
                 <q-input
                   filled
                   v-model="editedItem.ProjectInCharge"
+                  :disable="updateproject === !isEditMode"
                   label="Project in Charge"
                   dense
                   class="q-pa-sm"
@@ -195,7 +216,14 @@
           </q-form>
         </q-card-section>
         <q-card-actions align="right">
-          <q-btn flat label="Cancel" color="orange" v-close-popup size="md" />
+          <q-btn
+            flat
+            icon="edit"
+            color="orange"
+            size="md"
+            @click="toggleEditMode()"
+            v-show="updateproject"
+          />
           <q-btn
             label="Save"
             color="green-5"
@@ -203,9 +231,10 @@
             v-close-popup
             @click="save"
             class="q-mr-md"
+            :disable="updateproject === !isEditMode"
           />
         </q-card-actions>
-        <q-card class="q-px-lg q-pt-sm q-mb-md">
+        <!-- <q-card class="q-px-lg q-pt-sm q-mb-md">
           <q-btn
             style="width: 100%"
             class="btn-fixed-width"
@@ -215,12 +244,12 @@
             @click="UpdateProjectDialog = true"
             v-show="updateproject"
           />
-        </q-card>
+        </q-card> -->
       </q-card>
-    </q-dialog>
 
-    <q-dialog v-model="UpdateProjectDialog">
-      <q-card style="width: 50%; height: 70%">
+      <!-- DIALOG FOR UPDATE -->
+      <q-card style="width: 40%; max-width: 80vw; height: 50%"
+        v-show="updateproject">
         <q-card-section style="max-height: 50vh" class="scroll">
           <div class="row text-h6">
             <div class="col-11">PROJECT UPDATE HISTORY</div>
@@ -230,7 +259,8 @@
                 round
                 color="orange"
                 icon="close"
-                @click="this.UpdateProjectDialog = false"
+                v-close-popup
+                style="margin-bottom: -5px; margin-top: -5px"
               />
             </div>
           </div>
@@ -241,14 +271,14 @@
           bordered
           title=""
           dense
-          :rows="updatedetailsOptions"
+          :rows="store.projecthistory"
           :columns="history"
           :filter="filters"
           row-key="id"
         >
           <template v-slot:top-right>
             <q-input
-              borderless
+            color="green"
               dense
               debounce="300"
               v-model="filters"
@@ -259,6 +289,15 @@
               </template>
             </q-input>
           </template>
+          <template v-slot:top-left>
+            <q-btn
+              label="Add Update"
+              size="x-small"
+              icon="add"
+              @click="secondDialog = true"
+              color="green-10"
+            ></q-btn>
+          </template>
 
           <template v-slot:body-cell-DateUpdate="{ row }">
             <q-td>
@@ -267,7 +306,7 @@
           </template>
           <template v-slot:body-cell-ImageUpdate="{ row }">
             <q-td>
-              <q-img :src="row.ImageUpdate" />
+              <q-img :src="row.ImageUpdate" style="height: 50px; max-width: 100px" />
             </q-td>
           </template>
           <template v-slot:body-cell-UpdateDescription="{ row }">
@@ -298,7 +337,7 @@
           </template>
         </q-table>
         <q-separator />
-        <div style="position: absolute; bottom: 10px; right: 10px">
+        <!-- <div style="position: absolute; bottom: 10px; right: 10px">
           <q-btn
             label=""
             size="15px"
@@ -311,8 +350,14 @@
               >Create new Update History</q-tooltip
             ></q-btn
           >
-        </div>
+        </div> -->
       </q-card>
+
+
+    </q-dialog>
+
+    <q-dialog v-model="UpdateProjectDialog">
+
     </q-dialog>
 
     <!-- Dialog for vIEWING EACH Project Update -->
@@ -344,7 +389,7 @@
               <p><b>DATE:</b> {{ formatDate(selectedUpdate.DateUpdate) }}</p>
               <p class="q-mb-sm"><b>PROOF:</b></p>
               <q-img
-                style="height: auto; max-width: auto"
+                style="height: 400px; max-width: 100%"
                 :src="selectedUpdate.ImageUpdate"
               />
               <p class="q-mt-lg"><b>DESCRIPTION: </b></p>
@@ -433,6 +478,8 @@ import * as XLSX from "xlsx";
 export default {
   data() {
     return {
+      isEditMode: false,
+      exitBtn: false,
       viewUpdateId: false,
       selectedUpdate: null,
       updateproject: true,
@@ -583,8 +630,14 @@ export default {
 
   },
   methods: {
+    toggleEditMode() {
+      console.log("toggleEditMode called");
+      this.isEditMode = !this.isEditMode;
+    },
     Rowclick() {
       this.updateproject = false;
+      this.exitBtn = true;
+
       this.editedItem = {
         id: null,
         ProjectName: "",
@@ -611,6 +664,8 @@ export default {
     },
     editItem(item) {
       this.updateproject = true;
+      this.exitBtn = false;
+
       const store = useStoreProjectInfo();
 
       store.GetProject(item._id).then((res) => {
@@ -720,6 +775,7 @@ export default {
           this.editedItem = { ...this.defaultItem };
           store.fetchProject().then((res) => {
             this.closeDialog();
+            this.isEditMode = false;
           });
         });
         console.log("Item Updated: ", editedItemCopy);

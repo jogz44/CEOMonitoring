@@ -3,6 +3,7 @@ import axios from "axios";
 
 export const useStoreProjectInfo = defineStore("projectinfo", {
   state: () => ({
+    projecthistory: [],
     projects: [],
     project: [],
     projectsCount: 0,
@@ -74,6 +75,7 @@ export const useStoreProjectInfo = defineStore("projectinfo", {
         );
 
         this.project = response.data;
+        this.projecthistory = Object.values(response.data.ProjectUpdates);
         console.log("Projectsssse=", this.project);
       } catch (error) {
         console.log("Unable to retrieve=", error);
