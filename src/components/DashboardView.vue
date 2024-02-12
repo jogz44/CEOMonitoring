@@ -226,7 +226,7 @@
       <div class="col-12 col-sm-6 col-md-3 col-lg-3">
         <q-card class="my-card" bordered>
           <q-card-section>
-            <pie-chart :chart-data="ChartDatas()" class="pie" />
+            <status-chart :chart-data="ChartDatas()" class="pie" />
           </q-card-section>
         </q-card>
       </div>
@@ -343,6 +343,7 @@
 
 <script>
 import PieChart from "../components/PieChart.vue";
+import StatusChart from "../components/StatusChart.vue";
 import { defineComponent } from "vue";
 import CenterTable from "./CenterTable.vue";
 import MachineTable from "./MachineTable.vue";
@@ -361,6 +362,7 @@ export default defineComponent({
     ProjectTable,
     MachineTable,
     PieChart,
+    StatusChart,
   },
   data() {
     return {
@@ -438,7 +440,8 @@ export default defineComponent({
       const activecount = this.store.ActiveCount;
       const inactive = this.store.personnelsCount - activecount;
       const chartData = {
-        labels: ["Active", "End of Contract"],
+        labels: ["Active", "End of Contract",
+      ],
         datasets: [
           {
             data: [activecount, inactive],
@@ -448,6 +451,7 @@ export default defineComponent({
       };
       return chartData;
     },
+
     CeoEmployee() {
       this.employee = true;
       this.machine = false;

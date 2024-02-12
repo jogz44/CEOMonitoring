@@ -818,8 +818,38 @@
       </q-card>
     </q-dialog>
 
+    <!-- Dialog for multiple received JO -->
+
     <q-dialog v-model="ReceiveJO">
-      <q-card>test</q-card>
+      <q-card style="width: 35%; height: 55%"
+        ><div class="q-pa-md">
+          <q-table
+            flat
+            bordered
+            title="Treats"
+            :rows="store.personnels"
+            :columns="columnsAdd"
+            row-key="_id"
+            :selected-rows-label="getSelectedString"
+            selection="multiple"
+            v-model:selected="selected"
+          />
+        </div>
+      </q-card>
+      <q-card style="width: 35%; height: 55%">
+        <div class="q-mt-md"> <q-table
+            flat
+            bordered
+            title="Treats"
+            :rows="selected"
+            :columns="columnsAdd"
+            row-key="_id"
+
+            selection="multiple"
+
+          />
+        </div>
+      </q-card>
     </q-dialog>
   </div>
 </template>
@@ -920,6 +950,31 @@ export default {
         },
         resumeLink: "",
       },
+      columnsAdd: [
+        {
+          name: "lastname",
+          required: true,
+          label: "LASTNAME",
+          align: "left",
+          field: (row) => row.lastName,
+          format: (val) => `${val}`,
+          sortable: true,
+        },
+        {
+          name: "firstname",
+          align: "center",
+          label: "FIRSTNAME",
+          field: "firstName",
+          sortable: true,
+        },
+        {
+          name: "middlename",
+          align: "center",
+          label: "MIDDLENAME",
+          field: "middleName",
+          sortable: true,
+        },
+      ],
 
       columns: [
         {
@@ -1468,6 +1523,7 @@ export default {
     },
   },
   setup() {
+    const selected = ref([]);
     const options = ref(stringOptions);
     const store = useStorePersonnelInfo();
     const loginstore = useLoginStore();
@@ -1533,7 +1589,7 @@ export default {
       stringOptions,
       options,
       optionsD,
-
+        selected,
       filterFns(val, update, abort) {
         const needle = (val || "").toLowerCase();
         const filteredItems = origdata.value.filter((item) =>
@@ -1559,6 +1615,14 @@ export default {
             (v) => v.toLowerCase().indexOf(needle) > -1
           );
         });
+      },
+      getSelectedString() {
+        // this.rowsAdd =this.store.personnels;
+        return selected.value.length === 0
+          ? ""
+          : `${selected.value.length} record${
+              selected.value.length > 1 ? "s" : ""
+            } selected of ${store.personnels.length}`;
       },
     };
   },

@@ -1,6 +1,12 @@
 <template>
   <div class="q-pa-md">
-    <q-btn label="Add" @click="Rowclick" class="q-mb-sm" />
+    <q-btn
+      label="Add User"
+      color="green-10"
+      @click="Rowclick"
+      class="q-mb-sm"
+      icon="add"
+    />
 
     <q-table
       class="my-sticky-header-table"
@@ -30,10 +36,10 @@
       <template v-slot:body-cell-actions="{ row }">
         <div class="actionsbtn">
           <q-btn
-            icon="edit"
+            icon="visibility"
             flat
             round
-            color="secondary"
+            color="green"
             @click="editItem(row)"
           >
           </q-btn>
@@ -58,9 +64,14 @@
     </q-table>
 
     <q-dialog v-model="dialogVisible" persistent>
-      <q-card style="width: 50%; height: 45%">
+      <q-card style="width: 50%; height: auto">
         <q-card-section>
-          <div class="text-h6">User Details</div>
+          <div class="row text-h6">
+            <div class="col-11">USER DETAILS</div>
+            <div class="col-1">
+              <q-btn flat round color="orange" icon="close" v-close-popup />
+            </div>
+          </div>
         </q-card-section>
 
         <q-separator />
@@ -72,6 +83,7 @@
                 <q-input
                   filled
                   v-model="editedItem.IdNo"
+                  :disable="editdetails === !isEditMode"
                   label="ID Number"
                   dense
                   class="q-pa-sm"
@@ -82,6 +94,7 @@
                 <q-input
                   filled
                   v-model="editedItem.LastName"
+                  :disable="editdetails === !isEditMode"
                   label="Lastname"
                   dense
                   class="q-pa-sm"
@@ -94,6 +107,7 @@
                 <q-input
                   filled
                   v-model="editedItem.FirstName"
+                  :disable="editdetails === !isEditMode"
                   label="Firstname"
                   dense
                   class="q-pa-sm"
@@ -104,6 +118,7 @@
                 <q-input
                   filled
                   v-model="editedItem.MiddleName"
+                  :disable="editdetails === !isEditMode"
                   label="Middlename"
                   dense
                   class="q-pa-sm"
@@ -116,6 +131,7 @@
                 <q-input
                   filled
                   v-model="editedItem.Designation"
+                  :disable="editdetails === !isEditMode"
                   label="Designation"
                   dense
                   class="q-pa-sm"
@@ -126,6 +142,7 @@
                 <q-input
                   filled
                   v-model="editedItem.Office"
+                  :disable="editdetails === !isEditMode"
                   label="Office"
                   dense
                   class="q-pa-sm"
@@ -139,6 +156,7 @@
                 <q-input
                   filled
                   v-model="editedItem.Username"
+                  :disable="editdetails === !isEditMode"
                   label="Username"
                   dense
                   class="q-pa-sm"
@@ -149,6 +167,7 @@
                 <q-input
                   filled
                   v-model="editedItem.Password"
+                  :disable="editdetails === !isEditMode"
                   label="Password"
                   dense
                   class="q-pa-sm"
@@ -156,6 +175,7 @@
               </div>
               <q-toggle
                 v-model="editedItem.isAdmin"
+                :disable="editdetails === !isEditMode"
                 color="green"
                 label="Set as Admin"
               />
@@ -163,13 +183,22 @@
           </q-form>
         </q-card-section>
         <q-card-actions align="right">
-          <q-btn flat label="Cancel" color="primary" v-close-popup size="md" />
+          <q-btn
+            flat
+            icon="edit"
+            color="orange"
+            size="md"
+            @click="toggleEditMode()"
+            v-show="editdetails"
+          />
           <q-btn
             label="Save"
-            color="secondary"
+            color="green-10"
             size="md"
             v-close-popup
             @click="save"
+            class="q-mr-sm"
+            :disable="editdetails === !isEditMode"
           />
         </q-card-actions>
       </q-card>
@@ -177,21 +206,15 @@
 
     <!-- USER ACCESS BUTTON DIALOG -->
     <q-dialog v-model="UserAccess">
-      <q-card style="width: 50%; height: auto" class="container">
+      <q-card style="width: 50%; height: auto" class="container q-pa-sm">
         <q-card-section>
           <div class="row">
             <div class="text-h6 col-11">USER ACCESS</div>
             <div class="col-1">
-              <q-btn
-                size="sm"
-                color="green"
-                icon="add"
-                @click="ModuleEditDialog = true"
-              />
+              <q-btn flat round color="orange" icon="close" v-close-popup />
             </div>
           </div>
         </q-card-section>
-        <q-separator />
 
         <q-table
           title="Module Names"
@@ -202,6 +225,16 @@
           bordered
           dense
         >
+          <template v-slot:top-left>
+            <q-btn
+              label="ADD ACCESS"
+              size="x-small"
+              icon="add"
+              @click="ModuleEditDialog = true"
+              color="green-10"
+              class="q-pa-sm q-mt-sm"
+            ></q-btn>
+          </template>
           <template v-slot:body-cell-actions="{ row }">
             <div class="actionsbtn">
               <q-btn
@@ -224,23 +257,28 @@
           </template>
         </q-table>
 
-        <q-card-actions align="right">
+        <!-- <q-card-actions align="right">
           <q-btn flat label="Cancel" color="primary" v-close-popup size="md" />
-          <!-- <q-btn
+           <q-btn
             label="Save"
             color="secondary"
             size="md"
             v-close-popup
             @click="save"
-          /> -->
-        </q-card-actions>
+          />
+        </q-card-actions> -->
       </q-card>
     </q-dialog>
 
     <q-dialog v-model="ModuleEditDialog">
       <q-card style="width: 50%; height: auto" class="container">
         <q-card-section>
-          <div class="text-h6">USER ACCESS</div>
+          <div class="row">
+            <div class="text-h6 col-11">USER ACCESS</div>
+            <div class="col-1">
+              <q-btn flat round color="orange" icon="close" v-close-popup />
+            </div>
+          </div>
         </q-card-section>
         <q-separator />
         <q-card-section>
@@ -262,7 +300,6 @@
                   class="q-pa-sm"
                   :options="filteredOptions"
                   label="Module Name"
-
                 />
               </div>
               <div class="q-ml-md">
@@ -301,22 +338,58 @@
           </q-form>
           <q-separator />
           <q-card-actions align="right">
-            <q-btn
+            <!-- <q-btn
               flat
               label="Cancel"
               color="primary"
               v-close-popup
               size="md"
-            />
+            /> -->
             <q-btn
               label="Save"
-              color="secondary"
+              color="green"
               size="md"
               v-close-popup
               @click="saveCreds(this.selectedid, this.selectedCredID)"
             />
           </q-card-actions>
         </q-card-section>
+      </q-card>
+    </q-dialog>
+
+    <!-- For the Delete of User -->
+    <q-dialog
+      v-model="UserDelete"
+      persistent
+      transition-show="scale"
+      transition-hide="scale"
+    >
+      <q-card class="bg-red text-white" style="width: 400px">
+        <q-card-section>
+          <div class="text-h6">Delete User</div>
+        </q-card-section>
+
+        <q-card-section class="q-pt-none">
+          Do you want to delete this User?
+        </q-card-section>
+
+        <q-card-actions align="right" class="bg-white text-teal">
+          <q-btn
+            flat
+            label="Cancel"
+            size="small"
+            color="orange"
+            autofocus
+            v-close-popup
+          />
+          <q-btn
+            label="OK"
+            flat
+            color="green-5"
+            v-close-popup
+            @click="deleteItemConfirm(row)"
+          />
+        </q-card-actions>
       </q-card>
     </q-dialog>
   </div>
@@ -329,6 +402,11 @@ import { useStoreUserInfo } from "../stores/UserStore";
 export default {
   data() {
     return {
+      DeleteId: "",
+
+      UserDelete: false,
+      editdetails: true,
+      isEditMode: false,
       AdminValue: false,
       loadCreds: [],
       selectedid: "",
@@ -460,13 +538,19 @@ export default {
   },
   computed: {
     filteredOptions() {
-      return this.options.filter(option => !this.moduleExistsInCredentials(option));
+      return this.options.filter(
+        (option) => !this.moduleExistsInCredentials(option)
+      );
     },
   },
   methods: {
+    toggleEditMode() {
+      console.log("toggleEditMode called");
+      this.isEditMode = !this.isEditMode;
+    },
     moduleExistsInCredentials(module) {
       // Check if the selected module already exists in credentials
-      const credentialsModules = this.loadCreds.map(cred => cred.Module);
+      const credentialsModules = this.loadCreds.map((cred) => cred.Module);
       return credentialsModules.includes(module);
     },
 
@@ -556,8 +640,17 @@ export default {
 
     deleteItem(id) {
       console.log("Delete Item ID => ", id._id);
+      this.DeleteId = id._id;
+      this.UserDelete = true;
+      // const store = useStoreUserInfo();
+      // store.DeleteUser(id._id).then((res) => {
+      //   store.fetchUser();
+      // });
+    },
+    
+    deleteItemConfirm() {
       const store = useStoreUserInfo();
-      store.DeleteUser(id._id).then((res) => {
+      store.DeleteUser(this.DeleteId).then((res) => {
         store.fetchUser();
       });
     },

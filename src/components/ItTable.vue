@@ -329,10 +329,41 @@
       </q-card>
     </q-dialog>
 
-    <!-- DIALOG FOR MAINTENANCE -->
-    <!-- <q-dialog v-model="ITMaintenanceDialog" persistent>
+    <q-dialog
+      v-model="MachineDeleteHistory"
+      persistent
+      transition-show="scale"
+      transition-hide="scale"
+    >
+      <q-card class="bg-red text-white" style="width: 400px">
+        <q-card-section>
+          <div class="text-h6">Delete IT Equipment Maintenance History</div>
+        </q-card-section>
 
-    </q-dialog> -->
+        <q-card-section class="q-pt-none">
+          Do you want to delete this Equipment Maintenance History?
+        </q-card-section>
+
+        <q-card-actions align="right" class="bg-white text-teal">
+          <q-btn
+            flat
+            label="Cancel"
+            size="small"
+            color="orange"
+            v-close-popup
+            autofocus
+          />
+          <q-btn
+            label="OK"
+            flat
+            color="green-5"
+            size="small"
+            v-close-popup
+            @click="deleteMachineHistory()"
+          />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
 
     <!-- Dialog for vIEWING EACH IT EQUIPMENT MAINTENANCE HISTORY -->
     <q-dialog
@@ -385,7 +416,12 @@
     >
       <q-card class="" style="width: 500px">
         <q-card-section>
-          <div class="text-h6">ADD MAINTENANCE</div>
+          <div class="row text-h6">
+            <div class="col-11">ADD MAINTENANCE</div>
+            <div class="col-1">
+              <q-btn flat round color="orange" icon="close" v-close-popup />
+            </div>
+          </div>
         </q-card-section>
         <q-separator />
         <q-card-section>
@@ -451,29 +487,41 @@
       </q-card>
     </q-dialog>
 
-    <!-- For the Delete of the Maintenance -->
-
-    <!-- <q-dialog
+    <!-- For the Delete of the Maintenance History -->
+    <q-dialog
       v-model="MaintenanceDelete"
       persistent
       transition-show="scale"
       transition-hide="scale"
     >
-      <q-card class="bg-teal text-white" style="width: 400px">
+      <q-card class="bg-red text-white" style="width: 400px">
         <q-card-section>
-          <div class="text-h6">Delete Maintenance</div>
+          <div class="text-h6">Delete IT Equipment</div>
         </q-card-section>
 
         <q-card-section class="q-pt-none">
-          Do you want to delete this Machine Maintenance History?
+          Do you want to delete this IT Equipment?
         </q-card-section>
 
         <q-card-actions align="right" class="bg-white text-teal">
-          <q-btn flat label="Cancel" color="red" v-close-popup />
-          <q-btn label="OK" color="secondary" v-close-popup @click="deleteMaintenance(editedItem._id,editedItem.MaintenanceDtls._id )" />
+          <q-btn
+            flat
+            label="Cancel"
+            size="small"
+            color="orange"
+            autofocus
+            v-close-popup
+          />
+          <q-btn
+            label="OK"
+            flat
+            color="green-5"
+            v-close-popup
+            @click="deleteItemConfirm(row)"
+          />
         </q-card-actions>
       </q-card>
-    </q-dialog> -->
+    </q-dialog>
   </div>
 </template>
 
@@ -486,6 +534,11 @@ import * as XLSX from "xlsx";
 export default {
   data() {
     return {
+      MachineDeleteHistory: false,
+      DeleteHistoryId:"",
+      DeletedItem: [],
+      DeleteId: "",
+      MaintenanceDelete: false,
       isEditMode: false,
       exitBtn: false,
       viewUpdateId: false,
@@ -496,7 +549,6 @@ export default {
       ITMaintenanceDialog: false,
       dialogVisible: false,
       secondDialog: false,
-      MaintenanceDelete: false,
       editedIndex: -1,
       editedItem: {
         id: null,
@@ -734,31 +786,65 @@ export default {
 
     deleteItem(id) {
       console.log("Delete Item ID => ", id._id);
-      const store = useITEquipmentInfo();
-      store.DeleteITEquipment(id._id).then((res) => {
-        store.fetchITEquipment();
-      });
+      // const store = useITEquipmentInfo();
+      // store.DeleteITEquipment(id._id).then((res) => {
+      //   store.fetchITEquipment();
+      // });
+      this.DeletedItem = id;
+      this.DeleteId = id._id;
+      this.MaintenanceDelete = true;
+
     },
 
+    // deleteItemConfirm() {
+    //   const editedItemCopy = { ...this.editedItem };
+    //   console.log("Delete Item ID => ", this.DeleteId);
+    //   const store = useITEquipmentInfo();
+    //   editedItemCopy.isDeleted = true;
+
+    //   store.DeleteITEquipment(this.DeleteId, this.DeletedItem).then((res) => {
+    //     store.fetchITEquipment();
+    //   });
+    // },
+
     deleteMaintenance(maintenanceid) {
-      console.log("editeditem=", this.editedItem);
-      const id = this.editedItem._id;
-      console.log("Maintenance ID =>", id + "----" + maintenanceid);
+      this.DeleteHistoryId = maintenanceid;
+      this.MachineDeleteHistory = true;
+      // console.log("editeditem=", this.editedItem);
+      // const id = this.editedItem._id;
+      // console.log("Maintenance ID =>", id + "----" + maintenanceid);
 
       // const store = useEquipmentInfo();
       // store.DeleteMaintenance(id._id, maintenanceid).then((res) => {
       //   store.GetEquipment(id._id);
       // });
 
-      const store = useITEquipmentInfo();
+      // const store = useITEquipmentInfo();
       // const editedItemCopy = { ...this.editedItem.MaintenanceDtls };
-      store.DeleteITMaintenance(id, maintenanceid).then((req) => {
-        store.fetchITEquipment();
-        store.GetITEquipment(id).then((res) => {
-          this.editedItem = store.itequipment;
-        });
-      });
+      // store.DeleteITMaintenance(id, maintenanceid).then((req) => {
+      //   store.fetchITEquipment();
+      //   store.GetITEquipment(id).then((res) => {
+      //     this.editedItem = store.itequipment;
+      //   });
+      // });
     },
+
+    deleteMachineHistory() {
+      console.log("Contract ID =>", this.DeleteHistoryId);
+      const store = useITEquipmentInfo();
+      store
+        .DeleteITMaintenance(this.selectedID, this.DeleteHistoryId._id)
+        .then((req) => {
+          store.fetchITEquipment();
+          store.GetITEquipment(this.selectedID).then((res) => {
+            this.editedItem = store.itequipment;
+          });
+        });
+    },
+
+
+
+
     viewUpdate(row) {
       this.selectedUpdate = row;
       this.viewUpdateId = true;

@@ -1,7 +1,7 @@
 <template>
   <div class="q-pa-md">
     <q-btn
-    icon="add"
+      icon="add"
       color="green-10"
       label="Add Project"
       @click="Rowclick"
@@ -30,7 +30,7 @@
     >
       <template v-slot:top-right>
         <q-input
-        color="green"
+          color="green"
           style="margin-bottom: 20px"
           dense
           debounce="300"
@@ -91,8 +91,7 @@
       </template>
     </q-table>
 
-
-     <!-- the main dialog -->
+    <!-- the main dialog -->
     <q-dialog v-model="dialogVisible" persistent>
       <q-card style="width: 30%; max-width: 80vw; height: 50%">
         <q-card-section>
@@ -248,8 +247,10 @@
       </q-card>
 
       <!-- DIALOG FOR UPDATE -->
-      <q-card style="width: 40%; max-width: 80vw; height: 50%"
-        v-show="updateproject">
+      <q-card
+        style="width: 40%; max-width: 80vw; height: 50%"
+        v-show="updateproject"
+      >
         <q-card-section style="max-height: 50vh" class="scroll">
           <div class="row text-h6">
             <div class="col-11">PROJECT UPDATE HISTORY</div>
@@ -278,7 +279,7 @@
         >
           <template v-slot:top-right>
             <q-input
-            color="green"
+              color="green"
               dense
               debounce="300"
               v-model="filters"
@@ -306,7 +307,10 @@
           </template>
           <template v-slot:body-cell-ImageUpdate="{ row }">
             <q-td>
-              <q-img :src="row.ImageUpdate" style="height: 50px; max-width: 100px" />
+              <q-img
+                :src="row.ImageUpdate"
+                style="height: 50px; max-width: 100px"
+              />
             </q-td>
           </template>
           <template v-slot:body-cell-UpdateDescription="{ row }">
@@ -352,13 +356,9 @@
           >
         </div> -->
       </q-card>
-
-
     </q-dialog>
 
-    <q-dialog v-model="UpdateProjectDialog">
-
-    </q-dialog>
+    <q-dialog v-model="UpdateProjectDialog"> </q-dialog>
 
     <!-- Dialog for vIEWING EACH Project Update -->
     <q-dialog
@@ -410,7 +410,12 @@
     >
       <q-card class="" style="width: 500px">
         <q-card-section>
-          <div class="text-h6">Add Update</div>
+          <div class="row text-h6">
+            <div class="col-11">ADD UPDATE</div>
+            <div class="col-1">
+              <q-btn flat round color="orange" icon="close" v-close-popup />
+            </div>
+          </div>
         </q-card-section>
         <q-separator />
         <q-card-section>
@@ -466,6 +471,79 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
+
+    <!-- For the Delete of the Maintenance History -->
+    <q-dialog
+      v-model="ProjectDelete"
+      persistent
+      transition-show="scale"
+      transition-hide="scale"
+    >
+      <q-card class="bg-red text-white" style="width: 400px">
+        <q-card-section>
+          <div class="text-h6">Delete Project</div>
+        </q-card-section>
+
+        <q-card-section class="q-pt-none">
+          Do you want to delete this Project?
+        </q-card-section>
+
+        <q-card-actions align="right" class="bg-white text-teal">
+          <q-btn
+            flat
+            label="Cancel"
+            size="small"
+            color="orange"
+            autofocus
+            v-close-popup
+          />
+          <q-btn
+            label="OK"
+            flat
+            color="green-5"
+            v-close-popup
+            @click="deleteItemConfirm(row)"
+          />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+
+    <!-- Dialog for Project Update History Delete -->
+    <q-dialog
+      v-model="ProjectDeleteHistory"
+      persistent
+      transition-show="scale"
+      transition-hide="scale"
+    >
+      <q-card class="bg-red text-white" style="width: 400px">
+        <q-card-section>
+          <div class="text-h6">Delete Project Update History</div>
+        </q-card-section>
+
+        <q-card-section class="q-pt-none">
+          Do you want to delete this Project Update History?
+        </q-card-section>
+
+        <q-card-actions align="right" class="bg-white text-teal">
+          <q-btn
+            flat
+            label="Cancel"
+            size="small"
+            color="orange"
+            v-close-popup
+            autofocus
+          />
+          <q-btn
+            label="OK"
+            flat
+            color="green-5"
+            size="small"
+            v-close-popup
+            @click="deleteProjectHistory()"
+          />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </div>
 </template>
 
@@ -478,6 +556,13 @@ import * as XLSX from "xlsx";
 export default {
   data() {
     return {
+      DeletedItem: "",
+      DeleteId: "",
+      ProjectDelete: false,
+
+      DeleteHistoryId: "",
+      ProjectDeleteHistory: false,
+
       isEditMode: false,
       exitBtn: false,
       viewUpdateId: false,
@@ -618,16 +703,13 @@ export default {
   },
   computed: {
     updatedetailsOptions() {
-      console.log("mao ni long= ",this.editedItem.ProjectUpdates )
+      console.log("mao ni long= ", this.editedItem.ProjectUpdates);
       if (this.editedItem.ProjectUpdates) {
         return Object.values(this.editedItem.ProjectUpdates);
       } else {
         return {};
-
       }
-
     },
-
   },
   methods: {
     toggleEditMode() {
@@ -716,30 +798,59 @@ export default {
 
     deleteItem(id) {
       console.log("Delete Item ID => ", id._id);
-      const store = useStoreProjectInfo();
-      store.DeleteProject(id._id).then((res) => {
-        store.fetchProject();
-      });
+      // const store = useStoreProjectInfo();
+      // store.DeleteProject(id._id).then((res) => {
+      //   store.fetchProject();
+      // });
+      this.DeletedItem = id;
+      this.DeleteId = id._id;
+      this.ProjectDelete = true;
     },
 
+    // deleteItemConfirm() {
+    //   const editedItemCopy = { ...this.editedItem };
+    //   console.log("Delete Item ID => ", this.DeleteId);
+    //   const store = useStoreProjectInfo();
+    //   editedItemCopy.isDeleted = true;
+
+    //   store.DeleteProject(this.DeleteId, this.DeletedItem).then((res) => {
+    //     store.fetchProject();
+    //   });
+    // },
+
     deleteUpdate(updateid) {
-      console.log("editeditem=", this.editedItem);
-      const id = this.editedItem._id;
-      console.log("Update ID =>", id + "----" + updateid);
+      this.DeleteHistoryId = updateid;
+      this.ProjectDeleteHistory = true;
+      // console.log("editeditem=", this.editedItem);
+      // const id = this.editedItem._id;
+      // console.log("Update ID =>", id + "----" + updateid);
 
-      // const store = useEquipmentInfo();
-      // store.DeleteMaintenance(id._id, maintenanceid).then((res) => {
-      //   store.GetEquipment(id._id);
+      // // const store = useEquipmentInfo();
+      // // store.DeleteMaintenance(id._id, maintenanceid).then((res) => {
+      // //   store.GetEquipment(id._id);
+      // // });
+
+      // const store = useStoreProjectInfo();
+      // // const editedItemCopy = { ...this.editedItem.MaintenanceDtls };
+      // store.DeleteUpdate(id, updateid).then((req) => {
+      //   store.fetchProject();
+      //   store.GetProject(id).then((res) => {
+      //     this.editedItem = store.project;
+      //   });
       // });
+    },
 
+    deleteProjectHistory() {
+      console.log("Contract ID =>", this.DeleteHistoryId);
       const store = useStoreProjectInfo();
-      // const editedItemCopy = { ...this.editedItem.MaintenanceDtls };
-      store.DeleteUpdate(id, updateid).then((req) => {
-        store.fetchProject();
-        store.GetProject(id).then((res) => {
-          this.editedItem = store.project;
+      store
+        .DeleteProject(this.selectedID, this.DeleteHistoryId._id)
+        .then((req) => {
+          store.fetchProject();
+          store.GetProject(this.selectedID).then((res) => {
+            this.editedItem = store.project;
+          });
         });
-      });
     },
 
     viewUpdate(row) {
@@ -861,6 +972,7 @@ export default {
   },
 
   setup() {
+    const selected = ref([]);
     const store = useStoreProjectInfo();
     store.fetchProject();
     const loginstore = useLoginStore();
@@ -905,6 +1017,9 @@ export default {
       }
     }
     return {
+      selected,
+      columnsAdd,
+      rows,
       remove,
       update,
       create,
