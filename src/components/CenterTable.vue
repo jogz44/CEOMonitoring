@@ -821,33 +821,107 @@
     <!-- Dialog for multiple received JO -->
 
     <q-dialog v-model="ReceiveJO">
-      <q-card style="width: 35%; height: 55%"
+      <q-card style="width: 35%; height: 65%"
         ><div class="q-pa-md">
+          <q-card-section style="max-height: " class="scroll">
+            <div class="row">
+              <div class="col-12 text-h6">EMPLOYEE LIST</div>
+            </div>
+          </q-card-section>
           <q-table
             flat
+            :filter="filterReceived"
             bordered
-            title="Treats"
+            dense
             :rows="store.personnels"
             :columns="columnsAdd"
             row-key="_id"
             :selected-rows-label="getSelectedString"
             selection="multiple"
             v-model:selected="selected"
-          />
+            :rows-per-page-options="[10]"
+          >
+            <template v-slot:top-right>
+              <q-btn
+                label="Add Selected Employee"
+                size="x-small"
+                icon="chevron_right"
+                @click="moveSelectedToSecondTable"
+                color="green-10"
+              ></q-btn>
+            </template>
+            <template v-slot:top-left>
+              <q-input
+                color="green"
+                dense
+                debounce="300"
+                v-model="filterReceived"
+                style="margin-bottom: 20px"
+                placeholder="Search"
+              >
+                <template v-slot:append>
+                  <q-icon name="search" />
+                </template>
+              </q-input>
+            </template>
+          </q-table>
         </div>
       </q-card>
-      <q-card style="width: 35%; height: 55%">
-        <div class="q-mt-md"> <q-table
+
+      <q-card style="width: 35%; height: 65%">
+        <div class="q-pa-md">
+          <q-card-section style="max-height: " class="scroll">
+            <div class="row">
+              <div class="col-11 text-h6">SELECTED EMPLOYEE</div>
+              <div class="col-1">
+                <q-btn
+                  flat
+                  round
+                  color="orange"
+                  icon="close"
+                  v-close-popup
+                  style="margin-top: -10px"
+                />
+              </div>
+            </div>
+          </q-card-section>
+          <q-table
             flat
+            dense
             bordered
-            title="Treats"
-            :rows="selected"
+            :rows="secondTable"
             :columns="columnsAdd"
             row-key="_id"
-
             selection="multiple"
-
-          />
+            v-model:selected="selectedSecondTable"
+            table-style="width: 100%; max-height: 300px;"
+          >
+            <template v-slot:top-left>
+              <q-btn
+                label="Remove Selected Employee"
+                size="x-small"
+                icon="chevron_left"
+                @click="removeSelectedFromSecondTable"
+                color="green-10"
+                style="margin-bottom: 20px; margin-top: 20px"
+              ></q-btn>
+            </template>
+          </q-table>
+        </div>
+        <div class="row">
+          <div class="col-9">
+            <q-input
+              filled
+              v-model="EmpDtl.DteReceived"
+              label="Date Received"
+              dense
+              class="q-ml-md"
+              type="date"
+            />
+          </div>
+          <div class="col-3">
+            <q-btn label="SUBMIT" style="color: green" class="q-ml-md"/>
+          </div>
         </div>
       </q-card>
     </q-dialog>
@@ -871,7 +945,10 @@ export default {
     const $q = useQuasar();
 
     return {
+      selectedSecondTable: [],
+      secondTable: [],
       ReceiveJO: false,
+
       exitBtn: true,
       dialogVisibles: false,
       // EmpDetails: false,
@@ -898,6 +975,7 @@ export default {
       employmenthistory: true,
       filter: "",
       filters: "",
+      filterReceived: "",
       dialogVisible: false,
       secondDialog: false,
       editedIndex: -1,
@@ -1186,6 +1264,33 @@ export default {
     // },
   },
   methods: {
+    //Received JO - Moving to the second table
+    moveSelectedToSecondTable() {
+      this.selected.forEach((employee) => {
+        const index = this.store.personnels.findIndex(
+          (e) => e._id === employee._id
+        );
+        if (index !== -1) {
+          this.store.personnels.splice(index, 1);
+        }
+        this.secondTable.push(employee);
+      });
+      this.selected = [];
+    },
+    //Received JO- Moving back items to the first table
+    removeSelectedFromSecondTable() {
+      this.selectedSecondTable.forEach((employee) => {
+        const index = this.secondTable.findIndex((e) => e._id === employee._id);
+        if (index !== -1) {
+          this.secondTable.splice(index, 1);
+        }
+        // Add back to the first table
+        this.store.personnels.push(employee);
+      });
+
+      // Clear the selected array
+      this.selectedSecondTable = [];
+    },
     async onSubmit() {
       // Validate the form before submission
       await this.$refs.formRef.validate();
@@ -1589,7 +1694,7 @@ export default {
       stringOptions,
       options,
       optionsD,
-        selected,
+      selected,
       filterFns(val, update, abort) {
         const needle = (val || "").toLowerCase();
         const filteredItems = origdata.value.filter((item) =>

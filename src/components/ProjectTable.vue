@@ -1018,8 +1018,6 @@ export default {
     }
     return {
       selected,
-      columnsAdd,
-      rows,
       remove,
       update,
       create,
