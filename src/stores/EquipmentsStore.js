@@ -85,10 +85,14 @@ export const useEquipmentInfo = defineStore("equipmentinfo", {
         console.log(`Cannot Update ${error}`);
       }
     },
-    async DeleteEquipment(id) {
+    async DeleteEquipment(id,payload) {
       try {
-        await axios.put(`http://10.0.1.23:5000/api/Equipments/remove/` + id);
-        this.equipments = this.equipments.filter((e) => e.id !== id);
+        await axios.put(`http://10.0.1.23:5000/api/Equipments/remove/` + id,payload);
+        const index = this.equipment.findIndex((e) => e._id === payload._id);
+        if (index !== -1) {
+          this.equipment[index] = response.data;
+        }
+        // this.equipments = this.equipments.filter((e) => e.id !== id);
       } catch (error) {
         console.log(`Unable to Delete ${error}`);
       }

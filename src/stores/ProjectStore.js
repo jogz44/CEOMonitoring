@@ -22,7 +22,7 @@ export const useStoreProjectInfo = defineStore("projectinfo", {
           return totalCost + project.TotalProjectCost;
         }, 0);
 
-        // console.log("Total Project Cost", this.projectCost);
+        console.log("Total Project Cost", this.projectCost);
         // console.log("res=", this.projects);
         // console.log("count =>", this.projectsCount);
       } catch (error) {

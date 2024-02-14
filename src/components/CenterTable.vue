@@ -89,6 +89,7 @@
         <template v-slot:body-cell-status="{ row }">
           <q-td
             ><q-chip
+           style="height: auto;"
               :class="
                 getStatusClass(
                   row.employmentDtl[0] ? row.employmentDtl[0].DteEnded : null
@@ -100,6 +101,9 @@
                   row.employmentDtl[0] ? row.employmentDtl[0].DteEnded : null
                 ).status
               }}
+              <br />
+              {{ row.employmentDtl[0] ? row.employmentDtl[0].DteEnded : null }}
+
             </q-chip></q-td
           >
         </template>
@@ -171,7 +175,7 @@
             flat
             color="green-5"
             v-close-popup
-            @click="deleteItemConfirm(row)"
+            @click="deleteItemConfirm(this.DeleteId)"
           />
         </q-card-actions>
       </q-card>
@@ -833,7 +837,7 @@
             :filter="filterReceived"
             bordered
             dense
-            :rows="store.personnels"
+            :rows="store.ActiveEmployees"
             :columns="columnsAdd"
             row-key="_id"
             :selected-rows-label="getSelectedString"
@@ -1099,19 +1103,19 @@ export default {
           sortable: true,
           align: "center",
         },
-        {
-          name: "de",
-          label: "DATE ENDED",
-          field: "employmentDtl[0].DteEnded",
-          align: "center",
-        },
         // {
-        //   name: "DteReceived",
-        //   label: "DATE RECEIVED",
-        //   field: "employmentDtl[0].DteReceived",
-        //   sortable: true,
+        //   name: "de",
+        //   label: "DATE ENDED",
+        //   field: "employmentDtl[0].DteEnded",
         //   align: "center",
         // },
+        {
+          name: "DteReceived",
+          label: "DATE RECEIVED",
+          field: "employmentDtl[0].DteReceived",
+          sortable: true,
+          align: "center",
+        },
         {
           name: "designation",
           label: "DESIGNATION",

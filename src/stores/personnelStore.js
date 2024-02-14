@@ -10,6 +10,11 @@ export const useStorePersonnelInfo = defineStore("personnelinfo", {
     designationtype: [],
     EmpDesignation: [],
     EmpDtls: [],
+    filteredStatus: [],
+    regularCount: 0,
+    casualCount: 0,
+    programCount: 0,
+    projectCount: 0,
   }),
   persist: true,
   getters: {
@@ -23,6 +28,19 @@ export const useStorePersonnelInfo = defineStore("personnelinfo", {
           return p;
         }
       }, 0);
+    },
+    ActiveEmployees() {
+      const activeEmployees = this.personnels.filter((employee) => {
+        if (employee.employmentDtl[0] && employee.employmentDtl[0].DteEnded) {
+          return new Date(employee.employmentDtl[0].DteEnded) >= new Date();
+        } else {
+          return false; // If employment details are not available, consider the employee as active
+        }
+      });
+
+      console.log("Active Employees:", activeEmployees);
+
+      return activeEmployees;
     },
     // EndCount(){
     //   return this.personnels.reduce((p,c)=>{
@@ -43,6 +61,38 @@ export const useStorePersonnelInfo = defineStore("personnelinfo", {
 
         console.log("res=", this.personnels);
         // console.log("count =>", this.personnelsCount)
+
+        this.filteredStatus = response.data.filter(
+          (personnel) =>
+            personnel.employmentDtl[0].EmpStatus === "Regular" ||
+            personnel.employmentDtl[0].EmpStatus === "Casual" ||
+            personnel.employmentDtl[0].EmpStatus ===
+              "Job Order (Program-Based)" ||
+            personnel.employmentDtl[0].EmpStatus === "Job Order (Project-Based)"
+        );
+
+        this.regularCount = this.filteredStatus.filter(
+          (personnel) => personnel.employmentDtl[0].EmpStatus === "Regular"
+        ).length;
+
+        this.casualCount = this.filteredStatus.filter(
+          (personnel) => personnel.employmentDtl[0].EmpStatus === "Casual"
+        ).length;
+
+        this.programBasedCount = this.filteredStatus.filter(
+          (personnel) =>
+            personnel.employmentDtl[0].EmpStatus === "Job Order (Program-Based)"
+        ).length;
+
+        this.projectBasedCount = this.filteredStatus.filter(
+          (personnel) =>
+            personnel.employmentDtl[0].EmpStatus === "Job Order (Project-Based)"
+        ).length;
+
+        console.log("Regular Count:", this.regularCount);
+        console.log("Casual Count:", this.casualCount);
+        console.log("Program-Based Count:", this.programBasedCount);
+        console.log("Project-Based Count:", this.projectBasedCount);
       } catch (error) {
         console.log(`Error fetching tasks: ${error}`);
       }

@@ -114,23 +114,73 @@
           <q-card-section>
             <q-card>
               <p class="q-pa-md" style="text-align: center">
-                <b style="font-size: 18px; color: #057407"
-                  >EMPLOYEE DESIGNATION
-                </b>
+                <b style="font-size: 18px; color: #057407">EMPLOYEE STATUS </b>
               </p>
             </q-card>
+            <div class="row">
+              <div class="col-10">
+                <b> Regular: </b>
+              </div>
+              <div class="col-2">
+                <b>
+                  <span style="font-size: 18px; color: #057407">{{
+                    store.regularCount
+                  }}</span>
+                </b>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-10">
+                <b> Casual: </b>
+              </div>
+              <div class="col-2">
+                <b>
+                  <span style="font-size: 18px; color: #057407">{{
+                    store.casualCount
+                  }}</span>
+                </b>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-10">
+                <b>  Job-Order ( Program-Based ): </b>
+              </div>
+              <div class="col-2">
+                <b>
+                  <span style="font-size: 18px; color: #057407">{{
+                    store.programCount
+                  }}</span>
+                </b>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-10">
+                <b> Job-Order ( Project-Based ): </b>
+              </div>
+              <div class="col-2">
+                <b>
+                  <span style="font-size: 18px; color: #057407">{{
+                    store.projectCount
+                  }}</span>
+                </b>
+              </div>
+            </div>
             <q-card>
-              <q-table
+              <!-- <q-table
                 dense
                 :rows="store.designationtype"
                 :columns="personnelcolumns"
                 :rows-per-page-options="[5]"
               >
-              </q-table>
+              </q-table> -->
             </q-card>
           </q-card-section>
         </q-card>
       </div>
+
       <div class="col-12 col-sm-6 col-md-3 col-lg-3">
         <q-card class="my-card" bordered>
           <q-card-section>
@@ -214,7 +264,9 @@
     </div>
 
     <!-- chart viewing -->
-    <p class="text-h6 q-pa-xl" style="margin-bottom: -70px; color: green;">CEO PROJECTS UPDATES</p>
+    <p class="text-h6 q-pa-xl" style="margin-bottom: -70px; color: green">
+      CEO PROJECTS UPDATES
+    </p>
     <div class="row dashboard">
       <div class="col-12 col-sm-6 col-md-3 col-lg-3">
         <q-card class="my-card" bordered>
@@ -235,7 +287,9 @@
           <q-card-section>
             <q-card>
               <q-card-section>
-                <p><b style="font-size: 14px">Total Ongoing Projects Cost : </b></p>
+                <p>
+                  <b style="font-size: 14px">Total Ongoing Projects Cost : </b>
+                </p>
               </q-card-section>
             </q-card>
 
@@ -255,7 +309,7 @@
 
             <div class="row">
               <div class="col q-mr-sm">
-                <q-card class="q-mt-sm ">
+                <q-card class="q-mt-sm">
                   <q-card-section>
                     <p>
                       <b style="font-size: 14px"
@@ -434,14 +488,15 @@ export default defineComponent({
       return sortedProjects.slice(0, 3);
     },
   },
-  created() {},
+  created() {
+    const activeEmp = this.store.ActiveEmployees;
+  },
   methods: {
     ChartDatas() {
       const activecount = this.store.ActiveCount;
       const inactive = this.store.personnelsCount - activecount;
       const chartData = {
-        labels: ["Active", "End of Contract",
-      ],
+        labels: ["Active", "End of Contract"],
         datasets: [
           {
             data: [activecount, inactive],

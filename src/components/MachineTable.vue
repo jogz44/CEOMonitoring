@@ -136,7 +136,7 @@
             flat
             color="green-5"
             v-close-popup
-            @click="deleteItemConfirm(row)"
+            @click="deleteItemConfirm()"
           />
         </q-card-actions>
       </q-card>
@@ -591,12 +591,14 @@ export default {
         EquipmentType: "",
         PropertyCustodian: "",
         PlateNo: "",
+        IsDeleted: false,
         MaintenanceDtls: {
           0: {
             MaintenanceType: "",
             MaintenanceDate: "",
             MaintenanceImageProof: "",
             MaintenanceDesc: "",
+            IsDeleted: false,
           },
         },
         Remarks: "",
@@ -760,6 +762,7 @@ export default {
         MachineName: "",
         EquipmentType: "",
         PropertyCustodian: "",
+        IsDeleted: false,
         PlateNo: "",
         // MaintenanceDtls: {
         //   MaintenanceType: "",
@@ -817,16 +820,16 @@ export default {
       this.MaintenanceDelete = true;
     },
 
-    // deleteItemConfirm() {
-    //   const editedItemCopy = { ...this.editedItem };
-    //   console.log("Delete Item ID => ", this.DeleteId);
-    //   const store = useEquipmentInfo();
-    //   editedItemCopy.isDeleted = true;
+    deleteItemConfirm() {
+      const editedItemCopy = { ...this.editedItem };
+      console.log("Delete Item ID => ", this.DeleteId);
+      const store = useEquipmentInfo();
+      editedItemCopy.IsDeleted = true;
 
-    //   store.DeleteEquipment(this.DeleteId, this.DeletedItem).then((res) => {
-    //     store.fetchEquipment();
-    //   });
-    // },
+      store.DeleteEquipment(this.DeleteId, this.DeletedItem).then((res) => {
+        store.fetchEquipment();
+      });
+    },
 
     deleteMaintenance(maintenanceid) {
       this.DeleteHistoryId = maintenanceid;
@@ -882,6 +885,7 @@ export default {
               MachineName: "",
               EquipmentType: "",
               PropertyCustodian: "",
+              IsDeleted: false,
               PlateNo: "",
               Remarks: "",
             };
@@ -898,6 +902,7 @@ export default {
             MachineName: "",
             EquipmentType: "",
             PropertyCustodian: "",
+            IsDeleted: false,
             PlateNo: "",
             // MaintenanceDtls: {
             //   MaintenanceType: "",
