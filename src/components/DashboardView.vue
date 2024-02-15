@@ -145,7 +145,7 @@
 
             <div class="row">
               <div class="col-10">
-                <b>  Job-Order ( Program-Based ): </b>
+                <b> Job-Order ( Program-Based ): </b>
               </div>
               <div class="col-2">
                 <b>
@@ -278,7 +278,7 @@
       <div class="col-12 col-sm-6 col-md-3 col-lg-3">
         <q-card class="my-card" bordered>
           <q-card-section>
-            <status-chart :chart-data="ChartDatas()" class="pie" />
+            <status-chart :chart-data="StatusDatas()" class="pie" />
           </q-card-section>
         </q-card>
       </div>
@@ -489,9 +489,43 @@ export default defineComponent({
     },
   },
   created() {
-    const activeEmp = this.store.ActiveEmployees;
+    setTimeout(() => {
+      this.StatusDatas(true)
+    }, 2000);
   },
   methods: {
+    StatusDatas(value) {
+      if(value == true){
+        const regular = this.store.regularCount;
+      const casual = this.store.casualCount;
+      const program = this.store.programCount;
+      const project = this.store.projectCount;
+      const chartDatas = {
+        labels: ["Regular", "Casual", "Program-Based", "Project-Based"],
+        datasets: [
+          {
+            data: [regular, casual, program, project],
+            backgroundColor: ["#00cc00", "#FFB6B3", "#00cc66", "#FFB6B3"],
+          },
+        ],
+      };
+      return chartDatas;
+      }else{
+        const chartDatas = {
+        labels: ["Regular", "Casual", "Program-Based", "Project-Based"],
+        datasets: [
+          {
+            data: [1, 1, 1, 1],
+            backgroundColor: ["#00cc00", "#FFB6B3", "#00cc66", "#FFB6B3"],
+          },
+        ],
+      };
+      return chartDatas;
+      }
+
+
+
+    },
     ChartDatas() {
       const activecount = this.store.ActiveCount;
       const inactive = this.store.personnelsCount - activecount;
@@ -506,6 +540,7 @@ export default defineComponent({
       };
       return chartData;
     },
+
 
     CeoEmployee() {
       this.employee = true;

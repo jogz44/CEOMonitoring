@@ -3,7 +3,7 @@ import axios from "axios";
 
 export const useEquipmentInfo = defineStore("equipmentinfo", {
   state: () => ({
-    equipmenthistory:[],
+    equipmenthistory: [],
     equipments: [],
     equipment: [],
     equipmentsCount: 0,
@@ -13,18 +13,31 @@ export const useEquipmentInfo = defineStore("equipmentinfo", {
   }),
 
   actions: {
-    async UploadImage (id, payload) {
+    async UploadImage(id, payload) {
       try {
         let response = await axios.post(
           "http://10.0.1.23:5000/api/Equipments/" + id + "/maintenance",
           payload
         );
-        console.log("response=",response)
+        console.log("response=", response);
         // this.equipment.push(response.data);
       } catch (error) {
         console.log(`Error fetching tasks: ${error}`);
       }
     },
+
+    async AddMaintenance(id, payload) {
+      try {
+        const response = await axios.post(
+          "http://10.0.1.23:5000/api/Equipments/" + id + "/maintenance",
+          payload
+        );
+        // this.equipment.push(response.data);
+      } catch (error) {
+        console.log(`Error fetching tasks: ${error}`);
+      }
+    },
+
     async fetchEquipment() {
       try {
         const response = await axios.get(
@@ -33,7 +46,7 @@ export const useEquipmentInfo = defineStore("equipmentinfo", {
 
         this.equipments = response.data;
         this.equipmentsCount = response.data.length;
-
+        console.log("Equipments=", this.equipments);
         this.filteredEquipments = response.data.filter(
           (equipments) =>
             equipments.EquipmentType === "Heavy" ||
@@ -85,9 +98,12 @@ export const useEquipmentInfo = defineStore("equipmentinfo", {
         console.log(`Cannot Update ${error}`);
       }
     },
-    async DeleteEquipment(id,payload) {
+    async DeleteEquipment(id, payload) {
       try {
-        await axios.put(`http://10.0.1.23:5000/api/Equipments/remove/` + id,payload);
+        await axios.put(
+          `http://10.0.1.23:5000/api/Equipments/remove/` + id,
+          payload
+        );
         const index = this.equipment.findIndex((e) => e._id === payload._id);
         if (index !== -1) {
           this.equipment[index] = response.data;
@@ -106,36 +122,38 @@ export const useEquipmentInfo = defineStore("equipmentinfo", {
         const response = await axios.get(
           `http://10.0.1.23:5000/api/Equipments/` + id
         );
-        this.equipment=response.data;
-        this.equipmenthistory = Object.values(response.data.MaintenanceDtls);
+        this.equipment = response.data;
+        // this.equipmenthistory = Object.values(response.data.MaintenanceDtls);
         // console.log("equipment=",this.equipment);
       } catch (error) {
         console.log("Unable to retrieve=", error);
       }
     },
-    async AddMaintenance(id, payload) {
-      try {
-        const response = await axios.post(
-          "http://10.0.1.23:5000/api/Equipments/" + id + "/maintenance",
-          payload
-        );
-        // this.equipment.push(response.data);
-      } catch (error) {
-        console.log(`Error fetching tasks: ${error}`);
-      }
 
+    async GetEquipmentmaintenanceDetails(id) {
+      try {
+        const response = await axios.get(
+          `http://10.0.1.23:5000/api/Equipments/` + id + `/maintenance`
+        );
+        this.equipmenthistory = response.data;
+      } catch (error) {
+        console.log("Unable to retrieve=", error);
+      }
     },
 
     async DeleteMaintenance(id, maintenanceid) {
       try {
-        await axios.delete(
+        let res = await axios.put(
           `http://10.0.1.23:5000/api/Equipments/` +
             id +
-            `/maintenance/` +
+            `/maintenance/remove/` +
             maintenanceid
         );
+        console.log("res =", res.data);
       } catch (error) {
         console.log(`Unable to Delete ${error}`);
+
+        //64fe73740c41be33a4e5de58/maintenance/remove/64fe739d0c41be33a4e5de62
       }
     },
   },

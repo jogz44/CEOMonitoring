@@ -534,6 +534,7 @@ import * as XLSX from "xlsx";
 export default {
   data() {
     return {
+      selectedID: ref(""),
       MachineDeleteHistory: false,
       DeleteHistoryId:"",
       DeletedItem: [],
@@ -556,12 +557,14 @@ export default {
         EquipmentType: "",
         PropertyCustodian: "",
         SerialNo: "",
+        IsDeleted: false,
         MaintenanceDtls: {
           0: {
             MaintenanceType: "",
             MaintenanceDate: "",
             MaintenanceImage: "",
             MaintenanceDesc: "",
+            IsDeleted: false,
           },
         },
         Remarks: "",
@@ -571,12 +574,14 @@ export default {
         MachineName: "",
         EquipmentType: "",
         PropertyCustodian: "",
+        IsDeleted: false,
         SerialNo: "",
         MaintenanceDtls: {
           MaintenanceType: "",
           MaintenanceDate: "",
           MaintenanceImage: "",
           MaintenanceDesc: "",
+          IsDeleted: false,
         },
         Remarks: "",
       },
@@ -738,6 +743,7 @@ export default {
         MachineName: "",
         EquipmentType: "",
         PropertyCustodian: "",
+        IsDeleted: false,
         SerialNo: "",
         // MaintenanceDtls: {
         //   MaintenanceType: "",
@@ -760,6 +766,7 @@ export default {
       return `${year}-${month}-${day}`;
     },
     editItem(item) {
+      this.selectedID = item._id;
       this.exitBtn = false;
       this.maintenancehistory = true;
       const store = useITEquipmentInfo();
@@ -796,16 +803,16 @@ export default {
 
     },
 
-    // deleteItemConfirm() {
-    //   const editedItemCopy = { ...this.editedItem };
-    //   console.log("Delete Item ID => ", this.DeleteId);
-    //   const store = useITEquipmentInfo();
-    //   editedItemCopy.isDeleted = true;
+    deleteItemConfirm() {
+      const editedItemCopy = { ...this.editedItem };
+      console.log("Delete Item ID => ", this.DeleteId);
+      const store = useITEquipmentInfo();
+      editedItemCopy.IsDeleted = true;
 
-    //   store.DeleteITEquipment(this.DeleteId, this.DeletedItem).then((res) => {
-    //     store.fetchITEquipment();
-    //   });
-    // },
+      store.DeleteITEquipment(this.DeleteId, this.DeletedItem).then((res) => {
+        store.fetchITEquipment();
+      });
+    },
 
     deleteMaintenance(maintenanceid) {
       this.DeleteHistoryId = maintenanceid;
@@ -833,7 +840,7 @@ export default {
       console.log("Contract ID =>", this.DeleteHistoryId);
       const store = useITEquipmentInfo();
       store
-        .DeleteITMaintenance(this.selectedID, this.DeleteHistoryId._id)
+        .DeleteITMaintenance(this.selectedID, this.DeleteHistoryId)
         .then((req) => {
           store.fetchITEquipment();
           store.GetITEquipment(this.selectedID).then((res) => {
@@ -867,6 +874,7 @@ export default {
             this.editedItem = {
               MachineName: "",
               EquipmentType: "",
+              IsDeleted: false,
               PropertyCustodian: "",
               SerialNo: "",
               Remarks: "",
@@ -885,6 +893,7 @@ export default {
             EquipmentType: "",
             PropertyCustodian: "",
             SerialNo: "",
+            IsDeleted: false,
             // MaintenanceDtls: {
             //   MaintenanceType: "",
             //   MaintenanceDate: "",

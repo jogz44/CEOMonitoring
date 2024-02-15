@@ -5,6 +5,7 @@
 </template>
 
 <script>
+
 import Chart from "chart.js/auto";
 
 export default {
@@ -20,18 +21,22 @@ export default {
     },
   },
   created() {
+
+   if(this.chartData){
     this.renderChart();
+
+   }
   },
   methods: {
     renderChart() {
+      console.log("enter")
       if (this.chart) {
-      this.chart.destroy();
-    }
-      const ctx = this.$refs.statusChartChart
+        this.chart.destroy();
+      }
+      const ctx = this.$refs.statusChart;
       this.chart = new Chart(ctx, {
         type: "pie",
         data: this.chartData,
-
         options: {
           responsive: true,
           maintainAspectRatio: false,
@@ -41,7 +46,7 @@ export default {
             },
             title: {
               display: true,
-              text: "Employee Status",
+              text: "Employment Status",
             },
           },
         },
@@ -53,11 +58,16 @@ export default {
       }
     },
   },
-  watch: {
-    chartData: "renderChart",
-  },
+
   beforeUnmount() {
     this.destroy();
+  },
+  watch: {
+    chartData: {
+    handler: "renderChart",
+    deep: true,
+  },
+
   },
 };
 </script>

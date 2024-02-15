@@ -289,7 +289,7 @@
           :rows="store.equipmenthistory"
           :columns="history"
           :filter="filters"
-          row-key="id"
+          row-key="_id"
         >
           <template v-slot:top-right>
             <q-input
@@ -474,7 +474,7 @@
             <div class="col">
               <q-input
                 filled
-                v-model="editedItem.MaintenanceDtls.MaintenanceType"
+                v-model="MaintDtl.MaintenanceType"
                 label="Maintenance Type"
                 dense
                 class="q-pa-sm"
@@ -483,7 +483,7 @@
             <div class="col">
               <q-input
                 filled
-                v-model="editedItem.MaintenanceDtls.MaintenanceDate"
+                v-model="MaintDtl.MaintenanceDate"
                 label="Maintenance Date"
                 dense
                 class="q-pa-sm"
@@ -496,7 +496,7 @@
             <div class="col">
               <q-file
                 filled
-                v-model="editedItem.MaintenanceDtls.MaintenanceImageProof"
+                v-model="MaintDtl.MaintenanceImageProof"
                 hint="Maintenance Proof"
                 use-chips
                 dense
@@ -509,7 +509,7 @@
             <div class="col">
               <q-input
                 filled
-                v-model="editedItem.MaintenanceDtls.MaintenanceDesc"
+                v-model="MaintDtl.MaintenanceDesc"
                 label="Maintenance Description"
                 dense
                 class="q-pa-sm"
@@ -526,7 +526,7 @@
             color="green-10"
             size="md"
             v-close-popup
-            @click="savehistory(editedItem)"
+            @click="savehistory()"
           />
         </q-card-actions>
       </q-card>
@@ -603,6 +603,15 @@ export default {
         },
         Remarks: "",
       },
+      MaintDtl: [
+        {
+          MaintenanceType: "",
+          MaintenanceDate: "",
+          MaintenanceImageProof: "",
+          MaintenanceDesc: "",
+          IsDeleted: false,
+        },
+      ],
       defaultItem: {
         id: null,
         MachineName: "",
@@ -795,17 +804,23 @@ export default {
         // store.fetchEquipment();
         console.log("sdasda=", this.editedItem);
       });
+
+      store.GetEquipmentmaintenanceDetails(item._id);
+
       this.dialogVisible = true;
     },
+
     viewItem(item) {
       this.MaintenanceDialog = true;
       const store = useEquipmentInfo();
 
       store.GetEquipment(item._id).then((res) => {
         this.editedItem = store.equipment;
+
         // store.fetchEquipment();
-        console.log("sdasda=", this.editedItem);
+        console.log("sdasda11=", this.editedItem);
       });
+
       this.dialogVisible = false;
     },
 
@@ -822,7 +837,7 @@ export default {
 
     deleteItemConfirm() {
       const editedItemCopy = { ...this.editedItem };
-      console.log("Delete Item ID => ", this.DeleteId);
+      // console.log("Delete Item ID => ", this.DeleteId);
       const store = useEquipmentInfo();
       editedItemCopy.IsDeleted = true;
 
@@ -834,34 +849,23 @@ export default {
     deleteMaintenance(maintenanceid) {
       this.DeleteHistoryId = maintenanceid;
       this.MachineDeleteHistory = true;
-      // console.log("editeditem=", this.editedItem);
-      // const id = this.editedItem._id;
-      // console.log("Maintenance ID =>", id + "----" + maintenanceid);
-
-      // // const store = useEquipmentInfo();
-      // // store.DeleteMaintenance(id._id, maintenanceid).then((res) => {
-      // //   store.GetEquipment(id._id);
-      // // });
-
-      // const store = useEquipmentInfo();
-      // // const editedItemCopy = { ...this.editedItem.MaintenanceDtls };
-      // store.DeleteMaintenance(id, maintenanceid).then((req) => {
-      //   store.fetchEquipment();
-      //   store.GetEquipment(id).then((res) => {
-      //     this.editedItem = store.equipment;
-      //   });
-      // });
+      console.log(
+        "EQUIPMENT ID AND Maintenance ID =>",
+        this.selectedID + "----" + this.DeleteHistoryId
+      );
     },
 
     deleteMachineHistory() {
-      console.log("Contract ID =>", this.DeleteHistoryId);
+      console.log("Machine Maintenance ID =>", this.DeleteHistoryId);
       const store = useEquipmentInfo();
       store
-        .DeleteMaintenance(this.selectedID, this.DeleteHistoryId._id)
+        .DeleteMaintenance(this.selectedID, this.DeleteHistoryId)
         .then((req) => {
           store.fetchEquipment();
-          store.GetEquipment(this.selectedID).then((res) => {
-            this.editedItem = store.equipment;
+          store.GetEquipmentmaintenanceDetails(this.selectedID).then((res) => {
+            this.editedItem = store.equipment
+            // store.GetEquipmentmaintenanceDetails()
+            store.fetchEquipment()
           });
         });
     },
@@ -870,6 +874,15 @@ export default {
     viewUpdate(row) {
       this.selectedUpdate = row;
       this.viewUpdateId = true;
+    },
+
+    viewAllMaintenance(id) {
+      console.log(`nisulod sa viewAllMaintenance with ID` + id);
+
+      const store = useEquipmentInfo();
+      store.GetEquipmentmaintenanceDetails(id).then((res) => {
+        this.MaintDtl = res.data;
+      });
     },
 
     save() {
@@ -942,34 +955,24 @@ export default {
     //     console.error('Invalid event object.');
     //   }
     // },
-    savehistory(id) {
-      console.log("ID NAKO >> ", id._id);
+    savehistory() {
+      console.log("ID NAKO >> ", this.selectedID);
       const store = useEquipmentInfo();
 
       const formData = new FormData();
-      formData.append(
-        "MaintenanceType",
-        this.editedItem.MaintenanceDtls.MaintenanceType
-      );
-      formData.append(
-        "MaintenanceDate",
-        this.editedItem.MaintenanceDtls.MaintenanceDate
-      );
-      formData.append(
-        "file",
-        this.editedItem.MaintenanceDtls.MaintenanceImageProof
-      );
+      formData.append("MaintenanceType", this.MaintDtl.MaintenanceType);
+      formData.append("MaintenanceDate", this.MaintDtl.MaintenanceDate);
+      formData.append("file", this.MaintDtl.MaintenanceImageProof);
       formData.append("MaintenanceImageProof", "");
-      formData.append(
-        "MaintenanceDesc",
-        this.editedItem.MaintenanceDtls.MaintenanceDesc
-      );
-      store.UploadImage(id._id, formData).then((res) => {
-        store.GetEquipment(id._id).then((res) => {
-          this.editedItem = store.equipment;
-        });
-        store.fetchEquipment();
+      formData.append("MaintenanceDesc", this.MaintDtl.MaintenanceDesc);
+
+      store.UploadImage(this.selectedID, formData).then((res) => {
+        //   //store.GetEquipment(id._id);
+        store.GetEquipmentmaintenanceDetails(this.selectedID);
+
+        //   store.fetchEquipment();
       });
+
       // let res=axios.post(`http://10.0.1.23:5000/api/Equipments/" + ${{id}}+ "/maintenance`, {
 
       //   body: formData,

@@ -41,7 +41,7 @@ export default {
             },
             title: {
               display: true,
-              text: "Employee Status",
+              text: "Employee Status ",
             },
           },
         },

@@ -51,10 +51,13 @@ export const useITEquipmentInfo = defineStore("itequipmentinfo", {
         console.log(`Cannot Update ${error}`);
       }
     },
-    async DeleteITEquipment(id) {
+    async DeleteITEquipment(id, payload) {
       try {
-        await axios.delete(`http://10.0.1.23:5000/api/ITEquipments/` + id);
+        await axios.put(`http://10.0.1.23:5000/api/ITEquipments/remove/` + id, payload);
         this.itequipments = this.itequipments.filter((e) => e.id !== id);
+        if (index !== -1) {
+          this.itequipment[index] = response.data;
+        }
       } catch (error) {
         console.log(`Unable to Delete ${error}`);
       }
@@ -88,7 +91,7 @@ export const useITEquipmentInfo = defineStore("itequipmentinfo", {
     },
     async DeleteITMaintenance(id, maintenanceid) {
       try {
-        await axios.delete(
+        await axios.put(
           `http://10.0.1.23:5000/api/ITEquipments/` +
             id +
             `/maintenance/` +
