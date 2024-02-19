@@ -429,7 +429,7 @@
             <div class="col">
               <q-input
                 filled
-                v-model="editedItem.MaintenanceDtls.MaintenanceType"
+                v-model="MaintDtl.MaintenanceType"
                 label="Maintenance Type"
                 dense
                 class="q-pa-sm"
@@ -438,7 +438,7 @@
             <div class="col">
               <q-input
                 filled
-                v-model="editedItem.MaintenanceDtls.MaintenanceDate"
+                v-model="MaintDtl.MaintenanceDate"
                 label="Maintenance Date"
                 dense
                 class="q-pa-sm"
@@ -451,7 +451,7 @@
             <div class="col">
               <q-file
                 filled
-                v-model="editedItem.MaintenanceDtls.MaintenanceImage"
+                v-model="MaintDtl.MaintenanceImage"
                 hint="Maintenance Proof"
                 use-chips
                 dense
@@ -464,7 +464,7 @@
             <div class="col">
               <q-input
                 filled
-                v-model="editedItem.MaintenanceDtls.MaintenanceDesc"
+                v-model="MaintDtl.MaintenanceDesc"
                 label="Maintenance Description"
                 dense
                 class="q-pa-sm"
@@ -481,7 +481,7 @@
             color="green-5"
             size="md"
             v-close-popup
-            @click="savehistory(editedItem)"
+            @click="savehistory()"
           />
         </q-card-actions>
       </q-card>
@@ -569,6 +569,15 @@ export default {
         },
         Remarks: "",
       },
+      MaintDtl: [
+        {
+          MaintenanceType: "",
+          MaintenanceDate: "",
+          MaintenanceImageProof: "",
+          MaintenanceDesc: "",
+          IsDeleted: false,
+        },
+      ],
       defaultItem: {
         id: null,
         MachineName: "",
@@ -837,14 +846,16 @@ export default {
     },
 
     deleteMachineHistory() {
-      console.log("Contract ID =>", this.DeleteHistoryId);
+      console.log("Machine Maintenance ID =>", this.DeleteHistoryId);
+      console.log("Selected ID =>", this.selectedID);
+
       const store = useITEquipmentInfo();
       store
         .DeleteITMaintenance(this.selectedID, this.DeleteHistoryId)
         .then((req) => {
-          store.fetchITEquipment();
-          store.GetITEquipment(this.selectedID).then((res) => {
+          store.GetITEquipmentmaintenanceDetails(this.selectedID).then((res) => {
             this.editedItem = store.itequipment;
+            store.fetchITEquipment()
           });
         });
     },
@@ -908,29 +919,27 @@ export default {
         console.log("save=", editedItemCopy);
       }
     },
-    savehistory(id) {
-      console.log("ID NAKO >> ", id._id);
+    savehistory() {
+      console.log("ID NAKO >> ", this.selectedID);
       const store = useITEquipmentInfo();
 
       const formData = new FormData();
       formData.append(
         "MaintenanceType",
-        this.editedItem.MaintenanceDtls.MaintenanceType
+        this.MaintDtl.MaintenanceType
       );
       formData.append(
         "MaintenanceDate",
-        this.editedItem.MaintenanceDtls.MaintenanceDate
+        this.MaintDtl.MaintenanceDate
       );
-      formData.append("file", this.editedItem.MaintenanceDtls.MaintenanceImage);
+      formData.append("file", this.MaintDtl.MaintenanceImage);
       formData.append("MaintenanceImage", "");
       formData.append(
         "MaintenanceDesc",
-        this.editedItem.MaintenanceDtls.MaintenanceDesc
+        this.MaintDtl.MaintenanceDesc
       );
-      store.UploadImage(id._id, formData).then((res) => {
-        store.GetITEquipment(id._id).then((res) => {
-          this.editedItem = store.itequipment;
-        });
+      store.UploadImage(this.selectedID, formData).then((res) => {
+        store.GetITEquipmentmaintenanceDetails(this.selectedID)
         store.fetchITEquipment();
       });
     },

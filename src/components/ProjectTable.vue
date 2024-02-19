@@ -423,7 +423,7 @@
             <div class="col">
               <q-input
                 filled
-                v-model="editedItem.ProjectUpdates.DateUpdate"
+                v-model="ProjDtl.DateUpdate"
                 label="Update Date"
                 dense
                 class="q-pa-sm"
@@ -436,7 +436,7 @@
             <div class="col">
               <q-file
                 filled
-                v-model="editedItem.ProjectUpdates.ImageUpdate"
+                v-model="ProjDtl.ImageUpdate"
                 hint="Update Proof"
                 use-chips
                 dense
@@ -449,7 +449,7 @@
             <div class="col">
               <q-input
                 filled
-                v-model="editedItem.ProjectUpdates.UpdateDescription"
+                v-model="ProjDtl.UpdateDescription"
                 label="Update Description"
                 dense
                 class="q-pa-sm"
@@ -466,7 +466,7 @@
             color="green-10"
             size="md"
             v-close-popup
-            @click="savehistory(editedItem)"
+            @click="savehistory()"
           />
         </q-card-actions>
       </q-card>
@@ -556,6 +556,7 @@ import * as XLSX from "xlsx";
 export default {
   data() {
     return {
+      selectedID: ref(""),
       DeletedItem: "",
       DeleteId: "",
       ProjectDelete: false,
@@ -585,20 +586,31 @@ export default {
         TargetAccomplished: "",
         DateAccomplished: "",
         ProjectInCharge: "",
+        IsDeleted: false,
         ProjectUpdates: {
           0: {
             DateUpdate: "",
             ImageUpdate: "",
             UpdateDescription: "",
+            IsDeleted: false,
           },
         },
       },
+      ProjDtl: [
+        {
+          DateUpdate: "",
+            ImageUpdate: "",
+            UpdateDescription: "",
+            IsDeleted: false,
+        },
+      ],
       defaultItem: {
         id: null,
         ProjectName: "",
         Location: "",
         ReferenceNo: "",
         TotalProjectCost: "",
+        IsDeleted: false,
         DateStarted: "",
         TargetAccomplished: "",
         DateAccomplished: null,
@@ -747,12 +759,13 @@ export default {
     editItem(item) {
       this.updateproject = true;
       this.exitBtn = false;
+      this.selectedID = item._id;
 
       const store = useStoreProjectInfo();
 
-      store.GetProject(item._id).then((res) => {
+      store.GetProject(this.selectedID).then((res) => {
         this.editedItem = store.project;
-        store.fetchProject();
+        // store.fetchProject();
 
         // VIEWING OF DATES WITH TRAPPING IF EMPTY
         const DateStarted = new Date(item.DateStarted);
@@ -779,11 +792,14 @@ export default {
           this.editedItem.DateAccomplished = this.formatDate(DateAccomplished);
         }
       });
+
+      store.GetProjectUpdateDetails(this.selectedID);
       this.dialogVisible = true;
     },
     viewItem(item) {
       this.UpdateProjectDialog = true;
       const store = useStoreProjectInfo();
+
 
       store
         .GetProject(item._id, item.ProjectUpdates.ImageUpdate)
@@ -807,18 +823,19 @@ export default {
       this.ProjectDelete = true;
     },
 
-    // deleteItemConfirm() {
-    //   const editedItemCopy = { ...this.editedItem };
-    //   console.log("Delete Item ID => ", this.DeleteId);
-    //   const store = useStoreProjectInfo();
-    //   editedItemCopy.isDeleted = true;
+    deleteItemConfirm() {
+      const editedItemCopy = { ...this.editedItem };
+      console.log("Delete Item ID => ", this.DeleteId);
+      const store = useStoreProjectInfo();
+      editedItemCopy.IsDeleted = true;
 
-    //   store.DeleteProject(this.DeleteId, this.DeletedItem).then((res) => {
-    //     store.fetchProject();
-    //   });
-    // },
+      store.DeleteProject(this.DeleteId, this.DeletedItem).then((res) => {
+        store.fetchProject();
+      });
+    },
 
     deleteUpdate(updateid) {
+      //console.log(`fetched Update ID`+ updateid)
       this.DeleteHistoryId = updateid;
       this.ProjectDeleteHistory = true;
       // console.log("editeditem=", this.editedItem);
@@ -844,11 +861,12 @@ export default {
       console.log("Contract ID =>", this.DeleteHistoryId);
       const store = useStoreProjectInfo();
       store
-        .DeleteProject(this.selectedID, this.DeleteHistoryId._id)
+        .DeleteUpdate(this.selectedID, this.DeleteHistoryId)
         .then((req) => {
           store.fetchProject();
-          store.GetProject(this.selectedID).then((res) => {
-            this.editedItem = store.project;
+          store.GetProjectUpdateDetails(this.selectedID).then((res) => {
+            // this.editedItem = store.project;
+            // store.fetchProject();
           });
         });
     },
@@ -900,21 +918,22 @@ export default {
         console.log("save=", editedItemCopy);
       }
     },
-    savehistory(id) {
-      console.log("ID NAKO >> ", id._id);
+    savehistory() {
+      console.log("ID NAKO >> ", this.selectedID);
       const store = useStoreProjectInfo();
       const formData = new FormData();
-      formData.append("DateUpdate", this.editedItem.ProjectUpdates.DateUpdate);
-      formData.append("file", this.editedItem.ProjectUpdates.ImageUpdate);
+      formData.append("DateUpdate", this.ProjDtl.DateUpdate);
+      formData.append("file", this.ProjDtl.ImageUpdate);
       formData.append("ImageUpdate", "");
       formData.append(
         "UpdateDescription",
-        this.editedItem.ProjectUpdates.UpdateDescription
+        this.ProjDtl.UpdateDescription
       );
       console.log("kkkk = ", this.editedItem);
-      store.UploadImage(id._id, formData).then((res) => {
-        store.GetProject(id._id).then((res) => {
-          this.editedItem = store.project;
+      store.UploadImage(this.selectedID, formData).then((res) => {
+        store.GetProjectUpdateDetails(this.selectedID).then((res) => {
+          // this.editedItem = store.project;
+          store.fetchProject();
         });
       });
     },

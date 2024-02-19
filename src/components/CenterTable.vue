@@ -41,6 +41,7 @@
             dense
             debounce="300"
             v-model="filter"
+            :filter="filter"
             style="margin-bottom: 20px"
             placeholder="Search"
           >
@@ -89,7 +90,7 @@
         <template v-slot:body-cell-status="{ row }">
           <q-td
             ><q-chip
-           style="height: auto;"
+              style="height: auto"
               :class="
                 getStatusClass(
                   row.employmentDtl[0] ? row.employmentDtl[0].DteEnded : null
@@ -103,7 +104,6 @@
               }}
               <br />
               {{ row.employmentDtl[0] ? row.employmentDtl[0].DteEnded : null }}
-
             </q-chip></q-td
           >
         </template>
@@ -924,7 +924,7 @@
             />
           </div>
           <div class="col-3">
-            <q-btn label="SUBMIT" style="color: green" class="q-ml-md"/>
+            <q-btn label="RECEIVE" style="color: green" class="q-ml-md" />
           </div>
         </div>
       </q-card>
@@ -1211,6 +1211,10 @@ export default {
     filteredEmployees() {
       const searchTerm = this.filter.toLowerCase();
       return this.store.personnels.filter((employee) => {
+        const employmentDtl = employee.employmentDtl[0] || {};
+        const statusText = this.getStatusClass2(
+          employmentDtl.DteEnded
+        ).status.toLowerCase();
         const lastName = employee.lastName
           ? employee.lastName.toLowerCase()
           : "";
@@ -1220,7 +1224,6 @@ export default {
         const middleName = employee.middleName
           ? employee.middleName.toLowerCase()
           : "";
-        const employmentDtl = employee.employmentDtl[0] || {};
 
         const dteStarted = employmentDtl.DteStarted
           ? employmentDtl.DteStarted.toLowerCase()
@@ -1254,7 +1257,8 @@ export default {
           designation.includes(searchTerm) ||
           charges.includes(searchTerm) ||
           Drate.includes(searchTerm) ||
-          EmpStatus.includes(searchTerm)
+          EmpStatus.includes(searchTerm) ||
+          statusText.includes(searchTerm)
         );
       });
     },

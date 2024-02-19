@@ -278,7 +278,7 @@
       <div class="col-12 col-sm-6 col-md-3 col-lg-3">
         <q-card class="my-card" bordered>
           <q-card-section>
-            <status-chart :chart-data="StatusDatas()" class="pie" />
+            <chart-two :chart-data="StatusDatas()"/>
           </q-card-section>
         </q-card>
       </div>
@@ -396,8 +396,10 @@
 </template>
 
 <script>
+
+import ChartTwo from "../components/ChartTwo.vue";
 import PieChart from "../components/PieChart.vue";
-import StatusChart from "../components/StatusChart.vue";
+// import StatusChart from "../components/StatusChart.vue";
 import { defineComponent } from "vue";
 import CenterTable from "./CenterTable.vue";
 import MachineTable from "./MachineTable.vue";
@@ -411,12 +413,13 @@ import { useStoreProjectInfo } from "../stores/ProjectStore";
 export default defineComponent({
   name: "DashboardView",
   components: {
+    ChartTwo,
     CenterTable,
     ItTable,
     ProjectTable,
     MachineTable,
     PieChart,
-    StatusChart,
+    // StatusChart,
   },
   data() {
     return {
@@ -494,34 +497,24 @@ export default defineComponent({
     }, 2000);
   },
   methods: {
-    StatusDatas(value) {
-      if(value == true){
+    StatusDatas() {
+
         const regular = this.store.regularCount;
       const casual = this.store.casualCount;
       const program = this.store.programCount;
       const project = this.store.projectCount;
       const chartDatas = {
-        labels: ["Regular", "Casual", "Program-Based", "Project-Based"],
-        datasets: [
-          {
+        // labels: ["Regular", "Casual", "Program-Based", "Project-Based"],
+
             data: [regular, casual, program, project],
-            backgroundColor: ["#00cc00", "#FFB6B3", "#00cc66", "#FFB6B3"],
-          },
-        ],
+
+
+
       };
       return chartDatas;
-      }else{
-        const chartDatas = {
-        labels: ["Regular", "Casual", "Program-Based", "Project-Based"],
-        datasets: [
-          {
-            data: [1, 1, 1, 1],
-            backgroundColor: ["#00cc00", "#FFB6B3", "#00cc66", "#FFB6B3"],
-          },
-        ],
-      };
-      return chartDatas;
-      }
+
+
+
 
 
 

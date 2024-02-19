@@ -23,7 +23,7 @@ export const useStoreProjectInfo = defineStore("projectinfo", {
         }, 0);
 
         console.log("Total Project Cost", this.projectCost);
-        // console.log("res=", this.projects);
+         console.log("res=", this.projects);
         // console.log("count =>", this.projectsCount);
       } catch (error) {
         console.log(`Error fetching tasks: ${error}`);
@@ -42,10 +42,10 @@ export const useStoreProjectInfo = defineStore("projectinfo", {
       }
     },
 
-    async DeleteProject(id) {
+    async DeleteProject(id, payload) {
       try {
-        await axios.delete(`http://10.0.1.23:5000/api/Projects/` + id);
-        this.projects = this.projects.filter((e) => e.id !== id);
+        await axios.put(`http://10.0.1.23:5000/api/Projects/` + id + `/remove`, payload);
+        // this.projects = this.projects.filter((e) => e.id !== id);
       } catch (error) {
         console.log(`Unable to Delete ${error}`);
       }
@@ -107,14 +107,26 @@ export const useStoreProjectInfo = defineStore("projectinfo", {
     },
     async DeleteUpdate(id, updateid) {
       try {
-        await axios.delete(
+        await axios.put(
           `http://10.0.1.23:5000/api/Projects/` +
             id +
-            `/projectupdate/` +
+            `/updates/remove/` +
             updateid
         );
       } catch (error) {
         console.log(`Unable to Delete ${error}`);
+      }
+    },
+
+    async GetProjectUpdateDetails(id) {
+      try {
+        const response = await axios.get(
+          `http://10.0.1.23:5000/api/Projects/` + id + `/updates`
+        );
+        this.projecthistory = response.data;
+        console.log("history=>", this.projecthistory)
+      } catch (error) {
+        console.log("Unable to retrieve=", error);
       }
     },
   },

@@ -970,7 +970,7 @@ export default {
         //   //store.GetEquipment(id._id);
         store.GetEquipmentmaintenanceDetails(this.selectedID);
 
-        //   store.fetchEquipment();
+          store.fetchEquipment();
       });
 
       // let res=axios.post(`http://10.0.1.23:5000/api/Equipments/" + ${{id}}+ "/maintenance`, {

@@ -72,12 +72,24 @@ export const useITEquipmentInfo = defineStore("itequipmentinfo", {
           `http://10.0.1.23:5000/api/ITEquipments/` + id
         );
         this.itequipment = response.data;
-        this.itequipmenthistory = Object.values(response.data.MaintenanceDtls);
+        // this.itequipmenthistory = Object.values(response.data.MaintenanceDtls);
         //  console.log("itequipment=",this.itequipmenthistory);
       } catch (error) {
         console.log("Unable to retrieve=", error);
       }
     },
+
+    async GetITEquipmentmaintenanceDetails(id) {
+      try {
+        const response = await axios.get(
+          `http://10.0.1.23:5000/api/ITEquipments/` + id + `/maintenance`
+        );
+        this.itequipmenthistory = response.data;
+      } catch (error) {
+        console.log("Unable to retrieve=", error);
+      }
+    },
+
     async AddITMaintenance(id, payload) {
       try {
         const response = await axios.post(
@@ -94,7 +106,7 @@ export const useITEquipmentInfo = defineStore("itequipmentinfo", {
         await axios.put(
           `http://10.0.1.23:5000/api/ITEquipments/` +
             id +
-            `/maintenance/` +
+            `/maintenance/remove/` +
             maintenanceid
         );
       } catch (error) {
