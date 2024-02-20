@@ -1,7 +1,6 @@
 <template>
   <div>
     <apexchart
-      width="380"
       type="pie"
       :options="options"
       :series="chartData.data"
@@ -28,15 +27,27 @@ export default {
       chart: {
         width: 380,
         type: "pie",
+        align:"center",
       },
-
       labels: ["Regular", "Casual", "Program-Based", "Project-Based"],
       legend: {
         position: "bottom",
       },
+      title: {
+        text: "Status", // Your title text goes here
+        align: "center",
+        margin: 10,
+        offsetX: 0,
+        offsetY: 0,
+        floating: false,
+        style: {
+          fontSize: "12px",
+          color: "#263238",
+        },
+      },
       responsive: [
         {
-          breakpoint: 480,
+          breakpoint: 300,
           options: {
             chart: {
               width: 200,
@@ -49,11 +60,8 @@ export default {
       ],
     });
 
-    const series = ref([44, 55, 41, 17, 15]);
-
     return {
       options,
-      series,
     };
   },
 };

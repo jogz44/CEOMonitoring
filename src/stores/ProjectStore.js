@@ -54,7 +54,7 @@ export const useStoreProjectInfo = defineStore("projectinfo", {
     async UpdateProject(id, payload) {
       try {
         const response = await axios.put(
-          `http://10.0.1.23:5000/api/Projects/` + id,
+          `http://10.0.1.23:5000/api/Projects/` + id + `/update`,
           payload
         );
         const index = this.project.findIndex((e) => e._id === payload._id);

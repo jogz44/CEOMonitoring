@@ -223,5 +223,33 @@ export const useStorePersonnelInfo = defineStore("personnelinfo", {
         console.log(`Error fetching tasks: ${error}`);
       }
     },
+
+    //Employee Receive
+    async AddReceive(id, contractid) {
+      try {
+        // let i = this.ActiveCount;
+      //   this.secondTable.forEach(selectedEmployees => {
+      //     this.secondTable.employmentDtl.forEach((selectedEmployeesContract)=>{
+
+
+
+      //     })
+      //  });
+
+        const response = await axios.post(
+          `http://10.0.1.23:5000/api/Personnels/` +
+            id +
+            `/update/` +
+            contractid,
+          payload
+        );
+        const index = this.personnel.findIndex((e) => e._id === payload._id);
+        if (index !== -1) {
+          this.personnel[index] = response.data;
+        }
+      } catch (error) {
+        console.log(`Cannot Update ${error}`);
+      }
+    },
   },
 });

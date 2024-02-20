@@ -69,6 +69,12 @@
           </q-td>
         </template>
 
+        <template v-slot:body-cell-DteReceived="{ row }">
+          <q-td>
+            {{ row.employmentDtl[0] ? row.employmentDtl[0].DteReceived : null }}
+          </q-td>
+        </template>
+
         <template v-slot:body-cell-de="{ row }">
           <q-td>
             {{ row.employmentDtl[0] ? row.employmentDtl[0].DteEnded : null }}
@@ -80,6 +86,7 @@
             {{ row.employmentDtl[0] ? row.employmentDtl[0].Designation : null }}
           </q-td>
         </template>
+
 
         <template v-slot:body-cell-charges="{ row }">
           <q-td>
@@ -924,7 +931,12 @@
             />
           </div>
           <div class="col-3">
-            <q-btn label="RECEIVE" style="color: green" class="q-ml-md" />
+            <q-btn
+              label="RECEIVE"
+              style="color: green"
+              class="q-ml-md"
+              @click="BatchReceiveEmployees()"
+            />
           </div>
         </div>
       </q-card>
@@ -1200,7 +1212,7 @@ export default {
           Charges: "",
           EmpStatus: "",
           Drate: "",
-          isDeleted: false,
+          IsDeleted: false,
         },
       },
       resumeLink: "",
@@ -1272,6 +1284,25 @@ export default {
     // },
   },
   methods: {
+
+    BatchReceiveEmployees(){
+
+
+      this.secondTable.forEach(SelectedEmployee =>{
+
+        this.secondTable.employmentDtl.forEach(selectedEmployeesContract =>{
+
+          console.log(`result i needed: `+ SelectedEmployee._id +` ------- `+ selectedEmployeesContract._id);
+          // this.store.AddReceive(SelectedEmployee._id,selectedEmployeesContract._id)
+
+        });
+
+      });
+
+
+    },
+
+
     //Received JO - Moving to the second table
     moveSelectedToSecondTable() {
       this.selected.forEach((employee) => {
@@ -1284,6 +1315,7 @@ export default {
         this.secondTable.push(employee);
       });
       this.selected = [];
+      console.log("Second Table =", this.secondTable)
     },
     //Received JO- Moving back items to the first table
     removeSelectedFromSecondTable() {
@@ -1366,24 +1398,18 @@ export default {
         lastName: "",
         firstName: "",
         middleName: "",
-        isDeleted: false,
+        IsDeleted: false,
         resumeLink: "",
       };
       this.dialogVisibles = true;
     },
-    //Add Received Job Order Dialog
-    AddJo() {
-      this.ReceiveJO = true;
-    },
+
     formatDate(value) {
       if (!value) return "";
-
       const date = new Date(value);
-
       const year = date.getFullYear();
       const month = (date.getMonth() + 1).toString().padStart(2, "0");
       const day = date.getDate().toString().padStart(2, "0");
-
       return `${year}-${month}-${day}`;
     },
 
@@ -1494,6 +1520,23 @@ export default {
         resumeLink: "",
       };
       this.closeDialog();
+    },
+    //Add Received Job Order Dialog
+    AddJo() {
+      this.ReceiveJO = true;
+    },
+    ReceiveEmployee() {
+      if (!this.EmpDtl.DteReceived) {
+        // Validate that a date is selected
+        this.$q.notify({
+          color: 'negative',
+          message: 'Please select a date.',
+        });
+        return;
+      }
+      const store = useStorePersonnelInfo();
+      const editedItemCopy = { ...this.editedItem };
+
     },
     save() {
       const store = useStorePersonnelInfo();

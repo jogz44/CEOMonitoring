@@ -5,7 +5,6 @@
 </template>
 
 <script>
-
 import Chart from "chart.js/auto";
 
 export default {
@@ -21,15 +20,13 @@ export default {
     },
   },
   created() {
-
-   if(this.chartData){
-    this.renderChart();
-
-   }
+    if (this.chartData) {
+      this.renderChart();
+    }
   },
   methods: {
     renderChart() {
-      console.log("enter")
+      console.log("enter");
       if (this.chart) {
         this.chart.destroy();
       }
@@ -49,6 +46,19 @@ export default {
               text: "Employment Status",
             },
           },
+          breakpoints: {
+            // Define responsive breakpoints here
+            480: {
+              options: {
+                chart: {
+                  width: 200,
+                },
+                legend: {
+                  position: "bottom",
+                },
+              },
+            },
+          },
         },
       });
     },
@@ -64,10 +74,9 @@ export default {
   },
   watch: {
     chartData: {
-    handler: "renderChart",
-    deep: true,
-  },
-
+      handler: "renderChart",
+      deep: true,
+    },
   },
 };
 </script>

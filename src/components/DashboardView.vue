@@ -264,25 +264,26 @@
     </div>
 
     <!-- chart viewing -->
-    <p class="text-h6 q-pa-xl" style="margin-bottom: -70px; color: green">
-      CEO PROJECTS UPDATES
+    <p class="text-h6 q-pa-xl" style="margin-bottom: -50px; color: green">
+      CEO EMPLOYEES DASHBOARD
     </p>
     <div class="row dashboard">
-      <div class="col-12 col-sm-6 col-md-3 col-lg-3">
+      <div class="col-12 col-sm-6 col-md-6 col-lg-3">
         <q-card class="my-card" bordered>
           <q-card-section>
             <pie-chart :chart-data="ChartDatas()" class="pie" />
           </q-card-section>
         </q-card>
       </div>
-      <div class="col-12 col-sm-6 col-md-3 col-lg-3">
+      <div class="col-12 col-sm-6 col-md-6 col-lg-3">
         <q-card class="my-card" bordered>
           <q-card-section>
-            <chart-two :chart-data="StatusDatas()"/>
+            <chart-two :chart-data="StatusDatas()" />
           </q-card-section>
         </q-card>
       </div>
-      <div class="col-12 col-sm-6 col-md-6 col-lg-6">
+
+      <div class="col-12 col-sm-12 col-md-12 col-lg-6">
         <q-card class="my-card" bordered>
           <q-card-section>
             <q-card>
@@ -380,6 +381,10 @@
       </div>
     </div>
 
+    <p class="text-h6 q-pa-xl"  style="margin-bottom: -50px; color: green; margin-top: -30px;">
+      CEO PROJECT UDPATES
+    </p>
+
     <div v-if="employee">
       <CenterTable />
     </div>
@@ -396,7 +401,6 @@
 </template>
 
 <script>
-
 import ChartTwo from "../components/ChartTwo.vue";
 import PieChart from "../components/PieChart.vue";
 // import StatusChart from "../components/StatusChart.vue";
@@ -493,31 +497,21 @@ export default defineComponent({
   },
   created() {
     setTimeout(() => {
-      this.StatusDatas(true)
+      this.StatusDatas(true);
     }, 2000);
   },
   methods: {
     StatusDatas() {
-
-        const regular = this.store.regularCount;
+      const regular = this.store.regularCount;
       const casual = this.store.casualCount;
       const program = this.store.programCount;
       const project = this.store.projectCount;
       const chartDatas = {
         // labels: ["Regular", "Casual", "Program-Based", "Project-Based"],
 
-            data: [regular, casual, program, project],
-
-
-
+        data: [regular, casual, program, project],
       };
       return chartDatas;
-
-
-
-
-
-
     },
     ChartDatas() {
       const activecount = this.store.ActiveCount;
@@ -533,7 +527,6 @@ export default defineComponent({
       };
       return chartData;
     },
-
 
     CeoEmployee() {
       this.employee = true;
