@@ -87,7 +87,6 @@
           </q-td>
         </template>
 
-
         <template v-slot:body-cell-charges="{ row }">
           <q-td>
             {{ row.employmentDtl[0] ? row.employmentDtl[0].Charges : null }}
@@ -844,7 +843,7 @@
             :filter="filterReceived"
             bordered
             dense
-            :rows="store.ActiveEmployees"
+            :rows="store.ActiveReceivedEmployees"
             :columns="columnsAdd"
             row-key="_id"
             :selected-rows-label="getSelectedString"
@@ -923,7 +922,7 @@
           <div class="col-9">
             <q-input
               filled
-              v-model="EmpDtl.DteReceived"
+              v-model="recieveDate"
               label="Date Received"
               dense
               class="q-ml-md"
@@ -964,7 +963,7 @@ export default {
       selectedSecondTable: [],
       secondTable: [],
       ReceiveJO: false,
-
+      recieveDate: "",
       exitBtn: true,
       dialogVisibles: false,
       // EmpDetails: false,
@@ -1284,24 +1283,56 @@ export default {
     // },
   },
   methods: {
+    BatchReceiveEmployees() {
+      // this.secondTable.forEach(SelectedEmployee =>{
 
-    BatchReceiveEmployees(){
+      //   this.secondTable.employmentDtl.forEach(selectedEmployeesContract =>{
 
+      //     console.log(`result i needed: `+ SelectedEmployee._id +` ------- `+ selectedEmployeesContract._id);
+      //     // this.store.AddReceive(SelectedEmployee._id,selectedEmployeesContract._id)
 
-      this.secondTable.forEach(SelectedEmployee =>{
+      //   });
 
-        this.secondTable.employmentDtl.forEach(selectedEmployeesContract =>{
+      // });
+      const recievestore = useStorePersonnelInfo();
+      let fin = true;
+      for (let i = 0; i < this.secondTable.length; i++) {
+        if (fin) {
+          fin = false;
+          // console.log("main id=",this.secondTable[i].employmentDtl[0]._id)
+          this.secondTable[i].employmentDtl[0].DteReceived = this.recieveDate;
+          console.log("main id=", this.secondTable[i].employmentDtl[0]);
 
-          console.log(`result i needed: `+ SelectedEmployee._id +` ------- `+ selectedEmployeesContract._id);
-          // this.store.AddReceive(SelectedEmployee._id,selectedEmployeesContract._id)
+          recievestore
+            .AddReceive(
+              this.secondTable[i]._id,
+              this.secondTable[i].employmentDtl[0]._id,
+              this.secondTable[i].employmentDtl[0]
+            )
+            .then((fin = true))
+            .then((res) => {
+              recievestore.fetchPersonnel;
+              recievestore.ActiveReceivedEmployees;
 
-        });
-
-      });
-
-
+              this.secondTable = [];
+              this.EmpDtl = [
+                {
+                  DteReceived: "",
+                },
+              ];
+            });
+        } else {
+          if ((i = 0)) {
+            i = 0;
+          } else {
+            i = i - 1;
+          }
+        }
+      }
+      // recievestore.fetchPersonnel().then((res) => {
+      //   recievestore.ActiveReceivedEmployees();
+      // })
     },
-
 
     //Received JO - Moving to the second table
     moveSelectedToSecondTable() {
@@ -1315,7 +1346,7 @@ export default {
         this.secondTable.push(employee);
       });
       this.selected = [];
-      console.log("Second Table =", this.secondTable)
+      console.log("Second Table =", this.secondTable);
     },
     //Received JO- Moving back items to the first table
     removeSelectedFromSecondTable() {
@@ -1529,14 +1560,13 @@ export default {
       if (!this.EmpDtl.DteReceived) {
         // Validate that a date is selected
         this.$q.notify({
-          color: 'negative',
-          message: 'Please select a date.',
+          color: "negative",
+          message: "Please select a date.",
         });
         return;
       }
       const store = useStorePersonnelInfo();
       const editedItemCopy = { ...this.editedItem };
-
     },
     save() {
       const store = useStorePersonnelInfo();
@@ -1610,8 +1640,19 @@ export default {
         store.GetPersonnel(this.selectedID).then((res1) => {
           this.editedItem = store.personnel;
           store.GetPersonnelHistory(this.selectedID);
-          this.EmpDtl = "";
-          store.fetchPersonnel();
+          (this.EmpDtl = [
+            {
+              DteStarted: "",
+              DteEnded: "",
+              DteReceived: "",
+              Designation: "",
+              Charges: "",
+              EmpStatus: "",
+              Drate: "",
+              isDeleted: false,
+            },
+          ]),
+            store.fetchPersonnel();
           //  });
         });
       });

@@ -863,9 +863,9 @@ export default {
         .then((req) => {
           store.fetchEquipment();
           store.GetEquipmentmaintenanceDetails(this.selectedID).then((res) => {
-            this.editedItem = store.equipment
+            this.editedItem = store.equipment;
             // store.GetEquipmentmaintenanceDetails()
-            store.fetchEquipment()
+            store.fetchEquipment();
           });
         });
     },
@@ -969,8 +969,16 @@ export default {
       store.UploadImage(this.selectedID, formData).then((res) => {
         //   //store.GetEquipment(id._id);
         store.GetEquipmentmaintenanceDetails(this.selectedID);
-
-          store.fetchEquipment();
+        store.fetchEquipment();
+        this.MaintDtl = [
+          {
+            MaintenanceType: "",
+            MaintenanceDate: "",
+            MaintenanceImageProof: "",
+            MaintenanceDesc: "",
+            IsDeleted: false,
+          },
+        ];
       });
 
       // let res=axios.post(`http://10.0.1.23:5000/api/Equipments/" + ${{id}}+ "/maintenance`, {

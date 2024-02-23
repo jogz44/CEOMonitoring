@@ -431,6 +431,28 @@
               />
             </div>
           </div>
+          <div class="row">
+            <div class="col">
+              <q-input
+                filled
+                v-model="ProjDtl.UpdatePercent"
+                label="Update Percentage"
+                dense
+                class="q-pa-sm"
+                type="number"
+              />
+            </div>
+            <div class="col">
+              <q-input
+                filled
+                v-model="ProjDtl.UpdateSpent"
+                label="Update Expenditure"
+                dense
+                class="q-pa-sm"
+                type="number"
+              />
+            </div>
+          </div>
           <!-- image for update/edit -->
           <div class="row">
             <div class="col">
@@ -599,9 +621,9 @@ export default {
       ProjDtl: [
         {
           DateUpdate: "",
-            ImageUpdate: "",
-            UpdateDescription: "",
-            IsDeleted: false,
+          ImageUpdate: "",
+          UpdateDescription: "",
+          IsDeleted: false,
         },
       ],
       defaultItem: {
@@ -757,13 +779,14 @@ export default {
       return `${year}-${month}-${day}`;
     },
     editItem(item) {
+      this.selectedID = item._id;
       this.updateproject = true;
       this.exitBtn = false;
-      this.selectedID = item._id;
+
 
       const store = useStoreProjectInfo();
 
-      store.GetProject(this.selectedID).then((res) => {
+      store.GetProject(item._id).then((res) => {
         this.editedItem = store.project;
         // store.fetchProject();
 
@@ -799,7 +822,6 @@ export default {
     viewItem(item) {
       this.UpdateProjectDialog = true;
       const store = useStoreProjectInfo();
-
 
       store
         .GetProject(item._id, item.ProjectUpdates.ImageUpdate)
@@ -860,15 +882,13 @@ export default {
     deleteProjectHistory() {
       console.log("Contract ID =>", this.DeleteHistoryId);
       const store = useStoreProjectInfo();
-      store
-        .DeleteUpdate(this.selectedID, this.DeleteHistoryId)
-        .then((req) => {
-          store.fetchProject();
-          store.GetProjectUpdateDetails(this.selectedID).then((res) => {
-            // this.editedItem = store.project;
-            // store.fetchProject();
-          });
+      store.DeleteUpdate(this.selectedID, this.DeleteHistoryId).then((req) => {
+        store.fetchProject();
+        store.GetProjectUpdateDetails(this.selectedID).then((res) => {
+          // this.editedItem = store.project;
+          // store.fetchProject();
         });
+      });
     },
 
     viewUpdate(row) {
@@ -925,15 +945,20 @@ export default {
       formData.append("DateUpdate", this.ProjDtl.DateUpdate);
       formData.append("file", this.ProjDtl.ImageUpdate);
       formData.append("ImageUpdate", "");
-      formData.append(
-        "UpdateDescription",
-        this.ProjDtl.UpdateDescription
-      );
+      formData.append("UpdateDescription", this.ProjDtl.UpdateDescription);
       console.log("kkkk = ", this.editedItem);
       store.UploadImage(this.selectedID, formData).then((res) => {
         store.GetProjectUpdateDetails(this.selectedID).then((res) => {
           // this.editedItem = store.project;
           store.fetchProject();
+          this.ProjDtl = [
+            {
+              DateUpdate: "",
+              ImageUpdate: "",
+              UpdateDescription: "",
+              IsDeleted: false,
+            },
+          ];
         });
       });
     },

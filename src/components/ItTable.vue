@@ -786,6 +786,7 @@ export default {
         console.log("sdasda=", this.editedItem);
       });
       console.log("thisthis=", this.editedItem.MaintenanceDtls);
+      store.GetITEquipmentmaintenanceDetails(item._id)
       this.dialogVisible = true;
     },
     viewItem(item) {
@@ -941,6 +942,15 @@ export default {
       store.UploadImage(this.selectedID, formData).then((res) => {
         store.GetITEquipmentmaintenanceDetails(this.selectedID)
         store.fetchITEquipment();
+        this.MaintDtl = [
+          {
+            MaintenanceType: "",
+            MaintenanceDate: "",
+            MaintenanceImageProof: "",
+            MaintenanceDesc: "",
+            IsDeleted: false,
+          },
+        ];
       });
     },
     // savehistory(id) {

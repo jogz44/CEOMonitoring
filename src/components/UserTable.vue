@@ -647,7 +647,7 @@ export default {
       //   store.fetchUser();
       // });
     },
-    
+
     deleteItemConfirm() {
       const store = useStoreUserInfo();
       store.DeleteUser(this.DeleteId).then((res) => {

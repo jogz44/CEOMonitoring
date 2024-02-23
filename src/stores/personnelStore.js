@@ -42,6 +42,28 @@ export const useStorePersonnelInfo = defineStore("personnelinfo", {
 
       return activeEmployees;
     },
+
+    ActiveReceivedEmployees() {
+      const activeRecEmployees = this.personnels.filter((employee) => {
+        if (
+          employee.employmentDtl[0] &&
+          employee.employmentDtl[0].DteEnded &&
+          (employee.employmentDtl[0].DteReceived === null ||
+            employee.employmentDtl[0].DteReceived === undefined)
+        ) {
+          return new Date(employee.employmentDtl[0].DteEnded) >= new Date();
+        } else {
+          return false; // If employment details are not available, consider the employee as active
+        }
+      });
+
+      console.log(
+        "Active Employees without Date Received:",
+        activeRecEmployees
+      );
+
+      return activeRecEmployees;
+    },
   },
 
   actions: {
@@ -225,28 +247,31 @@ export const useStorePersonnelInfo = defineStore("personnelinfo", {
     },
 
     //Employee Receive
-    async AddReceive(id, contractid) {
+    async AddReceive(id, contractid, payload) {
       try {
         // let i = this.ActiveCount;
-      //   this.secondTable.forEach(selectedEmployees => {
-      //     this.secondTable.employmentDtl.forEach((selectedEmployeesContract)=>{
+        //   this.secondTable.forEach(selectedEmployees => {
+        //     this.secondTable.employmentDtl.forEach((selectedEmployeesContract)=>{
 
-
-
-      //     })
-      //  });
-
-        const response = await axios.post(
+        //     })
+        //  });
+        //     console.log("address=",`http://10.0.1.23:5000/api/Personnels/` +
+        //     id +
+        //     `/update/` +
+        //     contractid,
+        //   payload
+        // )
+        const response = await axios.put(
           `http://10.0.1.23:5000/api/Personnels/` +
             id +
             `/update/` +
             contractid,
           payload
         );
-        const index = this.personnel.findIndex((e) => e._id === payload._id);
-        if (index !== -1) {
-          this.personnel[index] = response.data;
-        }
+        // const index = this.personnel.findIndex((e) => e._id === payload._id);
+        // if (index !== -1) {
+        //   this.personnel[index] = response.data;
+        // }
       } catch (error) {
         console.log(`Cannot Update ${error}`);
       }
