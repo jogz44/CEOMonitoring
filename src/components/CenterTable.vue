@@ -291,17 +291,6 @@
             :disable="employmenthistory === !isEditMode"
           />
         </q-card-actions>
-        <!-- <q-card class="q-px-lg q-pt-sm q-mb-md">
-          <q-btn
-            style="width: 100%"
-            class="btn-fixed-width"
-            color="green-10"
-            label="VIEW EMPLOYMENT HISTORY"
-            icon="lightbulb_outline"
-            @click="EmpHistoryDialog = true"
-            v-show="employmenthistory"
-          />
-        </q-card> -->
       </q-card>
 
       <!-- EMPLOYMENT DETAIvisibilieditItemLS -->
@@ -454,263 +443,6 @@
       </q-card>
     </q-dialog>
 
-    <!-- <q-dialog v-model="dialogVisible" persistent>
-      <div class="row">
-        <div class="col">
-          <q-card style="height: auto">
-            <q-card-section>
-              <div class="row">
-                <div class="col-11 text-h6">EMPLOYEE DETAILS</div>
-                <div class="col-1">
-                  <q-btn
-                    flat
-                    round
-                    color="orange"
-                    icon="close"
-                    v-close-popup
-                    @click="this.isEditMode = false"
-                  />
-                </div>
-              </div>
-            </q-card-section>
-
-            <q-separator />
-
-            <q-card-section style="max-height: 50vh" class="scroll">
-              <q-form @submit.prevent.stop="onSubmit" ref="formRef">
-                <div class="row">
-                  <div class="col-12">
-                    <q-input
-                      filled
-                      v-model="editedItem.lastName"
-                      label="Lastname"
-                      dense
-                      class="q-pa-md"
-                      :disable="employmenthistory === !isEditMode"
-                      ref="lastNameRef"
-                      lazy-rules
-                      :rules="nameRules"
-                    />
-                  </div>
-                  <div class="col-12">
-                    <q-input
-                      filled
-                      v-model="editedItem.firstName"
-                      label="Firstname"
-                      class="q-pa-md"
-                      dense
-                      :disable="employmenthistory === !isEditMode"
-                      ref="firstNameRef"
-                      lazy-rules
-                      :rules="nameRules"
-                    />
-                  </div>
-                  <div class="col-12">
-                    <q-input
-                      filled
-                      v-model="editedItem.middleName"
-                      label="Middlename"
-                      class="q-pa-md"
-                      dense
-                      :disable="employmenthistory === !isEditMode"
-                    />
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="col">
-                    <q-file
-                      dense
-                      filled
-                      accept=".pdf"
-                      v-model="editedItem.resumeLink"
-                      label="Resume"
-                      class="q-ma-sm"
-                      icon="file"
-                      lazy-rules
-                    >
-                      <template v-slot:prepend>
-                        <q-icon name="attach_file" />
-                      </template>
-                    </q-file>
-                  </div>
-                </div>
-
-                <div class="row"></div>
-              </q-form>
-            </q-card-section>
-
-            <q-card-actions align="right">
-              <q-btn
-                flat
-                round
-                color="orange"
-                icon="edit"
-                @click="toggleEditMode()"
-                v-show="employmenthistory"
-              />
-              <q-btn
-                type="submit"
-                label="Save"
-                color="green"
-                v-close-popup
-                @click="save"
-                class="q-mr-md"
-                :disable="employmenthistory === !isEditMode"
-              />
-            </q-card-actions>
-            <q-card class="q-px-lg q-pt-sm q-mb-md">
-              <q-btn
-                style="width: 100%"
-                class="btn-fixed-width"
-                color="green-10"
-                label="VIEW EMPLOYMENT HISTORY"
-                icon="lightbulb_outline"
-                @click="EmpHistoryDialog = true"
-                v-show="employmenthistory"
-              />
-            </q-card>
-          </q-card>
-        </div>
-        <div class="col">
-          <q-card v-show="employmenthistory">
-            <q-card-section style="max-height: 50vh" class="scroll">
-              <div class="row">
-                <div class="col-11 text-h6">EMPLOYMENT DETAILS</div>
-                <div class="col-1">
-                  <q-btn flat round color="orange" icon="close" v-close-popup />
-                </div>
-              </div>
-            </q-card-section>
-
-            <q-table
-              class="my-sticky-header-table"
-              flat
-              bordered
-              title=""
-              wrap-cells=""
-              dense
-              :rows="store.EmpDtls"
-              :columns="history"
-              :filter="filters"
-              row-key="id"
-            >
-              <template v-slot:top-right>
-                <q-input
-                  dense
-                  debounce="300"
-                  v-model="filters"
-                  placeholder="Search"
-                  color="green-10"
-                >
-                  <template v-slot:append>
-                    <q-icon name="search" />
-                  </template>
-                </q-input>
-              </template>
-              <template v-slot:top-left>
-                <q-btn
-                  label="Create Appointment"
-                  size="x-small"
-                  icon="add"
-                  @click="secondDialog = true"
-                  color="green-10"
-                ></q-btn>
-              </template>
-
-              <template v-slot:body-cell-DteStarted="{ row }">
-                <q-td>
-                  {{ row.DteStarted }}
-                </q-td>
-              </template>
-
-              <template v-slot:body-cell-de="{ row }">
-                <q-td>
-                  {{ row.DteEnded }}
-                </q-td>
-              </template>
-
-              <template v-slot:body-cell-DteReceived="{ row }">
-                <q-td>
-                  {{ row.DteReceived }}
-                </q-td>
-              </template>
-
-              <template v-slot:body-cell-designation="{ row }">
-                <q-td>
-                  {{ row.Designation }}
-                </q-td>
-              </template>
-
-              <template v-slot:body-cell-charges="{ row }">
-                <q-td>
-                  {{ row.Charges }}
-                </q-td>
-              </template>
-
-              <template v-slot:body-cell-status="{ row }">
-                <q-td
-                  ><q-chip
-                    :class="getStatusClass(row.employmentDtl[0].DteEnded)"
-                  >
-                    {{ getStatusClass2(row.employmentDtl[0].DteEnded).status }}
-                  </q-chip></q-td
-                >
-              </template>
-              <template v-slot:body-cell-actions="{ row }">
-                <div class="actionsbtn">
-                  <q-btn
-                    icon="delete"
-                    flat
-                    round
-                    color="deep-orange"
-                    @click="deleteEmployment(row)"
-                  >
-                  </q-btn>
-                </div>
-              </template>
-            </q-table>
-            <q-dialog
-              v-model="EmployeeDeleteHistory"
-              persistent
-              transition-show="scale"
-              transition-hide="scale"
-            >
-              <q-card class="bg-red text-white" style="width: 400px">
-                <q-card-section>
-                  <div class="text-h6">Delete Employment History</div>
-                </q-card-section>
-
-                <q-card-section class="q-pt-none">
-                  Do you want to delete this Employee Employment History?
-                </q-card-section>
-
-                <q-card-actions align="right" class="bg-white text-teal">
-                  <q-btn
-                    flat
-                    label="Cancel"
-                    size="small"
-                    color="orange"
-                    v-close-popup
-                    autofocus
-                  />
-                  <q-btn
-                    label="OK"
-                    flat
-                    color="green-5"
-                    size="small"
-                    v-close-popup
-                    @click="deleteEmploymentHistory()"
-                  />
-                </q-card-actions>
-              </q-card>
-            </q-dialog>
-
-            <q-separator />
-            <div style="position: absolute; bottom: 5px; left: 10%"></div>
-          </q-card>
-        </div>
-      </div>
-    </q-dialog> -->
 
     <q-dialog
       v-model="secondDialog"
@@ -925,6 +657,7 @@
               v-model="recieveDate"
               label="Date Received"
               dense
+              lazy-rules="Please input"
               class="q-ml-md"
               type="date"
             />
@@ -935,6 +668,7 @@
               style="color: green"
               class="q-ml-md"
               @click="BatchReceiveEmployees()"
+              :disable="!recieveDate"
             />
           </div>
         </div>
@@ -1311,7 +1045,7 @@ export default {
             )
             .then((fin = true))
             .then((res) => {
-              recievestore.fetchPersonnel;
+              recievestore.fetchPersonnel();
               recievestore.ActiveReceivedEmployees;
 
               this.secondTable = [];
@@ -1321,6 +1055,11 @@ export default {
                 },
               ];
             });
+            // this.EmpDtl.DteReceived=""
+            window.alert('Selected items have been received.');
+            this.ReceiveJO = false;
+            this.filter=""
+
         } else {
           if ((i = 0)) {
             i = 0;
@@ -1329,6 +1068,7 @@ export default {
           }
         }
       }
+
       // recievestore.fetchPersonnel().then((res) => {
       //   recievestore.ActiveReceivedEmployees();
       // })
@@ -1572,16 +1312,6 @@ export default {
       const store = useStorePersonnelInfo();
       const editedItemCopy = { ...this.editedItem };
       console.log("edited item =>", editedItemCopy);
-      if (
-        this.editedItem.lastName.trim().length === 0 ||
-        this.editedItem.firstName.trim().length === 0
-      ) {
-        this.$q.notify({
-          color: "negative",
-          message: "Please fill in all required fields.",
-        });
-        return; // Do not proceed with saving
-      }
 
       if (editedItemCopy._id) {
         store
@@ -1720,6 +1450,7 @@ export default {
     },
   },
   setup() {
+
     const selected = ref([]);
     const options = ref(stringOptions);
     const store = useStorePersonnelInfo();

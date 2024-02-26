@@ -1,49 +1,87 @@
 <template>
-  <q-layout>
-    <q-page-container>
-      <q-page>
-        <q-page-container>
-          <pie-chart :chart-data="chartData" />
-        </q-page-container>
-      </q-page>
-    </q-page-container>
-  </q-layout>
+  <div class="q-pa-md" style="max-width: 300px">
+    <form @submit.prevent.stop="onSubmit" @reset.prevent.stop="onReset" class="q-gutter-md">
+      <q-input
+        ref="nameRef"
+        filled
+        v-model="name"
+        label="Your name *"
+        hint="Name and surname"
+        lazy-rules
+        :rules="nameRules"
+      />
+
+      <q-input
+        ref="ageRef"
+        filled
+        type="number"
+        v-model="age"
+        label="Your age *"
+        lazy-rules
+        :rules="ageRules"
+      />
+
+      <q-toggle v-model="accept" label="I accept the license and terms" />
+
+      <div>
+        <q-btn label="Submit" type="submit" color="primary" />
+        <q-btn label="Reset" type="reset" color="primary" flat class="q-ml-sm" />
+      </div>
+    </form>
+  </div>
 </template>
 
 <script>
-import { ref } from "vue";
-import PieChart from "../components/PieChart.vue";
-import { useStorePersonnelInfo } from "src/stores/personnelStore";
-
-const stringOptions = ["Active", "End of Contract"];
+import { ref } from 'vue'
+import { useQuasar } from 'quasar'
 
 export default {
-  components: {
-    PieChart,
-  },
   data() {
     return {
-      chartData: {
-        labels: ["Active", "End of Contract"],
-        datasets: [
-          {
-            data: [10, 30],
-            backgroundColor: ["#FF6384", "#36A2EB"],
-          },
-        ],
-      },
+      $q : useQuasar(),
+      name: null,
+      nameRef: null,
+      nameRules: [
+        val => (val && val.length > 0) || 'Please type something'
+      ],
+
+      age: null,
+      ageRef: null,
+      ageRules: [
+        val => (val !== null && val !== '') || 'Please type your age',
+        val => (val > 0 && val < 100) || 'Please type a real age'
+      ],
+
+      accept: false,
     };
   },
-  setup(){
-    const options = ref(stringOptions);
-    const store = useStorePersonnelInfo();
-    store.fetchPersonnel();
-    return{
-      store,
-      stringOptions,
-      options,
-      model: ref(null)
-    }
-  }
+  methods: {
+    onSubmit() {
+      this.$refs.nameRef.validate();
+      this.$refs.ageRef.validate();
+
+      if (this.$refs.nameRef.hasError || this.$refs.ageRef.hasError) {
+        // form has error
+      } else if (!this.accept) {
+        this.$q.notify({
+          color: 'negative',
+          message: 'You need to accept the license and terms first',
+        });
+      } else {
+        this.$q.notify({
+          icon: 'done',
+          color: 'positive',
+          message: 'Submitted',
+        });
+      }
+    },
+    onReset() {
+      this.name = null;
+      this.age = null;
+
+      this.$refs.nameRef.resetValidation();
+      this.$refs.ageRef.resetValidation();
+    },
+  },
 };
 </script>
