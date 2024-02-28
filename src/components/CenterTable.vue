@@ -209,7 +209,7 @@
         <q-separator />
 
         <q-card-section style="max-height: 50vh" class="scroll">
-          <q-form @submit.prevent.stop="onSubmit" ref="formRef">
+          <q-form ref="formRef">
             <div class="row">
               <div class="col-12">
                 <q-input
@@ -442,7 +442,6 @@
         </q-dialog>
       </q-card>
     </q-dialog>
-
 
     <q-dialog
       v-model="secondDialog"
@@ -712,7 +711,7 @@ export default {
       ],
       isFormValid: false,
       $q,
-      nameRules: [(val) => (val && val.length > 0) || "Please type something"],
+      // nameRules: [(val) => (val && val.length > 0) || "Please type something"],
 
       EmployeeDeleteHistory: false,
       selectedID: ref(""),
@@ -1055,11 +1054,10 @@ export default {
                 },
               ];
             });
-            // this.EmpDtl.DteReceived=""
-            window.alert('Selected items have been received.');
-            this.ReceiveJO = false;
-            this.filter=""
-
+          // this.EmpDtl.DteReceived=""
+          window.alert("Selected items have been received.");
+          this.ReceiveJO = false;
+          this.filter = "";
         } else {
           if ((i = 0)) {
             i = 0;
@@ -1313,11 +1311,36 @@ export default {
       const editedItemCopy = { ...this.editedItem };
       console.log("edited item =>", editedItemCopy);
 
-      if (editedItemCopy._id) {
-        store
-          .UpdatePersonnel(editedItemCopy._id, editedItemCopy)
-          .then((res) => {
+      // if (this.lastNameRef.value) {
+      //   this.lastNameRef.value.validate();
+
+        if (editedItemCopy._id) {
+          store
+            .UpdatePersonnel(editedItemCopy._id, editedItemCopy)
+            .then((res) => {
+              this.editedItem = {
+                lastName: "",
+                firstName: "",
+                middleName: "",
+
+                // employmentDtl: {
+                //   DteStarted: "",
+                //   DteEnded: "",
+                //   Designation: "",
+                //   Charges: "",
+                // },
+                resumeLink: "",
+              };
+              store.fetchPersonnel().then((res) => {
+                this.closeDialog();
+                this.isEditMode = false;
+              });
+            });
+          console.log("Item Updated: ", editedItemCopy);
+        } else {
+          store.AddPersonnel(editedItemCopy).then((res) => {
             this.editedItem = {
+              id: null,
               lastName: "",
               firstName: "",
               middleName: "",
@@ -1332,33 +1355,15 @@ export default {
             };
             store.fetchPersonnel().then((res) => {
               this.closeDialog();
-              this.isEditMode = false;
             });
           });
-        console.log("Item Updated: ", editedItemCopy);
-      } else {
-        store.AddPersonnel(editedItemCopy).then((res) => {
-          this.editedItem = {
-            id: null,
-            lastName: "",
-            firstName: "",
-            middleName: "",
 
-            // employmentDtl: {
-            //   DteStarted: "",
-            //   DteEnded: "",
-            //   Designation: "",
-            //   Charges: "",
-            // },
-            resumeLink: "",
-          };
-          store.fetchPersonnel().then((res) => {
-            this.closeDialog();
-          });
-        });
-
-        console.log("save=", editedItemCopy);
-      }
+          console.log("save=", editedItemCopy);
+        }
+      // } else {
+      //   // Inputs are empty, do nothing or display an error message
+      //   console.log("Error: Please fill in all required fields.");
+      // }
     },
     savehistory() {
       const store = useStorePersonnelInfo();
@@ -1450,6 +1455,8 @@ export default {
     },
   },
   setup() {
+    const lastNameRef = ref(null);
+    const lastName = ref(null);
 
     const selected = ref([]);
     const options = ref(stringOptions);
@@ -1508,6 +1515,20 @@ export default {
       //   lastNameRef.value.validate();
       //   firstNameRef.value.validate();
       // },
+
+      // editedItem = {
+      //   lastName: "",
+      //   firstName: "",
+      //   middleName: "",
+      //   isDeleted: false,
+      //   resumeLink: "",
+      // },
+
+      lastName: ref(""),
+      lastNameRef,
+
+      nameRules: [(val) => (val && val.length > 0) || "Please type something"],
+
       remove,
       update,
       create,

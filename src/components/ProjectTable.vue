@@ -816,7 +816,7 @@ export default {
         }
       });
 
-      store.GetProjectUpdateDetails(this.selectedID);
+      store.GetProjectUpdateDetails(item._id);
       this.dialogVisible = true;
     },
     viewItem(item) {

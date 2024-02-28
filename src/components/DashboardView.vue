@@ -150,7 +150,7 @@
               <div class="col-2">
                 <b>
                   <span style="font-size: 18px; color: #057407">{{
-                    store.programCount
+                    store.ActiveCount
                   }}</span>
                 </b>
               </div>
@@ -270,8 +270,11 @@
     <div class="row dashboard">
       <div class="col-12 col-sm-6 col-md-6 col-lg-3">
         <q-card class="my-card" bordered>
-          <q-card-section>
+          <!-- <q-card-section>
             <pie-chart :chart-data="ChartDatas()" class="pie" />
+          </q-card-section> -->
+          <q-card-section>
+            <employment-status-chart  :chart-data="EmpStatusDatas()" />
           </q-card-section>
         </q-card>
       </div>
@@ -280,6 +283,7 @@
           <q-card-section>
             <chart-two :chart-data="StatusDatas()" />
           </q-card-section>
+
         </q-card>
       </div>
 
@@ -402,7 +406,8 @@
 
 <script>
 import ChartTwo from "../components/ChartTwo.vue";
-import PieChart from "../components/PieChart.vue";
+// import PieChart from "../components/PieChart.vue";
+import EmploymentStatusChart from "./EmploymentStatusChart.vue";
 // import StatusChart from "../components/StatusChart.vue";
 import { defineComponent } from "vue";
 import CenterTable from "./CenterTable.vue";
@@ -422,7 +427,8 @@ export default defineComponent({
     ItTable,
     ProjectTable,
     MachineTable,
-    PieChart,
+    // PieChart,
+    EmploymentStatusChart,
     // StatusChart,
   },
   data() {
@@ -512,6 +518,15 @@ export default defineComponent({
         data: [regular, casual, program, project],
       };
       return chartDatas;
+    },
+    EmpStatusDatas() {
+      const activecount = this.store.ActiveCount;
+      const inactive = this.store.personnelsCount - activecount;
+
+      const chartData = {
+        data: [activecount, inactive],
+      };
+      return chartData;
     },
     ChartDatas() {
       const activecount = this.store.ActiveCount;

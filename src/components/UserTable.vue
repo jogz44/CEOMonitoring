@@ -564,6 +564,8 @@ export default {
       row.selectedCheckbox2 = value;
     },
     Rowclick() {
+      this.editdetails = false;
+
       this.editedItem = {
         id: null,
         Username: "",
@@ -617,6 +619,7 @@ export default {
       this.UserAccess = true;
     },
     editItem(item) {
+      this.editdetails = true;
       const store = useStoreUserInfo();
 
       store.GetUser(item._id).then((res) => {
@@ -735,6 +738,7 @@ export default {
           };
           store.fetchUser().then((res) => {
             this.closeDialog();
+            this.isEditMode = false;
           });
         });
         console.log("Item Updated: ", editedItemCopy);
