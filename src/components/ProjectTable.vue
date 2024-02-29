@@ -118,22 +118,28 @@
             <div class="row">
               <div class="col-12">
                 <q-input
+                  ref="projectname"
+                  :rules="[this.required]"
+                  lazy-rules
                   filled
                   v-model="editedItem.ProjectName"
                   :disable="updateproject === !isEditMode"
                   label="Project Name"
                   dense
-                  class="q-pa-sm"
+                  class="q-pa-sm q-mb-sm"
                 />
               </div>
               <div class="col-12">
                 <q-input
+                  ref="location"
+                  :rules="[this.required]"
+                  lazy-rules
                   filled
                   v-model="editedItem.Location"
                   :disable="updateproject === !isEditMode"
                   label="Location"
                   dense
-                  class="q-pa-sm"
+                  class="q-pa-sm q-mb-sm"
                 />
               </div>
             </div>
@@ -141,23 +147,29 @@
             <div class="row">
               <div class="col">
                 <q-input
+                  ref="referenceNo"
+                  :rules="[this.required]"
+                  lazy-rules
                   filled
                   v-model="editedItem.ReferenceNo"
                   :disable="updateproject === !isEditMode"
                   label="Reference Number"
                   dense
-                  class="q-pa-sm"
+                  class="q-pa-sm q-mb-sm"
                 />
               </div>
 
               <div class="col">
                 <q-input
+                  ref="totalProjectCost"
+                  :rules="[this.required]"
+                  lazy-rules
                   filled
                   v-model="editedItem.TotalProjectCost"
                   :disable="updateproject === !isEditMode"
                   label="Total Project Cost"
                   dense
-                  class="q-pa-sm"
+                  class="q-pa-sm q-mb-sm"
                   type="number"
                 />
               </div>
@@ -165,23 +177,29 @@
             <div class="row">
               <div class="col">
                 <q-input
+                  ref="dateStarted"
+                  :rules="[this.required]"
+                  lazy-rules
                   filled
                   v-model="editedItem.DateStarted"
                   :disable="updateproject === !isEditMode"
                   label="Date Started"
                   dense
-                  class="q-pa-sm"
+                  class="q-pa-sm q-mb-sm"
                   type="date"
                 />
               </div>
               <div class="col">
                 <q-input
+                  ref="targetAccomplished"
+                  :rules="[this.required]"
+                  lazy-rules
                   filled
                   v-model="editedItem.TargetAccomplished"
                   :disable="updateproject === !isEditMode"
                   label="Target Accomplished"
                   dense
-                  class="q-pa-sm"
+                  class="q-pa-sm q-mb-sm"
                   type="date"
                 />
               </div>
@@ -203,6 +221,9 @@
             <div class="row">
               <div class="col-12">
                 <q-input
+                  ref="projectinCharge"
+                  :rules="[this.required]"
+                  lazy-rules
                   filled
                   v-model="editedItem.ProjectInCharge"
                   :disable="updateproject === !isEditMode"
@@ -227,7 +248,6 @@
             label="Save"
             color="green-5"
             size="md"
-            v-close-popup
             @click="save"
             class="q-mr-md"
             :disable="updateproject === !isEditMode"
@@ -422,16 +442,19 @@
           <div class="row">
             <div class="col">
               <q-input
+                ref="updatedate"
+                :rules="[this.required]"
+                lazy-rules
                 filled
                 v-model="ProjDtl.DateUpdate"
                 label="Update Date"
                 dense
-                class="q-pa-sm"
+                class="q-pa-sm q-mb-sm"
                 type="date"
               />
             </div>
           </div>
-          <div class="row">
+          <!-- <div class="row">
             <div class="col">
               <q-input
                 filled
@@ -452,11 +475,14 @@
                 type="number"
               />
             </div>
-          </div>
+          </div> -->
           <!-- image for update/edit -->
           <div class="row">
             <div class="col">
               <q-file
+                ref="updateproof"
+                :rules="[this.requiredProof]"
+                lazy-rules
                 filled
                 v-model="ProjDtl.ImageUpdate"
                 hint="Update Proof"
@@ -470,6 +496,9 @@
           <div class="row">
             <div class="col">
               <q-input
+                ref="updatedesc"
+                :rules="[this.required]"
+                lazy-rules
                 filled
                 v-model="ProjDtl.UpdateDescription"
                 label="Update Description"
@@ -485,9 +514,8 @@
           <q-btn flat label="Cancel" color="warning" v-close-popup size="md" />
           <q-btn
             label="Save"
-            color="green-10"
+            color="green-5"
             size="md"
-            v-close-popup
             @click="savehistory()"
           />
         </q-card-actions>
@@ -783,7 +811,6 @@ export default {
       this.updateproject = true;
       this.exitBtn = false;
 
-
       const store = useStoreProjectInfo();
 
       store.GetProject(item._id).then((res) => {
@@ -900,67 +927,105 @@ export default {
       // const store = useStoreProjectInfo();
       // store.GetProject(id);
     },
-
+    required(val) {
+      return (val && val.length > 0) || "Field must be filled in";
+    },
+    requiredProof(val) {
+      return (val !== null && val !== undefined) || "Field must be filled in";
+    },
     save() {
-      const store = useStoreProjectInfo();
-      const editedItemCopy = { ...this.editedItem };
+      this.$refs.projectname.validate();
+      this.$refs.location.validate();
+      this.$refs.referenceNo.validate();
+      this.$refs.totalProjectCost.validate();
+      this.$refs.dateStarted.validate();
+      this.$refs.targetAccomplished.validate();
+      this.$refs.projectinCharge.validate();
 
-      console.log("edited item =>", editedItemCopy._id);
-      const isDateAccomplishedSet =
-        editedItemCopy.DateAccomplished !== null &&
-        editedItemCopy.DateAccomplished !== undefined;
-      const isNewItem = !editedItemCopy._id;
+      if (
+        !this.$refs.projectname.hasError &&
+        !this.$refs.location.hasError &&
+        !this.$refs.referenceNo.hasError &&
+        !this.$refs.totalProjectCost.hasError &&
+        !this.$refs.dateStarted.hasError &&
+        !this.$refs.targetAccomplished.hasError &&
+        !this.$refs.projectinCharge.hasError
+      ) {
+        const store = useStoreProjectInfo();
+        const editedItemCopy = { ...this.editedItem };
 
-      if (isNewItem) {
-        // For new items, don't set DateAccomplished
-        editedItemCopy.DateAccomplished = null;
-      } else if (!isDateAccomplishedSet) {
-        // For edit, if DateAccomplished is not set, keep the existing value
-        editedItemCopy.DateAccomplished = this.editedItem.DateAccomplished;
-      }
+        console.log("edited item =>", editedItemCopy._id);
+        const isDateAccomplishedSet =
+          editedItemCopy.DateAccomplished !== null &&
+          editedItemCopy.DateAccomplished !== undefined;
+        const isNewItem = !editedItemCopy._id;
 
-      if (editedItemCopy._id) {
-        store.UpdateProject(editedItemCopy._id, editedItemCopy).then((res) => {
-          this.editedItem = { ...this.defaultItem };
-          store.fetchProject().then((res) => {
-            this.closeDialog();
-            this.isEditMode = false;
+        if (isNewItem) {
+          // For new items, don't set DateAccomplished
+          editedItemCopy.DateAccomplished = null;
+        } else if (!isDateAccomplishedSet) {
+          // For edit, if DateAccomplished is not set, keep the existing value
+          editedItemCopy.DateAccomplished = this.editedItem.DateAccomplished;
+        }
+
+        if (editedItemCopy._id) {
+          store
+            .UpdateProject(editedItemCopy._id, editedItemCopy)
+            .then((res) => {
+              this.editedItem = { ...this.defaultItem };
+              store.fetchProject().then((res) => {
+                this.closeDialog();
+                this.isEditMode = false;
+              });
+            });
+          console.log("Item Updated: ", editedItemCopy);
+        } else {
+          store.AddProject(editedItemCopy).then((res) => {
+            this.editedItem = { ...this.defaultItem };
+            store.fetchProject().then((res) => {
+              this.closeDialog();
+            });
           });
-        });
-        console.log("Item Updated: ", editedItemCopy);
-      } else {
-        store.AddProject(editedItemCopy).then((res) => {
-          this.editedItem = { ...this.defaultItem };
-          store.fetchProject().then((res) => {
-            this.closeDialog();
-          });
-        });
-        console.log("save=", editedItemCopy);
+          console.log("save=", editedItemCopy);
+        }
       }
     },
     savehistory() {
-      console.log("ID NAKO >> ", this.selectedID);
-      const store = useStoreProjectInfo();
-      const formData = new FormData();
-      formData.append("DateUpdate", this.ProjDtl.DateUpdate);
-      formData.append("file", this.ProjDtl.ImageUpdate);
-      formData.append("ImageUpdate", "");
-      formData.append("UpdateDescription", this.ProjDtl.UpdateDescription);
-      console.log("kkkk = ", this.editedItem);
-      store.UploadImage(this.selectedID, formData).then((res) => {
-        store.GetProjectUpdateDetails(this.selectedID).then((res) => {
-          // this.editedItem = store.project;
-          store.fetchProject();
-          this.ProjDtl = [
-            {
-              DateUpdate: "",
-              ImageUpdate: "",
-              UpdateDescription: "",
-              IsDeleted: false,
-            },
-          ];
+      this.$refs.updatedate.validate();
+      this.$refs.updateproof.validate();
+      this.$refs.updatedesc.validate();
+
+      if (
+        !this.$refs.updatedate.hasError &&
+        !this.$refs.updateproof.hasError &&
+        !this.$refs.updatedesc.hasError
+      ) {
+        console.log("ID NAKO >> ", this.selectedID);
+        const store = useStoreProjectInfo();
+
+        const formData = new FormData();
+        formData.append("DateUpdate", this.ProjDtl.DateUpdate);
+        formData.append("file", this.ProjDtl.ImageUpdate);
+        formData.append("ImageUpdate", "");
+        formData.append("UpdateDescription", this.ProjDtl.UpdateDescription);
+        // console.log("kkkk = ", this.editedItem);
+        store.UploadImage(this.selectedID, formData).then((res) => {
+          store.GetProjectUpdateDetails(this.selectedID).then((res) => {
+            // this.editedItem = store.project;
+            store.fetchProject();
+            this.ProjDtl = [
+              {
+                DateUpdate: "",
+                ImageUpdate: "",
+                UpdateDescription: "",
+                IsDeleted: false,
+              },
+            ];
+          });
         });
-      });
+        this.secondDialog = false;
+      }
+
     },
 
     closeDialog() {

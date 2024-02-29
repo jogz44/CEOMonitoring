@@ -82,17 +82,6 @@
             @click="editItem(row)"
           >
           </q-btn>
-          <!-- <q-btn
-            v-if="update('Machine Equipment')"
-            icon="add"
-            size="sm"
-            round
-            color="green"
-            @click="viewItem(row)"
-          >
-            <q-tooltip class="">Create Maintenance</q-tooltip>
-          </q-btn> -->
-
           <q-btn
             v-if="remove('Machine Equipment')"
             icon="delete"
@@ -168,22 +157,28 @@
             <div class="row">
               <div class="col-12">
                 <q-input
+                  ref="machinename"
+                  :rules="[this.required]"
+                  lazy-rules
                   filled
                   v-model="editedItem.MachineName"
                   :disable="maintenancehistory === !isEditMode"
                   label="Machine Name"
                   dense
-                  class="q-pa-sm"
+                  class="q-pa-sm q-mb-sm"
                 />
               </div>
               <div class="col-12">
                 <div class="q-gutter-md">
                   <q-select
+                    ref="equipmentType"
+                    :rules="[this.required]"
+                    lazy-rules
                     filled
                     v-model="editedItem.EquipmentType"
                     :disable="maintenancehistory === !isEditMode"
                     dense
-                    class="q-pa-sm"
+                    class="q-pa-sm q-mb-sm"
                     :options="options"
                     label="Equipment Type"
                   />
@@ -193,24 +188,30 @@
             <div class="row">
               <div class="col">
                 <q-input
+                  ref="propertyCustodian"
+                  :rules="[this.required]"
+                  lazy-rules
                   filled
                   v-model="editedItem.PropertyCustodian"
                   :disable="maintenancehistory === !isEditMode"
                   label="Property Custodian"
                   dense
-                  class="q-pa-sm"
+                  class="q-pa-sm q-mb-sm"
                 />
               </div>
             </div>
             <div class="row">
               <div class="col-12">
                 <q-input
+                  ref="plateno"
+                  :rules="[this.required]"
+                  lazy-rules
                   filled
                   v-model="editedItem.PlateNo"
                   :disable="maintenancehistory === !isEditMode"
                   label="Plate Number"
                   dense
-                  class="q-pa-sm"
+                  class="q-pa-sm q-mb-sm"
                 />
               </div>
               <div class="col-12">
@@ -241,7 +242,6 @@
             label="Save"
             color="green-5"
             size="md"
-            v-close-popup
             @click="save"
             class="q-mr-md"
             :disable="maintenancehistory === !isEditMode"
@@ -351,20 +351,6 @@
             </div>
           </template>
         </q-table>
-        <!-- <div style="position: absolute; bottom: 10px; right: 10px">
-          <q-btn
-            label=""
-            size="15px"
-            @click="secondDialog = true"
-            icon="add"
-            color="green-10"
-            round
-            style="position: absolute; bottom: 0; right: 0"
-            ><q-tooltip class="white"
-              >Create new Maintenance History</q-tooltip
-            ></q-btn
-          >
-        </div> -->
       </q-card>
     </q-dialog>
 
@@ -473,15 +459,21 @@
           <div class="row">
             <div class="col">
               <q-input
+                ref="maintenanceType"
+                :rules="[this.required]"
+                lazy-rules
                 filled
                 v-model="MaintDtl.MaintenanceType"
                 label="Maintenance Type"
                 dense
-                class="q-pa-sm"
+                class="q-pa-sm q-mb-sm"
               />
             </div>
             <div class="col">
               <q-input
+                ref="maintenanceDate"
+                :rules="[this.required]"
+                lazy-rules
                 filled
                 v-model="MaintDtl.MaintenanceDate"
                 label="Maintenance Date"
@@ -495,6 +487,9 @@
           <div class="row">
             <div class="col">
               <q-file
+                ref="maintenanceProof"
+                :rules="[this.requiredProof]"
+                lazy-rules
                 filled
                 v-model="MaintDtl.MaintenanceImageProof"
                 hint="Maintenance Proof"
@@ -508,6 +503,9 @@
           <div class="row">
             <div class="col">
               <q-input
+                ref="maintenanceDesc"
+                :rules="[this.required]"
+                lazy-rules
                 filled
                 v-model="MaintDtl.MaintenanceDesc"
                 label="Maintenance Description"
@@ -525,7 +523,6 @@
             label="Save"
             color="green-10"
             size="md"
-            v-close-popup
             @click="savehistory()"
           />
         </q-card-actions>
@@ -884,17 +881,50 @@ export default {
         this.MaintDtl = res.data;
       });
     },
-
+    required(val) {
+      return (val && val.length > 0) || "Field must be filled in";
+    },
+    requiredProof(val) {
+      return (val !== null && val !== undefined) || "Field must be filled in";
+    },
     save() {
-      const store = useEquipmentInfo();
-      const editedItemCopy = { ...this.editedItem };
-      console.log("edited item =>", editedItemCopy._id);
+      this.$refs.machinename.validate();
+      this.$refs.equipmentType.validate();
+      this.$refs.propertyCustodian.validate();
+      this.$refs.plateno.validate();
 
-      if (editedItemCopy._id) {
-        store
-          .UpdateEquipment(editedItemCopy._id, editedItemCopy)
-          .then((res) => {
+      if (
+        !this.$refs.machinename.hasError &&
+        !this.$refs.equipmentType.hasError &&
+        !this.$refs.propertyCustodian.hasError &&
+        !this.$refs.plateno.hasError
+      ) {
+        const store = useEquipmentInfo();
+        const editedItemCopy = { ...this.editedItem };
+        console.log("edited item =>", editedItemCopy._id);
+
+        if (editedItemCopy._id) {
+          store
+            .UpdateEquipment(editedItemCopy._id, editedItemCopy)
+            .then((res) => {
+              this.editedItem = {
+                MachineName: "",
+                EquipmentType: "",
+                PropertyCustodian: "",
+                IsDeleted: false,
+                PlateNo: "",
+                Remarks: "",
+              };
+              store.fetchEquipment().then((res) => {
+                this.closeDialog();
+                this.isEditMode = false;
+              });
+            });
+          console.log("Item Updated: ", editedItemCopy);
+        } else {
+          store.AddEquipment(editedItemCopy).then((res) => {
             this.editedItem = {
+              id: null,
               MachineName: "",
               EquipmentType: "",
               PropertyCustodian: "",
@@ -904,131 +934,52 @@ export default {
             };
             store.fetchEquipment().then((res) => {
               this.closeDialog();
-              this.isEditMode = false;
             });
           });
-        console.log("Item Updated: ", editedItemCopy);
-      } else {
-        store.AddEquipment(editedItemCopy).then((res) => {
-          this.editedItem = {
-            id: null,
-            MachineName: "",
-            EquipmentType: "",
-            PropertyCustodian: "",
-            IsDeleted: false,
-            PlateNo: "",
-            // MaintenanceDtls: {
-            //   MaintenanceType: "",
-            //   MaintenanceDate: "",
-            //   MaintenanceDesc: "",
-            // },
-            Remarks: "",
-          };
-          store.fetchEquipment().then((res) => {
-            this.closeDialog();
-          });
-        });
-        console.log("save=", editedItemCopy);
+          console.log("save=", editedItemCopy);
+        }
       }
     },
-    // handleImageChange(event) {
-    //   // Handle image selection
-    //   console.log("event=", event);
-    //   this.editedItem.MaintenanceDtls.MaintenanceImageProof =
-    //     event.target.files[0];
-    // },
-    //   handleImageChange(event) {
-    //   // Ensure that event and event.target are defined
-    //   if (event && event.target) {
-    //     // Access files property if available
-    //     const selectedFile = event.target.files ? event.target.files[0] : null;
-
-    //     // Update MaintenanceImageProof if a file is selected
-    //     if (selectedFile) {
-    //       this.editedItem.MaintenanceDtls.MaintenanceImageProof = selectedFile;
-    //     } else {
-    //       // Handle the case when no file is selected
-    //       console.error('No file selected.');
-    //     }
-    //   } else {
-    //     // Handle the case when event or event.target is undefined
-    //     console.error('Invalid event object.');
-    //   }
-    // },
     savehistory() {
-      console.log("ID NAKO >> ", this.selectedID);
-      const store = useEquipmentInfo();
+      this.$refs.maintenanceType.validate();
+      this.$refs.maintenanceDate.validate();
+      this.$refs.maintenanceProof.validate();
+      this.$refs.maintenanceDesc.validate();
 
-      const formData = new FormData();
-      formData.append("MaintenanceType", this.MaintDtl.MaintenanceType);
-      formData.append("MaintenanceDate", this.MaintDtl.MaintenanceDate);
-      formData.append("file", this.MaintDtl.MaintenanceImageProof);
-      formData.append("MaintenanceImageProof", "");
-      formData.append("MaintenanceDesc", this.MaintDtl.MaintenanceDesc);
+      if (
+        !this.$refs.maintenanceType.hasError &&
+        !this.$refs.maintenanceDate.hasError &&
+        !this.$refs.maintenanceProof.hasError &&
+        !this.$refs.maintenanceProof.hasError
+      ) {
+        console.log("ID NAKO >> ", this.selectedID);
+        const store = useEquipmentInfo();
 
-      store.UploadImage(this.selectedID, formData).then((res) => {
-        //   //store.GetEquipment(id._id);
-        store.GetEquipmentmaintenanceDetails(this.selectedID);
-        store.fetchEquipment();
-        this.MaintDtl = [
-          {
-            MaintenanceType: "",
-            MaintenanceDate: "",
-            MaintenanceImageProof: "",
-            MaintenanceDesc: "",
-            IsDeleted: false,
-          },
-        ];
-      });
+        const formData = new FormData();
+        formData.append("MaintenanceType", this.MaintDtl.MaintenanceType);
+        formData.append("MaintenanceDate", this.MaintDtl.MaintenanceDate);
+        formData.append("file", this.MaintDtl.MaintenanceImageProof);
+        formData.append("MaintenanceImageProof", "");
+        formData.append("MaintenanceDesc", this.MaintDtl.MaintenanceDesc);
 
-      // let res=axios.post(`http://10.0.1.23:5000/api/Equipments/" + ${{id}}+ "/maintenance`, {
+        store.UploadImage(this.selectedID, formData).then((res) => {
+          //   //store.GetEquipment(id._id);
+          store.GetEquipmentmaintenanceDetails(this.selectedID);
+          store.fetchEquipment();
+          this.MaintDtl = [
+            {
+              MaintenanceType: "",
+              MaintenanceDate: "",
+              MaintenanceImageProof: "",
+              MaintenanceDesc: "",
+              IsDeleted: false,
+            },
+          ];
+        });
 
-      //   body: formData,
-      // })
-      //   .then((response) => response.json())
-      //   .then((imageData) => {
-      //     console.log ("mao ni=>", imageData)
-      //     // Now, `imageData` should contain information about the uploaded image, including its filename
-      //     const editedItemCopy = {
-      //       ...this.editedItem.MaintenanceDtls,
-      //       MaintenanceImageProof: `Q:\\Engineering\\server\\public\\uploads\\equipments\\${imageData.fileName}`,
-      //     };
-
-      //     // Save maintenance history with the received image URL
-      //     store.AddMaintenance(id._id, editedItemCopy);
-      //     store.fetchEquipment().then(() => {
-      //       store.GetEquipment(id._id).then(() => {
-      //         this.editedItem = store.equipment;
-      //         store.fetchEquipment();
-
-      //       });
-      //     });
-      //   })
-      //   .catch((error) => {
-      //     console.error("Error uploading image:", error);
-      //   });
-
-      // const editedItemCopy = { ...this.editedItem.MaintenanceDtls };
-      // store.AddMaintenance(id._id, editedItemCopy);
-      // store.fetchEquipment().then((res) => {
-      //   store.GetEquipment(id._id).then((res1) => {
-      //     this.editedItem = store.equipment;
-      //     store.fetchEquipment();
-      //   });
-      // });
+        this.secondDialog = false;
+      }
     },
-    // savehistory(id) {
-    //   console.log("ID NAKO >> ", id._id);
-    //   const store = useEquipmentInfo();
-    //   const editedItemCopy = { ...this.editedItem.MaintenanceDtls };
-    //   store.AddMaintenance(id._id, editedItemCopy);
-    //   store.fetchEquipment().then((res) => {
-    //     store.GetEquipment(id._id).then((res1) => {
-    //       this.editedItem = store.equipment;
-    //       store.fetchEquipment();
-    //     });
-    //   });
-    // },
     closeDialog() {
       this.editedItem = {
         id: null,

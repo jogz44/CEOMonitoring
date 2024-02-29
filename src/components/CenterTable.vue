@@ -208,43 +208,44 @@
         </q-card-section>
         <q-separator />
 
-        <q-card-section style="max-height: 50vh" class="scroll">
-          <q-form ref="formRef">
+        <q-card-section style="max-height: 50vh">
+          <q-form>
             <div class="row">
               <div class="col-12">
                 <q-input
+                  ref="lastname"
+                  :rules="[this.required]"
                   filled
                   v-model="editedItem.lastName"
                   label="Lastname"
                   dense
                   class="q-pa-md"
                   :disable="employmenthistory === !isEditMode"
-                  ref="lastNameRef"
                   lazy-rules
-                  :rules="nameRules"
                 />
               </div>
               <div class="col-12">
                 <q-input
+                  ref="firstname"
+                  :rules="[this.required]"
                   filled
                   v-model="editedItem.firstName"
                   label="Firstname"
                   class="q-pa-md"
                   dense
                   :disable="employmenthistory === !isEditMode"
-                  ref="firstNameRef"
                   lazy-rules
-                  :rules="nameRules"
                 />
               </div>
               <div class="col-12">
                 <q-input
+                  ref="middlename"
+                  :rules="[this.required]"
                   filled
                   v-model="editedItem.middleName"
                   label="Middlename"
                   class="q-pa-md"
                   dense
-                  maxlength="1"
                   :disable="employmenthistory === !isEditMode"
                 />
               </div>
@@ -284,8 +285,7 @@
           <q-btn
             type="submit"
             label="Save"
-            color="green"
-            v-close-popup
+            color="green-5"
             @click="save"
             class="q-mr-md"
             :disable="employmenthistory === !isEditMode"
@@ -459,10 +459,13 @@
           </div>
         </q-card-section>
         <q-separator />
-        <q-card-section>
+        <q-card-section class="q-pa-md">
           <div class="row">
             <div class="col">
               <q-input
+                ref="dateStarted"
+                :rules="[this.required]"
+                lazy-rules
                 filled
                 v-model="EmpDtl.DteStarted"
                 label="Date Started"
@@ -473,6 +476,9 @@
             </div>
             <div class="col">
               <q-input
+                ref="dateEnded"
+                :rules="[this.required]"
+                lazy-rules
                 filled
                 v-model="EmpDtl.DteEnded"
                 label="Date Ended"
@@ -489,7 +495,7 @@
                 v-model="EmpDtl.DteReceived"
                 label="Date Received"
                 dense
-                class="q-pa-sm"
+                class="q-pa-sm q-mt-sm"
                 type="date"
               />
             </div>
@@ -497,6 +503,9 @@
           <div class="row">
             <div class="col">
               <q-select
+                ref="designation"
+                :rules="[this.requiredDesignation]"
+                lazy-rules
                 filled
                 v-model="EmpDtl.Designation"
                 use-input
@@ -515,31 +524,40 @@
           <div class="row">
             <div class="col">
               <q-input
+                ref="charges"
+                :rules="[this.required]"
+                lazy-rules
                 filled
                 v-model="EmpDtl.Charges"
                 label="Charges"
                 dense
-                class="q-pa-sm"
+                class="q-pa-sm q-mt-sm"
               />
             </div>
           </div>
           <div class="row">
             <div class="col">
               <q-select
+                ref="employeeStatus"
+                :rules="[this.required]"
+                lazy-rules
                 filled
                 v-model="EmpDtl.EmpStatus"
                 :options="EmpStatus"
                 label="Employee Status"
-                class="q-pa-sm"
+                class="q-pa-sm q-mt-sm"
                 dense
               />
             </div>
             <div class="col">
               <q-input
+                ref="salaryRate"
+                :rules="[this.required]"
+                lazy-rules
                 filled
                 v-model="EmpDtl.Drate"
                 label="Salary Rate"
-                class="q-pa-sm"
+                class="q-pa-sm q-mt-sm"
                 dense
               />
             </div>
@@ -552,7 +570,6 @@
             label="Save"
             color="green-5"
             size="md"
-            v-close-popup
             @click="savehistory(editedItem.id)"
           />
         </q-card-actions>
@@ -656,7 +673,9 @@
               v-model="recieveDate"
               label="Date Received"
               dense
-              lazy-rules="Please input"
+              ref="dateReceived"
+              lazy-rules
+              :rules="[this.required]"
               class="q-ml-md"
               type="date"
             />
@@ -667,7 +686,6 @@
               style="color: green"
               class="q-ml-md"
               @click="BatchReceiveEmployees()"
-              :disable="!recieveDate"
             />
           </div>
         </div>
@@ -1017,59 +1035,48 @@ export default {
   },
   methods: {
     BatchReceiveEmployees() {
-      // this.secondTable.forEach(SelectedEmployee =>{
+      this.$refs.dateReceived.validate();
 
-      //   this.secondTable.employmentDtl.forEach(selectedEmployeesContract =>{
+      if (!this.$refs.dateReceived.hasError) {
+        const recievestore = useStorePersonnelInfo();
+        let fin = true;
+        for (let i = 0; i < this.secondTable.length; i++) {
+          if (fin) {
+            fin = false;
+            // console.log("main id=",this.secondTable[i].employmentDtl[0]._id)
+            this.secondTable[i].employmentDtl[0].DteReceived = this.recieveDate;
+            console.log("main id=", this.secondTable[i].employmentDtl[0]);
 
-      //     console.log(`result i needed: `+ SelectedEmployee._id +` ------- `+ selectedEmployeesContract._id);
-      //     // this.store.AddReceive(SelectedEmployee._id,selectedEmployeesContract._id)
+            recievestore
+              .AddReceive(
+                this.secondTable[i]._id,
+                this.secondTable[i].employmentDtl[0]._id,
+                this.secondTable[i].employmentDtl[0]
+              )
+              .then((fin = true))
+              .then((res) => {
+                recievestore.fetchPersonnel();
+                recievestore.ActiveReceivedEmployees;
 
-      //   });
-
-      // });
-      const recievestore = useStorePersonnelInfo();
-      let fin = true;
-      for (let i = 0; i < this.secondTable.length; i++) {
-        if (fin) {
-          fin = false;
-          // console.log("main id=",this.secondTable[i].employmentDtl[0]._id)
-          this.secondTable[i].employmentDtl[0].DteReceived = this.recieveDate;
-          console.log("main id=", this.secondTable[i].employmentDtl[0]);
-
-          recievestore
-            .AddReceive(
-              this.secondTable[i]._id,
-              this.secondTable[i].employmentDtl[0]._id,
-              this.secondTable[i].employmentDtl[0]
-            )
-            .then((fin = true))
-            .then((res) => {
-              recievestore.fetchPersonnel();
-              recievestore.ActiveReceivedEmployees;
-
-              this.secondTable = [];
-              this.EmpDtl = [
-                {
-                  DteReceived: "",
-                },
-              ];
-            });
-          // this.EmpDtl.DteReceived=""
-          window.alert("Selected items have been received.");
-          this.ReceiveJO = false;
-          this.filter = "";
-        } else {
-          if ((i = 0)) {
-            i = 0;
+                this.secondTable = [];
+                this.EmpDtl = [
+                  {
+                    DteReceived: "",
+                  },
+                ];
+              });
+            window.alert("Selected items have been received.");
+            this.ReceiveJO = false;
+            this.filter = "";
           } else {
-            i = i - 1;
+            if ((i = 0)) {
+              i = 0;
+            } else {
+              i = i - 1;
+            }
           }
         }
       }
-
-      // recievestore.fetchPersonnel().then((res) => {
-      //   recievestore.ActiveReceivedEmployees();
-      // })
     },
 
     //Received JO - Moving to the second table
@@ -1100,22 +1107,22 @@ export default {
       // Clear the selected array
       this.selectedSecondTable = [];
     },
-    async onSubmit() {
-      // Validate the form before submission
-      await this.$refs.formRef.validate();
+    // async onSubmit() {
+    //   // Validate the form before submission
+    //   await this.$refs.formRef.validate();
 
-      // Check for validation errors
-      if (this.$refs.lastNameRef.hasError || this.$refs.firstNameRef.hasError) {
-        // Handle form validation errors
-        this.$q.notify({
-          color: "negative",
-          message: "Please fill in all required fields.",
-        });
-      } else {
-        // Continue with the form submission logic
-        this.save();
-      }
-    },
+    //   // Check for validation errors
+    //   if (this.$refs.lastNameRef.hasError || this.$refs.firstNameRef.hasError) {
+    //     // Handle form validation errors
+    //     this.$q.notify({
+    //       color: "negative",
+    //       message: "Please fill in all required fields.",
+    //     });
+    //   } else {
+    //     // Continue with the form submission logic
+    //     this.save();
+    //   }
+    // },
     // validateForm() {
     //   // Check if the required fields are filled
     //   this.isFormValid =
@@ -1306,13 +1313,24 @@ export default {
       const store = useStorePersonnelInfo();
       const editedItemCopy = { ...this.editedItem };
     },
+    required(val) {
+      return (val && val.length > 0) || "Field must be filled in";
+    },
+    requiredDesignation(val) {
+      return (val !== null && val !== undefined) || "Field must be filled in";
+    },
     save() {
-      const store = useStorePersonnelInfo();
-      const editedItemCopy = { ...this.editedItem };
-      console.log("edited item =>", editedItemCopy);
-
-      // if (this.lastNameRef.value) {
-      //   this.lastNameRef.value.validate();
+      this.$refs.lastname.validate();
+      this.$refs.firstname.validate();
+      this.$refs.middlename.validate();
+      if (
+        !this.$refs.lastname.hasError &&
+        !this.$refs.firstname.hasError &&
+        !this.$refs.middlename.hasError
+      ) {
+        const store = useStorePersonnelInfo();
+        const editedItemCopy = { ...this.editedItem };
+        console.log("edited item =>", editedItemCopy);
 
         if (editedItemCopy._id) {
           store
@@ -1322,13 +1340,6 @@ export default {
                 lastName: "",
                 firstName: "",
                 middleName: "",
-
-                // employmentDtl: {
-                //   DteStarted: "",
-                //   DteEnded: "",
-                //   Designation: "",
-                //   Charges: "",
-                // },
                 resumeLink: "",
               };
               store.fetchPersonnel().then((res) => {
@@ -1344,54 +1355,58 @@ export default {
               lastName: "",
               firstName: "",
               middleName: "",
-
-              // employmentDtl: {
-              //   DteStarted: "",
-              //   DteEnded: "",
-              //   Designation: "",
-              //   Charges: "",
-              // },
               resumeLink: "",
             };
             store.fetchPersonnel().then((res) => {
               this.closeDialog();
             });
           });
-
           console.log("save=", editedItemCopy);
         }
-      // } else {
-      //   // Inputs are empty, do nothing or display an error message
-      //   console.log("Error: Please fill in all required fields.");
-      // }
+      }
+
     },
     savehistory() {
-      const store = useStorePersonnelInfo();
+      this.$refs.dateStarted.validate();
+      this.$refs.dateEnded.validate();
+      this.$refs.designation.validate();
+      this.$refs.charges.validate();
+      this.$refs.employeeStatus.validate();
+      this.$refs.salaryRate.validate();
 
-      let editedItemCopy = { ...this.EmpDtl };
-      editedItemCopy.Designation = this.EmpDtl.Designation.Designation;
-      //console.log("item=", editedItemCopy);
-      store.AddEmployment(this.selectedID, editedItemCopy).then(() => {
-        store.GetPersonnel(this.selectedID).then((res1) => {
-          this.editedItem = store.personnel;
-          store.GetPersonnelHistory(this.selectedID);
-          (this.EmpDtl = [
-            {
-              DteStarted: "",
-              DteEnded: "",
-              DteReceived: "",
-              Designation: "",
-              Charges: "",
-              EmpStatus: "",
-              Drate: "",
-              isDeleted: false,
-            },
-          ]),
-            store.fetchPersonnel();
-          //  });
+      if (
+        !this.$refs.dateStarted.hasError &&
+        !this.$refs.dateEnded.hasError &&
+        !this.$refs.designation.hasError &&
+        !this.$refs.charges.hasError &&
+        !this.$refs.employeeStatus.hasError &&
+        !this.$refs.salaryRate.hasError
+      ) {
+        const store = useStorePersonnelInfo();
+        let editedItemCopy = { ...this.EmpDtl };
+        editedItemCopy.Designation = this.EmpDtl.Designation.Designation;
+        store.AddEmployment(this.selectedID, editedItemCopy).then(() => {
+          store.GetPersonnel(this.selectedID).then((res1) => {
+            this.editedItem = store.personnel;
+            store.GetPersonnelHistory(this.selectedID);
+            (this.EmpDtl = [
+              {
+                DteStarted: "",
+                DteEnded: "",
+                DteReceived: "",
+                Designation: "",
+                Charges: "",
+                EmpStatus: "",
+                Drate: "",
+                isDeleted: false,
+              },
+            ]),
+              store.fetchPersonnel();
+          });
         });
-      });
-      //store.fetchPersonnel().then((res) => {
+        this.secondDialog = false
+      }
+
     },
     closeDialog() {
       this.editedItem = {
@@ -1412,7 +1427,7 @@ export default {
 
         resumeLink: "",
       };
-      this.dialogVisible = false;
+      this.dialogVisibles = false;
     },
     getNextId() {
       const ids = this.rows.map((item) => item.id);
@@ -1455,9 +1470,6 @@ export default {
     },
   },
   setup() {
-    const lastNameRef = ref(null);
-    const lastName = ref(null);
-
     const selected = ref([]);
     const options = ref(stringOptions);
     const store = useStorePersonnelInfo();
@@ -1524,8 +1536,8 @@ export default {
       //   resumeLink: "",
       // },
 
-      lastName: ref(""),
-      lastNameRef,
+      // lastName: ref(""),
+      // lastNameRef,
 
       nameRules: [(val) => (val && val.length > 0) || "Please type something"],
 

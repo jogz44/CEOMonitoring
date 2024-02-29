@@ -53,7 +53,7 @@ export const useITEquipmentInfo = defineStore("itequipmentinfo", {
     },
     async DeleteITEquipment(id, payload) {
       try {
-        await axios.put(`http://10.0.1.23:5000/api/ITEquipments/remove/` + id, payload);
+        await axios.put(`http://10.0.1.23:5000/api/ITEquipments/` + id + `/remove`, payload);
         this.itequipments = this.itequipments.filter((e) => e.id !== id);
         if (index !== -1) {
           this.itequipment[index] = response.data;
