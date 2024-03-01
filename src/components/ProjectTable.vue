@@ -92,24 +92,27 @@
     </q-table>
 
     <!-- the main dialog -->
-    <q-dialog v-model="dialogVisible" persistent>
-      <q-card style="width: 30%; max-width: 80vw; height: 50%">
-        <q-card-section>
-          <div class="row">
-            <div class="col-11 text-h6">PROJECT DETAILS</div>
-            <div class="col-1">
-              <q-btn
-                flat
-                round
-                color="orange"
-                icon="close"
-                v-close-popup
-                @click="this.isEditMode = false"
-                v-show="exitBtn"
-              />
-            </div>
-          </div>
-        </q-card-section>
+
+    <q-dialog persistent v-model="dialogVisible">
+      <q-card style="width: auto; max-width: 80vw; height: auto">
+        <q-toolbar>
+          <q-toolbar-title
+            ><span class="text-weight-bold"
+              >PROJECT DETAILS</span
+            ></q-toolbar-title
+          >
+
+          <q-btn
+            flat
+            round
+            dense
+            icon="close"
+            v-close-popup
+            color="orange"
+            @click="this.isEditMode = false"
+            v-show="exitBtn"
+          />
+        </q-toolbar>
 
         <q-separator />
 
@@ -243,6 +246,7 @@
             size="md"
             @click="toggleEditMode()"
             v-show="updateproject"
+            style="margin-top: -3%"
           />
           <q-btn
             label="Save"
@@ -251,6 +255,7 @@
             @click="save"
             class="q-mr-md"
             :disable="updateproject === !isEditMode"
+            style="margin-top: -3%"
           />
         </q-card-actions>
         <!-- <q-card class="q-px-lg q-pt-sm q-mb-md">
@@ -268,25 +273,20 @@
 
       <!-- DIALOG FOR UPDATE -->
       <q-card
-        style="width: 40%; max-width: 80vw; height: 50%"
+        style="width:auto; max-width: 80vw; height: auto"
         v-show="updateproject"
       >
+        <q-toolbar>
+          <q-toolbar-title
+            ><span class="text-weight-bold"
+              >PROJECT UPDATE HISTORY</span
+            ></q-toolbar-title
+          >
+          <q-btn flat round dense icon="close" v-close-popup color="orange" />
+        </q-toolbar>
+        <q-separator />
         <q-card-section style="max-height: 50vh" class="scroll">
-          <div class="row text-h6">
-            <div class="col-11">PROJECT UPDATE HISTORY</div>
-            <div class="col-1">
-              <q-btn
-                flat
-                round
-                color="orange"
-                icon="close"
-                v-close-popup
-                style="margin-bottom: -5px; margin-top: -5px"
-              />
-            </div>
-          </div>
-        </q-card-section>
-        <q-table
+          <q-table
           class="my-sticky-header-table"
           flat
           bordered
@@ -360,6 +360,8 @@
             </div>
           </template>
         </q-table>
+        </q-card-section>
+
         <q-separator />
         <!-- <div style="position: absolute; bottom: 10px; right: 10px">
           <q-btn
@@ -1025,7 +1027,6 @@ export default {
         });
         this.secondDialog = false;
       }
-
     },
 
     closeDialog() {
