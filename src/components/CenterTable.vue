@@ -188,9 +188,27 @@
     </q-dialog>
 
     <!-- Mao ni gamita goooo bulok -->
-    <q-dialog v-model="dialogVisibles" persistent="">
-      <q-card style="width: 30%; max-width: 80vw; height: 50%">
-        <q-card-section class="">
+    <q-dialog v-model="dialogVisibles" persistent="" >
+      <q-card style="width: 500px; max-width: 80vw; height: 450px" class="">
+        <q-toolbar class="q-pa-md">
+          <q-toolbar-title
+            ><span class="text-weight-bold"
+              >EMPLOYEE DETAILS</span
+            ></q-toolbar-title
+          >
+
+          <q-btn
+            flat
+            round
+            dense
+            icon="close"
+            v-close-popup
+            color="orange"
+            @click="this.isEditMode = false"
+            v-show="exitBtn"
+          />
+        </q-toolbar>
+        <!-- <q-card-section class="">
           <div class="row">
             <div class="col-11 text-h6">EMPLOYEE DETAILS</div>
             <div class="col-1">
@@ -205,10 +223,10 @@
               />
             </div>
           </div>
-        </q-card-section>
+        </q-card-section> -->
         <q-separator />
 
-        <q-card-section style="max-height: 50vh">
+        <q-card-section style="max-height: 50vh"  class="scroll">
           <q-form>
             <div class="row">
               <div class="col-12">
@@ -293,12 +311,12 @@
         </q-card-actions>
       </q-card>
 
-      <!-- EMPLOYMENT DETAIvisibilieditItemLS -->
+      <!-- EMPLOYMENT DETAILS -->
       <q-card
-        style="width: 40%; max-width: 80vw; height: 50%"
+        style="width: 500px; max-width: 80vw; height: 450px"
         v-show="employmenthistory"
       >
-        <q-card-section style="max-height: " class="scroll">
+        <!-- <q-card-section style="max-height: " class="scroll">
           <div class="row">
             <div class="col-11 text-h6">EMPLOYMENT DETAILS</div>
             <div class="col-1">
@@ -312,99 +330,110 @@
               />
             </div>
           </div>
-        </q-card-section>
+        </q-card-section> -->
+        <q-toolbar class="q-pa-md">
+          <q-toolbar-title
+            ><span class="text-weight-bold"
+              >EMPLOYMENT DETAILS</span
+            ></q-toolbar-title
+          >
+          <q-btn flat round dense icon="close" v-close-popup color="orange" />
+        </q-toolbar>
+        <q-separator />
 
-        <q-table
-          class="my-sticky-header-table"
-          flat
-          bordered
-          title=""
-          wrap-cells=""
-          dense
-          :rows="store.EmpDtls"
-          :columns="history"
-          :filter="filters"
-          row-key="id"
-          style="margin-top: -5px"
-        >
-          <template v-slot:top-right>
-            <q-input
-              dense
-              debounce="300"
-              v-model="filters"
-              placeholder="Search"
-              color="green-10"
-            >
-              <template v-slot:append>
-                <q-icon name="search" />
-              </template>
-            </q-input>
-          </template>
-          <template v-slot:top-left>
-            <q-btn
-              label="Create Appointment"
-              size="x-small"
-              icon="add"
-              @click="secondDialog = true"
-              color="green-10"
-            ></q-btn>
-          </template>
-
-          <template v-slot:body-cell-DteStarted="{ row }">
-            <q-td>
-              {{ row.DteStarted }}
-            </q-td>
-          </template>
-
-          <template v-slot:body-cell-de="{ row }">
-            <q-td>
-              {{ row.DteEnded }}
-            </q-td>
-          </template>
-
-          <template v-slot:body-cell-DteReceived="{ row }">
-            <q-td>
-              {{ row.DteReceived }}
-            </q-td>
-          </template>
-
-          <template v-slot:body-cell-designation="{ row }">
-            <q-td>
-              {{ row.Designation }}
-            </q-td>
-          </template>
-
-          <template v-slot:body-cell-charges="{ row }">
-            <q-td>
-              {{ row.Charges }}
-            </q-td>
-          </template>
-
-          <template v-slot:body-cell-status="{ row }">
-            <q-td
-              ><q-chip :class="getStatusClass(row.employmentDtl[0].DteEnded)">
-                {{ getStatusClass2(row.employmentDtl[0].DteEnded).status }}
-              </q-chip></q-td
-            >
-          </template>
-          <template v-slot:body-cell-actions="{ row }">
-            <div class="actionsbtn">
-              <q-btn
-                icon="delete"
-                flat
-                round
-                color="deep-orange"
-                @click="deleteEmployment(row)"
+        <q-card-section style="max-height: 50vh" class="scroll">
+          <q-table
+            class="my-sticky-header-table"
+            flat
+            bordered
+            title=""
+            wrap-cells=""
+            dense
+            :rows="store.EmpDtls"
+            :columns="history"
+            :filter="filters"
+            row-key="id"
+            style="margin-top: -5px"
+          >
+            <template v-slot:top-right>
+              <q-input
+                dense
+                debounce="300"
+                v-model="filters"
+                placeholder="Search"
+                color="green-10"
               >
-              </q-btn>
-            </div>
-          </template>
-          <!-- <template v-slot:body-cell="{ row, charges }">
+                <template v-slot:append>
+                  <q-icon name="search" />
+                </template>
+              </q-input>
+            </template>
+            <template v-slot:top-left>
+              <q-btn
+                label="Create Appointment"
+                size="x-small"
+                icon="add"
+                @click="secondDialog = true"
+                color="green-10"
+              ></q-btn>
+            </template>
+
+            <template v-slot:body-cell-DteStarted="{ row }">
+              <q-td>
+                {{ row.DteStarted }}
+              </q-td>
+            </template>
+
+            <template v-slot:body-cell-de="{ row }">
+              <q-td>
+                {{ row.DteEnded }}
+              </q-td>
+            </template>
+
+            <template v-slot:body-cell-DteReceived="{ row }">
+              <q-td>
+                {{ row.DteReceived }}
+              </q-td>
+            </template>
+
+            <template v-slot:body-cell-designation="{ row }">
+              <q-td>
+                {{ row.Designation }}
+              </q-td>
+            </template>
+
+            <template v-slot:body-cell-charges="{ row }">
+              <q-td>
+                {{ row.Charges }}
+              </q-td>
+            </template>
+
+            <template v-slot:body-cell-status="{ row }">
+              <q-td
+                ><q-chip :class="getStatusClass(row.employmentDtl[0].DteEnded)">
+                  {{ getStatusClass2(row.employmentDtl[0].DteEnded).status }}
+                </q-chip></q-td
+              >
+            </template>
+            <template v-slot:body-cell-actions="{ row }">
+              <div class="actionsbtn">
+                <q-btn
+                  icon="delete"
+                  flat
+                  round
+                  color="deep-orange"
+                  @click="deleteEmployment(row)"
+                >
+                </q-btn>
+              </div>
+            </template>
+            <!-- <template v-slot:body-cell="{ row, charges }">
             <q-td class="custom-table-cell">
               {{ row[charges.name] }}
             </q-td>
           </template> -->
-        </q-table>
+          </q-table>
+        </q-card-section>
         <q-dialog
           v-model="EmployeeDeleteHistory"
           persistent
@@ -449,19 +478,27 @@
       transition-show="scale"
       transition-hide="scale"
     >
-      <q-card class="" style="width: 500px">
-        <q-card-section>
+      <q-card class="" style="width: 500px; ;">
+        <!-- <q-card-section>
           <div class="row">
             <div class="col-11 text-h6">ADD EMPLOYMENT</div>
             <div class="col-1">
               <q-btn flat round color="orange" icon="close" v-close-popup />
             </div>
           </div>
-        </q-card-section>
+        </q-card-section> -->
+        <q-toolbar>
+          <q-toolbar-title
+            ><span class="text-weight-bold"
+              >ADD EMPLOYMENT</span
+            ></q-toolbar-title
+          >
+          <q-btn flat round dense icon="close" v-close-popup color="orange" />
+        </q-toolbar>
         <q-separator />
         <q-card-section class="q-pa-md">
           <div class="row">
-            <div class="col">
+            <div class="col-6 col-xs-12 col-sm-6">
               <q-input
                 ref="dateStarted"
                 :rules="[this.required]"
@@ -474,7 +511,7 @@
                 type="date"
               />
             </div>
-            <div class="col">
+            <div class="col-6 col-xs-12 col-sm-6">
               <q-input
                 ref="dateEnded"
                 :rules="[this.required]"
@@ -536,7 +573,7 @@
             </div>
           </div>
           <div class="row">
-            <div class="col">
+            <div class="col-6 col-xs-12 col-sm-6">
               <q-select
                 ref="employeeStatus"
                 :rules="[this.required]"
@@ -549,7 +586,7 @@
                 dense
               />
             </div>
-            <div class="col">
+            <div class="col-6 col-xs-12 col-sm-6">
               <q-input
                 ref="salaryRate"
                 :rules="[this.required]"
@@ -579,13 +616,22 @@
     <!-- Dialog for multiple received JO -->
 
     <q-dialog v-model="ReceiveJO">
-      <q-card style="width: 35%; height: 65%"
+      <q-card style="width: 500px; height: 65%"
         ><div class="q-pa-md">
-          <q-card-section style="max-height: " class="scroll">
+
+          <q-toolbar>
+          <q-toolbar-title
+            ><span class="text-weight-bold"
+              > EMPLOYEE LIST</span
+            ></q-toolbar-title
+          >
+        </q-toolbar>
+
+          <!-- <q-card-section style="max-height: " class="scroll">
             <div class="row">
               <div class="col-12 text-h6">EMPLOYEE LIST</div>
             </div>
-          </q-card-section>
+          </q-card-section> -->
           <q-table
             flat
             :filter="filterReceived"
@@ -626,9 +672,18 @@
         </div>
       </q-card>
 
-      <q-card style="width: 35%; height: 65%">
+      <q-card style="width: 500px; height: 65%">
         <div class="q-pa-md">
-          <q-card-section style="max-height: " class="scroll">
+          <q-toolbar>
+          <q-toolbar-title
+            ><span class="text-weight-bold"
+              >SELECTED EMPLOYEE</span
+            ></q-toolbar-title
+          >
+          <q-btn flat round dense icon="close" v-close-popup color="orange" />
+        </q-toolbar>
+
+          <!-- <q-card-section style="max-height: " class="scroll">
             <div class="row">
               <div class="col-11 text-h6">SELECTED EMPLOYEE</div>
               <div class="col-1">
@@ -642,7 +697,7 @@
                 />
               </div>
             </div>
-          </q-card-section>
+          </q-card-section> -->
           <q-table
             flat
             dense
@@ -653,6 +708,7 @@
             selection="multiple"
             v-model:selected="selectedSecondTable"
             table-style="width: 100%; max-height: 300px;"
+            :rows-per-page-options="[10]"
           >
             <template v-slot:top-left>
               <q-btn
@@ -1364,7 +1420,6 @@ export default {
           console.log("save=", editedItemCopy);
         }
       }
-
     },
     savehistory() {
       this.$refs.dateStarted.validate();
@@ -1404,9 +1459,8 @@ export default {
               store.fetchPersonnel();
           });
         });
-        this.secondDialog = false
+        this.secondDialog = false;
       }
-
     },
     closeDialog() {
       this.editedItem = {

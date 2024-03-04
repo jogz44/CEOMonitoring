@@ -94,7 +94,7 @@
     <!-- the main dialog -->
 
     <q-dialog persistent v-model="dialogVisible">
-      <q-card style="width: auto; max-width: 80vw; height: auto">
+      <q-card style="width: 500px; max-width: 80vw; height: 500px">
         <q-toolbar>
           <q-toolbar-title
             ><span class="text-weight-bold"
@@ -158,7 +158,7 @@
                   :disable="updateproject === !isEditMode"
                   label="Reference Number"
                   dense
-                  class="q-pa-sm q-mb-sm"
+                  class="q-pa-sm q-mb-sm "
                 />
               </div>
 
@@ -273,7 +273,7 @@
 
       <!-- DIALOG FOR UPDATE -->
       <q-card
-        style="width:auto; max-width: 80vw; height: auto"
+      style="width: 500px; max-width: 80vw; height: 500px"
         v-show="updateproject"
       >
         <q-toolbar>
@@ -296,6 +296,7 @@
           :columns="history"
           :filter="filters"
           row-key="id"
+          virtual-scroll
         >
           <template v-slot:top-right>
             <q-input
@@ -388,7 +389,7 @@
       transition-show="scale"
       transition-hide="scale"
     >
-      <q-card class="" style="min-width: 50%">
+      <q-card class="" style="width: 500px;">
         <q-card-section style="max-height: 50vh" class="scroll">
           <div class="row text-h6">
             <div class="col-11">UPDATE VIEW</div>
