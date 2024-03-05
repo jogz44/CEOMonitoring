@@ -188,7 +188,7 @@
     </q-dialog>
 
     <!-- Mao ni gamita goooo bulok -->
-    <q-dialog v-model="dialogVisibles" persistent="" >
+    <q-dialog v-model="dialogVisibles" persistent="">
       <q-card style="width: 500px; max-width: 80vw; height: 450px" class="">
         <q-toolbar class="q-pa-md">
           <q-toolbar-title
@@ -226,7 +226,7 @@
         </q-card-section> -->
         <q-separator />
 
-        <q-card-section style="max-height: 50vh"  class="scroll">
+        <q-card-section style="max-height: 50vh" class="scroll">
           <q-form>
             <div class="row">
               <div class="col-12">
@@ -337,7 +337,7 @@
               >EMPLOYMENT DETAILS</span
             ></q-toolbar-title
           >
-          <q-btn flat round dense icon="close" v-close-popup color="orange" />
+          <q-btn flat dense icon="close" v-close-popup color="orange" />
         </q-toolbar>
         <q-separator />
 
@@ -478,7 +478,7 @@
       transition-show="scale"
       transition-hide="scale"
     >
-      <q-card class="" style="width: 500px; ;">
+      <q-card class="" style="width: 500px">
         <!-- <q-card-section>
           <div class="row">
             <div class="col-11 text-h6">ADD EMPLOYMENT</div>
@@ -493,7 +493,7 @@
               >ADD EMPLOYMENT</span
             ></q-toolbar-title
           >
-          <q-btn flat round dense icon="close" v-close-popup color="orange" />
+          <q-btn flat dense icon="close" v-close-popup color="orange" />
         </q-toolbar>
         <q-separator />
         <q-card-section class="q-pa-md">
@@ -616,22 +616,22 @@
     <!-- Dialog for multiple received JO -->
 
     <q-dialog v-model="ReceiveJO">
-      <q-card style="width: 500px; height: 65%"
-        ><div class="q-pa-md">
-
-          <q-toolbar>
+      <q-card style="width: 500px; height: 65%">
+        <q-toolbar class="q-pa-md">
           <q-toolbar-title
-            ><span class="text-weight-bold"
-              > EMPLOYEE LIST</span
+            ><span class="text-weight-bold">
+              EMPLOYEE LIST</span
             ></q-toolbar-title
           >
         </q-toolbar>
 
-          <!-- <q-card-section style="max-height: " class="scroll">
+        <!-- <q-card-section style="max-height: " class="scroll">
             <div class="row">
               <div class="col-12 text-h6">EMPLOYEE LIST</div>
             </div>
           </q-card-section> -->
+          <q-separator />
+        <q-card-section>
           <q-table
             flat
             :filter="filterReceived"
@@ -669,21 +669,21 @@
               </q-input>
             </template>
           </q-table>
-        </div>
+        </q-card-section>
       </q-card>
 
       <q-card style="width: 500px; height: 65%">
-        <div class="q-pa-md">
-          <q-toolbar>
+        <q-toolbar class="q-pa-md">
           <q-toolbar-title
             ><span class="text-weight-bold"
               >SELECTED EMPLOYEE</span
             ></q-toolbar-title
           >
-          <q-btn flat round dense icon="close" v-close-popup color="orange" />
+          <q-btn flat dense icon="close" v-close-popup color="orange" />
         </q-toolbar>
+        <q-separator></q-separator>
 
-          <!-- <q-card-section style="max-height: " class="scroll">
+        <!-- <q-card-section style="max-height: " class="scroll">
             <div class="row">
               <div class="col-11 text-h6">SELECTED EMPLOYEE</div>
               <div class="col-1">
@@ -698,6 +698,7 @@
               </div>
             </div>
           </q-card-section> -->
+        <q-card-section>
           <q-table
             flat
             dense
@@ -721,7 +722,8 @@
               ></q-btn>
             </template>
           </q-table>
-        </div>
+        </q-card-section>
+
         <div class="row">
           <div class="col-9">
             <q-input

@@ -133,8 +133,27 @@
 
     <!-- the main dialog -->
     <q-dialog v-model="dialogVisible" persistent>
-      <q-card style="width: 30%; max-width: 80vw; height: 50%">
-        <q-card-section>
+      <q-card style="width: 500px; max-width: 80vw; height: 480px" class="">
+        <q-toolbar class="q-pa-md">
+          <q-toolbar-title
+            ><span class="text-weight-bold"
+              >MACHINE DETAILS</span
+            ></q-toolbar-title
+          >
+
+          <q-btn
+            flat
+            round
+            dense
+            icon="close"
+            v-close-popup
+            color="orange"
+            @click="this.isEditMode = false"
+            v-show="exitBtn"
+          />
+        </q-toolbar>
+
+        <!-- <q-card-section>
           <div class="row">
             <div class="col-11 text-h6">MACHINE DETAILS</div>
             <div class="col-1">
@@ -149,7 +168,7 @@
               />
             </div>
           </div>
-        </q-card-section>
+        </q-card-section> -->
         <q-separator />
 
         <q-card-section style="max-height: 50vh" class="scroll">
@@ -262,10 +281,21 @@
 
       <!-- DIALOG FOR MAINTENANCE -->
       <q-card
-        style="width: 40%; max-width: 80vw; height: 50%"
+        style="width: 500px; max-width: 80vw; height: 480px"
+        class=""
         v-show="maintenancehistory"
       >
-        <q-card-section style="max-height: " class="scroll">
+        <q-toolbar class="q-pa-md">
+          <q-toolbar-title
+            ><span class="text-weight-bold"
+              >MAINTENANCE HISTORY</span
+            ></q-toolbar-title
+          >
+          <q-btn flat dense icon="close" v-close-popup color="orange" />
+        </q-toolbar>
+        <q-separator></q-separator>
+
+        <!-- <q-card-section style="max-height: " class="scroll">
           <div class="row">
             <div class="col-11 text-h6">MACHINE MAINTENANCE HISTORY</div>
             <div class="col-1">
@@ -279,7 +309,8 @@
               />
             </div>
           </div>
-        </q-card-section>
+        </q-card-section> -->
+        <q-card-section>
         <q-table
           class="my-sticky-header-table"
           flat
@@ -351,6 +382,7 @@
             </div>
           </template>
         </q-table>
+        </q-card-section>
       </q-card>
     </q-dialog>
 
@@ -446,18 +478,28 @@
       transition-hide="scale"
     >
       <q-card class="" style="width: 500px">
-        <q-card-section>
+        <!-- <q-card-section>
           <div class="row text-h6">
             <div class="col-11">ADD MAINTENANCE</div>
             <div class="col-1">
               <q-btn flat round color="orange" icon="close" v-close-popup />
             </div>
           </div>
-        </q-card-section>
-        <q-separator />
+        </q-card-section> -->
+
+        <q-toolbar>
+          <q-toolbar-title
+            ><span class="text-weight-bold"
+              >ADD MAINTENANCE</span
+            ></q-toolbar-title
+          >
+          <q-btn flat round dense icon="close" v-close-popup color="orange" />
+        </q-toolbar>
+        <q-separator /> 
+
         <q-card-section>
           <div class="row">
-            <div class="col">
+            <div class="col-6 col-xs-12 col-sm-6">
               <q-input
                 ref="maintenanceType"
                 :rules="[this.required]"
@@ -469,7 +511,7 @@
                 class="q-pa-sm q-mb-sm"
               />
             </div>
-            <div class="col">
+            <div class="col-6 col-xs-12 col-sm-6">
               <q-input
                 ref="maintenanceDate"
                 :rules="[this.required]"

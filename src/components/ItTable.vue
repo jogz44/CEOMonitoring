@@ -105,8 +105,8 @@
 
     <!-- DIALOG FOR DETAILS -->
     <q-dialog v-model="dialogVisible" persistent>
-      <q-card style="width: auto; max-width: 80vw; height: auto; max-height: 55%;">
-        <q-toolbar>
+      <q-card style="width: 500px; max-width: 80vw; height: 470px; ">
+        <q-toolbar class="q-pa-md">
           <q-toolbar-title
             ><span class="text-weight-bold"
               >IT EQUIPMENT DETAILS</span
@@ -251,17 +251,18 @@
 
       <!-- DIALOG FOR MAINTENANCE -->
       <q-card
-        style="width: auto; max-width: 80vw; height: 50%"
+      style="width: 500px; max-width: 80vw; height: 470px; "
         v-show="maintenancehistory"
       >
-        <q-toolbar>
+        <q-toolbar class="q-pa-md">
           <q-toolbar-title
             ><span class="text-weight-bold"
-              >IT EQUIPMENT MAINTENANCE HISTORY</span
+              >MAINTENANCE HISTORY</span
             ></q-toolbar-title
           >
-          <q-btn flat round dense icon="close" v-close-popup color="orange" />
+          <q-btn flat dense icon="close" v-close-popup color="orange" />
         </q-toolbar>
+        <q-separator />
 
         <!-- <q-card-section class="scroll">
           <div class="row">
@@ -455,18 +456,26 @@
       transition-hide="scale"
     >
       <q-card class="" style="width: 500px">
-        <q-card-section>
+        <q-toolbar>
+          <q-toolbar-title
+            ><span class="text-weight-bold"
+              >ADD MAINTENANCE</span
+            ></q-toolbar-title
+          >
+          <q-btn flat round dense icon="close" v-close-popup color="orange" />
+        </q-toolbar>
+        <!-- <q-card-section>
           <div class="row text-h6">
             <div class="col-11">ADD MAINTENANCE</div>
             <div class="col-1">
               <q-btn flat round color="orange" icon="close" v-close-popup />
             </div>
           </div>
-        </q-card-section>
+        </q-card-section> -->
         <q-separator />
         <q-card-section>
           <div class="row">
-            <div class="col">
+            <div class="col-6 col-xs-12 col-sm-6">
               <q-input
                 ref="maintenanceType"
                 :rules="[this.required]"
@@ -478,7 +487,7 @@
                 class="q-pa-sm q-mb-sm"
               />
             </div>
-            <div class="col">
+            <div class="col-6 col-xs-12 col-sm-6">
               <q-input
                 ref="maintenanceDate"
                 :rules="[this.required]"

@@ -12,7 +12,7 @@
       class="my-sticky-header-table"
       flat
       bordered
-      title="User List"
+      title="USER LIST"
       dense
       :rows="store.users"
       :columns="columns"
@@ -21,11 +21,11 @@
     >
       <template v-slot:top-right>
         <q-input
-          borderless
           dense
           debounce="300"
           v-model="filter"
           placeholder="Search"
+          style="margin-bottom: 20px"
         >
           <template v-slot:append>
             <q-icon name="search" />
@@ -44,14 +44,6 @@
           >
           </q-btn>
           <q-btn
-            icon="delete"
-            flat
-            round
-            color="deep-orange"
-            @click="deleteItem(row)"
-          >
-          </q-btn>
-          <q-btn
             icon="security"
             flat
             round
@@ -59,20 +51,35 @@
             @click="accessItem(row)"
           >
           </q-btn>
+          <q-btn
+            icon="delete"
+            flat
+            round
+            color="deep-orange"
+            @click="deleteItem(row)"
+          >
+          </q-btn>
         </div>
       </template>
     </q-table>
 
     <q-dialog v-model="dialogVisible" persistent>
-      <q-card style="width: 50%; height: auto">
-        <q-card-section>
+      <q-card style="width: 500px; height: auto">
+        <q-toolbar>
+          <q-toolbar-title
+            ><span class="text-weight-bold">USER DETAILS</span></q-toolbar-title
+          >
+          <q-btn flat dense icon="close" v-close-popup color="orange" />
+        </q-toolbar>
+
+        <!-- <q-card-section>
           <div class="row text-h6">
             <div class="col-11">USER DETAILS</div>
             <div class="col-1">
               <q-btn flat round color="orange" icon="close" v-close-popup />
             </div>
           </div>
-        </q-card-section>
+        </q-card-section> -->
 
         <q-separator />
 
@@ -207,55 +214,65 @@
     <!-- USER ACCESS BUTTON DIALOG -->
     <q-dialog v-model="UserAccess">
       <q-card style="width: 50%; height: auto" class="container q-pa-sm">
-        <q-card-section>
+        <!-- <q-card-section>
           <div class="row">
             <div class="text-h6 col-11">USER ACCESS</div>
             <div class="col-1">
               <q-btn flat round color="orange" icon="close" v-close-popup />
             </div>
           </div>
-        </q-card-section>
+        </q-card-section> -->
 
-        <q-table
-          title="Module Names"
-          :rows="loadCreds"
-          :columns="ModuleColumn"
-          row-key="id"
-          flat
-          bordered
-          dense
-        >
-          <template v-slot:top-left>
-            <q-btn
-              label="ADD ACCESS"
-              size="x-small"
-              icon="add"
-              @click="ModuleEditDialog = true"
-              color="green-10"
-              class="q-pa-sm q-mt-sm"
-            ></q-btn>
-          </template>
-          <template v-slot:body-cell-actions="{ row }">
-            <div class="actionsbtn">
+        <q-toolbar>
+          <q-toolbar-title
+            ><span class="text-weight-bold">USER ACCESS</span></q-toolbar-title
+          >
+          <q-btn flat dense icon="close" v-close-popup color="orange" />
+        </q-toolbar>
+        <q-separator />
+
+        <q-card-section>
+          <q-table
+            title="Module Names"
+            :rows="loadCreds"
+            :columns="ModuleColumn"
+            row-key="id"
+            flat
+            bordered
+            dense
+          >
+            <template v-slot:top-left>
               <q-btn
-                icon="edit"
-                flat
-                round
-                color="secondary"
-                @click="editModule(row)"
-              >
-              </q-btn>
-              <q-btn
-                icon="delete"
-                flat
-                round
-                color="deep-orange"
-                @click="deleteCredentials(this.selectedid, row._id)"
-              >
-              </q-btn>
-            </div>
-          </template>
-        </q-table>
+                label="ADD ACCESS"
+                size="x-small"
+                icon="add"
+                @click="ModuleEditDialog = true"
+                color="green-10"
+                class="q-pa-sm q-mt-sm"
+              ></q-btn>
+            </template>
+            <template v-slot:body-cell-actions="{ row }">
+              <div class="actionsbtn">
+                <q-btn
+                  icon="edit"
+                  flat
+                  round
+                  color="secondary"
+                  @click="editModule(row)"
+                >
+                </q-btn>
+                <q-btn
+                  icon="delete"
+                  flat
+                  round
+                  color="deep-orange"
+                  @click="deleteCredentials(this.selectedid, row._id)"
+                >
+                </q-btn>
+              </div>
+            </template>
+          </q-table>
+        </q-card-section>
 
         <!-- <q-card-actions align="right">
           <q-btn flat label="Cancel" color="primary" v-close-popup size="md" />

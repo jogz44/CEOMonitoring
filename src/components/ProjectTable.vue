@@ -94,8 +94,8 @@
     <!-- the main dialog -->
 
     <q-dialog persistent v-model="dialogVisible">
-      <q-card style="width: 500px; max-width: 80vw; height: 500px">
-        <q-toolbar>
+      <q-card style="width: 500px; max-width: 80vw; height: 510px">
+        <q-toolbar class="q-pa-md">
           <q-toolbar-title
             ><span class="text-weight-bold"
               >PROJECT DETAILS</span
@@ -104,7 +104,6 @@
 
           <q-btn
             flat
-            round
             dense
             icon="close"
             v-close-popup
@@ -156,9 +155,9 @@
                   filled
                   v-model="editedItem.ReferenceNo"
                   :disable="updateproject === !isEditMode"
-                  label="Reference Number"
+                  label="Reference No."
                   dense
-                  class="q-pa-sm q-mb-sm "
+                  class="q-pa-sm q-mb-sm"
                 />
               </div>
 
@@ -209,8 +208,17 @@
             </div>
             <div class="row">
               <div class="col">
-                <q-input
+                <!-- <q-input
                   v-if="editedItem._id"
+                  filled
+                  v-model="editedItem.DateAccomplished"
+                  :disable="updateproject === !isEditMode"
+                  label="Actual Finished Date"
+                  dense
+                  class="q-pa-sm"
+                  type="date"
+                /> -->
+                <q-input
                   filled
                   v-model="editedItem.DateAccomplished"
                   :disable="updateproject === !isEditMode"
@@ -273,97 +281,95 @@
 
       <!-- DIALOG FOR UPDATE -->
       <q-card
-      style="width: 500px; max-width: 80vw; height: 500px"
+      style="width: 500px; max-width: 80vw; height: 510px"
         v-show="updateproject"
       >
-        <q-toolbar>
+        <q-toolbar class="q-pa-md">
           <q-toolbar-title
             ><span class="text-weight-bold"
-              >PROJECT UPDATE HISTORY</span
+              >UPDATE HISTORY</span
             ></q-toolbar-title
           >
-          <q-btn flat round dense icon="close" v-close-popup color="orange" />
+          <q-btn flat dense icon="close" v-close-popup color="orange" />
         </q-toolbar>
         <q-separator />
         <q-card-section style="max-height: 50vh" class="scroll">
           <q-table
-          class="my-sticky-header-table"
-          flat
-          bordered
-          title=""
-          dense
-          :rows="store.projecthistory"
-          :columns="history"
-          :filter="filters"
-          row-key="id"
-          virtual-scroll
-        >
-          <template v-slot:top-right>
-            <q-input
-              color="green"
-              dense
-              debounce="300"
-              v-model="filters"
-              placeholder="Search"
-            >
-              <template v-slot:append>
-                <q-icon name="search" />
-              </template>
-            </q-input>
-          </template>
-          <template v-slot:top-left>
-            <q-btn
-              label="Add Update"
-              size="x-small"
-              icon="add"
-              @click="secondDialog = true"
-              color="green-10"
-            ></q-btn>
-          </template>
-
-          <template v-slot:body-cell-DateUpdate="{ row }">
-            <q-td>
-              {{ formatDate(row.DateUpdate) }}
-            </q-td>
-          </template>
-          <template v-slot:body-cell-ImageUpdate="{ row }">
-            <q-td>
-              <q-img
-                :src="row.ImageUpdate"
-                style="height: 50px; max-width: 100px"
-              />
-            </q-td>
-          </template>
-          <template v-slot:body-cell-UpdateDescription="{ row }">
-            <q-td>
-              {{ row.UpdateDescription }}
-            </q-td>
-          </template>
-
-          <template v-slot:body-cell-actions="{ row }">
-            <div class="actionsbtn">
-              <q-btn
-                icon="visibility"
-                flat
-                round
+            class="my-sticky-header-table"
+            flat
+            bordered
+            title=""
+            dense
+            :rows="store.projecthistory"
+            :columns="history"
+            :filter="filters"
+            row-key="id"
+            virtual-scroll
+          >
+            <template v-slot:top-right>
+              <q-input
                 color="green"
-                @click="viewUpdate(row)"
+                dense
+                debounce="300"
+                v-model="filters"
+                placeholder="Search"
               >
-              </q-btn>
+                <template v-slot:append>
+                  <q-icon name="search" />
+                </template>
+              </q-input>
+            </template>
+            <template v-slot:top-left>
               <q-btn
-                icon="delete"
-                flat
-                round
-                color="deep-orange"
-                @click="deleteUpdate(row._id)"
-              >
-              </q-btn>
-            </div>
-          </template>
-        </q-table>
-        </q-card-section>
+                label="Add Update"
+                size="x-small"
+                icon="add"
+                @click="secondDialog = true"
+                color="green-10"
+              ></q-btn>
+            </template>
 
-        <q-separator />
+            <template v-slot:body-cell-DateUpdate="{ row }">
+              <q-td>
+                {{ formatDate(row.DateUpdate) }}
+              </q-td>
+            </template>
+            <template v-slot:body-cell-ImageUpdate="{ row }">
+              <q-td>
+                <q-img
+                  :src="row.ImageUpdate"
+                  style="height: 50px; max-width: 100px"
+                />
+              </q-td>
+            </template>
+            <template v-slot:body-cell-UpdateDescription="{ row }">
+              <q-td>
+                {{ row.UpdateDescription }}
+              </q-td>
+            </template>
+
+            <template v-slot:body-cell-actions="{ row }">
+              <div class="actionsbtn">
+                <q-btn
+                  icon="visibility"
+                  flat
+                  round
+                  color="green"
+                  @click="viewUpdate(row)"
+                >
+                </q-btn>
+                <q-btn
+                  icon="delete"
+                  flat
+                  round
+                  color="deep-orange"
+                  @click="deleteUpdate(row._id)"
+                >
+                </q-btn>
+              </div>
+            </template>
+          </q-table>
+        </q-card-section>
         <!-- <div style="position: absolute; bottom: 10px; right: 10px">
           <q-btn
             label=""
@@ -389,7 +395,7 @@
       transition-show="scale"
       transition-hide="scale"
     >
-      <q-card class="" style="width: 500px;">
+      <q-card class="" style="width: 500px">
         <q-card-section style="max-height: 50vh" class="scroll">
           <div class="row text-h6">
             <div class="col-11">UPDATE VIEW</div>
@@ -432,14 +438,22 @@
       transition-hide="scale"
     >
       <q-card class="" style="width: 500px">
-        <q-card-section>
+        <q-toolbar>
+          <q-toolbar-title
+            ><span class="text-weight-bold"
+              >ADD UPDATE</span
+            ></q-toolbar-title
+          >
+          <q-btn flat round dense icon="close" v-close-popup color="orange" />
+        </q-toolbar>
+        <!-- <q-card-section>
           <div class="row text-h6">
             <div class="col-11">ADD UPDATE</div>
             <div class="col-1">
               <q-btn flat round color="orange" icon="close" v-close-popup />
             </div>
           </div>
-        </q-card-section>
+        </q-card-section> -->
         <q-separator />
         <q-card-section>
           <div class="row">
