@@ -88,7 +88,7 @@
         </template>
 
         <template v-slot:body-cell-charges="{ row }">
-          <q-td>
+          <q-td class="charges">
             {{ row.employmentDtl[0] ? row.employmentDtl[0].Charges : null }}
           </q-td>
         </template>
@@ -630,7 +630,7 @@
               <div class="col-12 text-h6">EMPLOYEE LIST</div>
             </div>
           </q-card-section> -->
-          <q-separator />
+        <q-separator />
         <q-card-section>
           <q-table
             flat
@@ -890,7 +890,7 @@ export default {
         },
         {
           name: "firstname",
-          align: "center",
+          align: "left",
           label: "FIRSTNAME",
           field: "firstName",
           sortable: true,
@@ -1025,7 +1025,7 @@ export default {
       },
       resumeLink: "",
     };
-    console.log("sge=", this.editedItem);
+    // console.log("sge=", this.editedItem);
   },
   computed: {
     filteredEmployees() {
@@ -1226,6 +1226,7 @@ export default {
     Rowclick() {
       this.employmenthistory = false;
       this.exitBtn = true;
+      this.dialogVisibles = true;
 
       this.editedItem = {
         id: null,
@@ -1235,7 +1236,7 @@ export default {
         IsDeleted: false,
         resumeLink: "",
       };
-      this.dialogVisibles = true;
+
     },
 
     formatDate(value) {
@@ -1647,6 +1648,17 @@ export default {
 </script>
 
 <style scoped>
+.my-sticky-header-table {
+  width: 100%;
+  table-layout: fixed;
+}
+/* for the table ellipses */
+.charges {
+  max-width: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 .my-card {
   width: 100%;
   max-width: 250px;
@@ -1663,5 +1675,7 @@ export default {
 .custom-table-cell {
   white-space: normal;
   word-wrap: break-word;
+}
+td {
 }
 </style>

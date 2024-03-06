@@ -46,7 +46,7 @@ export const useEquipmentInfo = defineStore("equipmentinfo", {
 
         this.equipments = response.data;
         this.equipmentsCount = response.data.length;
-        console.log("Equipments=", this.equipments);
+        // console.log("Equipments=", this.equipments);
         this.filteredEquipments = response.data.filter(
           (equipments) =>
             equipments.EquipmentType === "Heavy" ||
@@ -149,7 +149,7 @@ export const useEquipmentInfo = defineStore("equipmentinfo", {
             `/maintenance/remove/` +
             maintenanceid
         );
-        console.log("res =", res.data);
+        // console.log("res =", res.data);
       } catch (error) {
         console.log(`Unable to Delete ${error}`);
 

@@ -57,10 +57,10 @@ export const useStorePersonnelInfo = defineStore("personnelinfo", {
         }
       });
 
-      console.log(
-        "Active Employees without Date Received:",
-        activeRecEmployees
-      );
+      // console.log(
+      //   "Active Employees without Date Received:",
+      //   activeRecEmployees
+      // );
 
       return activeRecEmployees;
     },
@@ -76,8 +76,8 @@ export const useStorePersonnelInfo = defineStore("personnelinfo", {
         this.personnels = response.data;
         this.personnelsCount = response.data.length;
 
-        console.log("res=", this.personnels);
-        console.log("count =>", this.personnelsCount);
+        // console.log("res=", this.personnels);
+        // console.log("count =>", this.personnelsCount);
 
         this.filteredStatus = response.data.filter((personnel) => {
           if (
@@ -116,10 +116,10 @@ export const useStorePersonnelInfo = defineStore("personnelinfo", {
             personnel.employmentDtl[0].EmpStatus === "Job Order (Project-Based)"
         ).length;
 
-        console.log("Regular Count:", this.regularCount);
-        console.log("Casual Count:", this.casualCount);
-        console.log("Program-Based Count:", this.programCount);
-        console.log("Project-Based Count:", this.projectCount);
+        // console.log("Regular Count:", this.regularCount);
+        // console.log("Casual Count:", this.casualCount);
+        // console.log("Program-Based Count:", this.programCount);
+        // console.log("Project-Based Count:", this.projectCount);
       } catch (error) {
         console.log(`Error fetching tasks: ${error}`);
       }
@@ -240,7 +240,7 @@ export const useStorePersonnelInfo = defineStore("personnelinfo", {
           "http://10.0.1.23:5000/api/library/designation"
         );
         this.EmpDesignation = response.data;
-        console.log("Empppp", this.EmpDesignation);
+        // console.log("Empppp", this.EmpDesignation);
       } catch (error) {
         console.log(`Error fetching tasks: ${error}`);
       }
