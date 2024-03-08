@@ -10,6 +10,7 @@ export const useStorePersonnelInfo = defineStore("personnelinfo", {
     designationtype: [],
     EmpDesignation: [],
     EmpDtls: [],
+    EmpContractDtls: [],
     filteredStatus: [],
     regularCount: 0,
     casualCount: 0,
@@ -205,6 +206,21 @@ export const useStorePersonnelInfo = defineStore("personnelinfo", {
       }
     },
 
+    async GetEmployment(id, contractid) {
+      try {
+        const response = await axios.get(
+          `http://10.0.1.23:5000/api/Personnels/` +
+            id +
+            `/contract/` +
+            contractid
+        );
+        this.EmpContractDtls = response.data;
+        console.log("This is the Appointment =>", this.EmpContractDtls)
+      } catch (error) {
+        console.log(`Error fetching Employment: ${error}`);
+      }
+    },
+
     async AddEmployment(id, payload) {
       try {
         const response = await axios.post(
@@ -214,6 +230,20 @@ export const useStorePersonnelInfo = defineStore("personnelinfo", {
         // this.equipment.push(response.data);
       } catch (error) {
         console.log(`Error fetching tasks: ${error}`);
+      }
+    },
+
+    async UpdateEmployment(id, contractid, payload) {
+      try {
+        const response = await axios.put(
+          `http://10.0.1.23:5000/api/Personnels/` +
+            id +
+            `/contract/` +
+            contractid,
+          payload
+        );
+      } catch (error) {
+        console.log(`Cannot Update ${error}`);
       }
     },
 

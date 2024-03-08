@@ -957,6 +957,7 @@ export default {
           store
             .UpdateITEquipment(editedItemCopy._id, editedItemCopy)
             .then((res) => {
+              this.closeDialog();
               this.editedItem = {
                 MachineName: "",
                 EquipmentType: "",
@@ -966,13 +967,14 @@ export default {
                 Remarks: "",
               };
               store.fetchITEquipment().then((res) => {
-                this.closeDialog();
+
                 this.isEditMode = false;
               });
             });
           console.log("Item Updated: ", editedItemCopy);
         } else {
           store.AddITEquipment(editedItemCopy).then((res) => {
+            this.closeDialog();
             this.editedItem = {
               id: null,
               MachineName: "",
@@ -983,7 +985,7 @@ export default {
               Remarks: "",
             };
             store.fetchITEquipment().then((res) => {
-              this.closeDialog();
+    
             });
           });
           console.log("save=", editedItemCopy);

@@ -281,7 +281,7 @@
 
       <!-- DIALOG FOR UPDATE -->
       <q-card
-      style="width: 500px; max-width: 80vw; height: 510px"
+        style="width: 500px; max-width: 80vw; height: 510px"
         v-show="updateproject"
       >
         <q-toolbar class="q-pa-md">
@@ -440,9 +440,7 @@
       <q-card class="" style="width: 500px">
         <q-toolbar>
           <q-toolbar-title
-            ><span class="text-weight-bold"
-              >ADD UPDATE</span
-            ></q-toolbar-title
+            ><span class="text-weight-bold">ADD UPDATE</span></q-toolbar-title
           >
           <q-btn flat round dense icon="close" v-close-popup color="orange" />
         </q-toolbar>
@@ -989,19 +987,18 @@ export default {
           store
             .UpdateProject(editedItemCopy._id, editedItemCopy)
             .then((res) => {
+              this.closeDialog();
               this.editedItem = { ...this.defaultItem };
               store.fetchProject().then((res) => {
-                this.closeDialog();
                 this.isEditMode = false;
               });
             });
           console.log("Item Updated: ", editedItemCopy);
         } else {
           store.AddProject(editedItemCopy).then((res) => {
+            this.closeDialog();
             this.editedItem = { ...this.defaultItem };
-            store.fetchProject().then((res) => {
-              this.closeDialog();
-            });
+            store.fetchProject().then((res) => {});
           });
           console.log("save=", editedItemCopy);
         }

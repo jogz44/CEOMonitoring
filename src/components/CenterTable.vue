@@ -418,6 +418,14 @@
             <template v-slot:body-cell-actions="{ row }">
               <div class="actionsbtn">
                 <q-btn
+                  icon="edit"
+                  flat
+                  round
+                  color="green-8"
+                  @click="updateEmployment(row)"
+                >
+                </q-btn>
+                <q-btn
                   icon="delete"
                   flat
                   round
@@ -490,7 +498,7 @@
         <q-toolbar>
           <q-toolbar-title
             ><span class="text-weight-bold"
-              >ADD EMPLOYMENT</span
+              >APPOINTMENT DETAILS</span
             ></q-toolbar-title
           >
           <q-btn flat dense icon="close" v-close-popup color="orange" />
@@ -545,12 +553,14 @@
                 lazy-rules
                 filled
                 v-model="EmpDtl.Designation"
+
                 use-input
                 hide-selected
                 fill-input
                 input-debounce="0"
                 :options="optionsD"
                 :option-label="(val) => val.Designation"
+                :option-value="(val) => val.Designation"
                 @filter="filterFns"
                 label="Designation"
                 dense
@@ -1236,7 +1246,6 @@ export default {
         IsDeleted: false,
         resumeLink: "",
       };
-
     },
 
     formatDate(value) {
@@ -1314,6 +1323,16 @@ export default {
     //   });
     //   console.log("row click=", id);
     // },
+
+    updateEmployment(contractid) {
+      this.secondDialog = true;
+      const store = useStorePersonnelInfo();
+      store.GetEmployment(this.selectedID, contractid._id).then((res)=> {
+        this.EmpDtl=store.EmpContractDtls;
+
+
+      })
+    },
 
     deleteEmployment(contractid) {
       // console.log("Contract ID =>", id + "----" + contractid);
@@ -1395,6 +1414,7 @@ export default {
           store
             .UpdatePersonnel(editedItemCopy._id, editedItemCopy)
             .then((res) => {
+              this.closeDialog();
               this.editedItem = {
                 lastName: "",
                 firstName: "",
@@ -1402,13 +1422,13 @@ export default {
                 resumeLink: "",
               };
               store.fetchPersonnel().then((res) => {
-                this.closeDialog();
                 this.isEditMode = false;
               });
             });
           console.log("Item Updated: ", editedItemCopy);
         } else {
           store.AddPersonnel(editedItemCopy).then((res) => {
+            this.closeDialog();
             this.editedItem = {
               id: null,
               lastName: "",
@@ -1416,9 +1436,7 @@ export default {
               middleName: "",
               resumeLink: "",
             };
-            store.fetchPersonnel().then((res) => {
-              this.closeDialog();
-            });
+            store.fetchPersonnel().then((res) => {});
           });
           console.log("save=", editedItemCopy);
         }
@@ -1431,7 +1449,7 @@ export default {
       this.$refs.charges.validate();
       this.$refs.employeeStatus.validate();
       this.$refs.salaryRate.validate();
-
+      console.log("edited=",this.EmpDtl)
       if (
         !this.$refs.dateStarted.hasError &&
         !this.$refs.dateEnded.hasError &&
@@ -1443,25 +1461,31 @@ export default {
         const store = useStorePersonnelInfo();
         let editedItemCopy = { ...this.EmpDtl };
         editedItemCopy.Designation = this.EmpDtl.Designation.Designation;
-        store.AddEmployment(this.selectedID, editedItemCopy).then(() => {
-          store.GetPersonnel(this.selectedID).then((res1) => {
-            this.editedItem = store.personnel;
-            store.GetPersonnelHistory(this.selectedID);
-            (this.EmpDtl = [
-              {
-                DteStarted: "",
-                DteEnded: "",
-                DteReceived: "",
-                Designation: "",
-                Charges: "",
-                EmpStatus: "",
-                Drate: "",
-                isDeleted: false,
-              },
-            ]),
-              store.fetchPersonnel();
+
+        if (editedItemCopy._id) {
+          store.UpdateEmployment();
+        } else {
+          store.AddEmployment(this.selectedID, editedItemCopy).then(() => {
+            store.GetPersonnel(this.selectedID).then((res1) => {
+              this.editedItem = store.personnel;
+              store.GetPersonnelHistory(this.selectedID);
+              (this.EmpDtl = [
+                {
+                  DteStarted: "",
+                  DteEnded: "",
+                  DteReceived: "",
+                  Designation: "",
+                  Charges: "",
+                  EmpStatus: "",
+                  Drate: "",
+                  isDeleted: false,
+                },
+              ]),
+                store.fetchPersonnel();
+            });
           });
-        });
+        }
+
         this.secondDialog = false;
       }
     },

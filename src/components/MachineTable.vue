@@ -495,7 +495,7 @@
           >
           <q-btn flat round dense icon="close" v-close-popup color="orange" />
         </q-toolbar>
-        <q-separator /> 
+        <q-separator />
 
         <q-card-section>
           <div class="row">
@@ -949,6 +949,7 @@ export default {
           store
             .UpdateEquipment(editedItemCopy._id, editedItemCopy)
             .then((res) => {
+              this.closeDialog();
               this.editedItem = {
                 MachineName: "",
                 EquipmentType: "",
@@ -958,13 +959,14 @@ export default {
                 Remarks: "",
               };
               store.fetchEquipment().then((res) => {
-                this.closeDialog();
+
                 this.isEditMode = false;
               });
             });
           console.log("Item Updated: ", editedItemCopy);
         } else {
           store.AddEquipment(editedItemCopy).then((res) => {
+            this.closeDialog();
             this.editedItem = {
               id: null,
               MachineName: "",
@@ -975,7 +977,7 @@ export default {
               Remarks: "",
             };
             store.fetchEquipment().then((res) => {
-              this.closeDialog();
+
             });
           });
           console.log("save=", editedItemCopy);
