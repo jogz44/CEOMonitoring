@@ -53,43 +53,43 @@
 
         <template v-slot:body-cell-EmpStatus="{ row }">
           <q-td>
-            {{ row.employmentDtl[0] ? row.employmentDtl[0].EmpStatus : null }}
+            {{ row.employmentDtl[row.employmentDtl.length -1] ? row.employmentDtl[row.employmentDtl.length -1].EmpStatus : null }}
           </q-td>
         </template>
 
         <template v-slot:body-cell-Drate="{ row }">
           <q-td>
-            {{ row.employmentDtl[0] ? row.employmentDtl[0].Drate : null }}
+            {{ row.employmentDtl[row.employmentDtl.length -1] ? row.employmentDtl[row.employmentDtl.length -1].Drate : null }}
           </q-td>
         </template>
 
         <template v-slot:body-cell-DteStarted="{ row }">
           <q-td>
-            {{ row.employmentDtl[0] ? row.employmentDtl[0].DteStarted : null }}
+            {{ row.employmentDtl[row.employmentDtl.length -1] ? row.employmentDtl[row.employmentDtl.length -1].DteStarted : null }}
           </q-td>
         </template>
 
         <template v-slot:body-cell-DteReceived="{ row }">
           <q-td>
-            {{ row.employmentDtl[0] ? row.employmentDtl[0].DteReceived : null }}
+            {{ row.employmentDtl[row.employmentDtl.length -1] ? row.employmentDtl[row.employmentDtl.length -1].DteReceived : null }}
           </q-td>
         </template>
 
         <template v-slot:body-cell-de="{ row }">
           <q-td>
-            {{ row.employmentDtl[0] ? row.employmentDtl[0].DteEnded : null }}
+            {{ row.employmentDtl[row.employmentDtl.length -1] ? row.employmentDtl[row.employmentDtl.length -1].DteEnded : null }}
           </q-td>
         </template>
 
         <template v-slot:body-cell-designation="{ row }">
           <q-td>
-            {{ row.employmentDtl[0] ? row.employmentDtl[0].Designation : null }}
+            {{ row.employmentDtl[row.employmentDtl.length -1] ? row.employmentDtl[row.employmentDtl.length -1].Designation : null }}
           </q-td>
         </template>
 
         <template v-slot:body-cell-charges="{ row }">
           <q-td class="charges">
-            {{ row.employmentDtl[0] ? row.employmentDtl[0].Charges : null }}
+            {{ row.employmentDtl[row.employmentDtl.length -1] ? row.employmentDtl[row.employmentDtl.length -1].Charges : null }}
           </q-td>
         </template>
 
@@ -99,17 +99,17 @@
               style="height: auto"
               :class="
                 getStatusClass(
-                  row.employmentDtl[0] ? row.employmentDtl[0].DteEnded : null
+                  row.employmentDtl[row.employmentDtl.length -1] ? row.employmentDtl[row.employmentDtl.length -1].DteEnded : null
                 )
               "
             >
               {{
                 getStatusClass2(
-                  row.employmentDtl[0] ? row.employmentDtl[0].DteEnded : null
+                  row.employmentDtl[row.employmentDtl.length -1] ? row.employmentDtl[row.employmentDtl.length -1].DteEnded : null
                 ).status
               }}
               <br />
-              {{ row.employmentDtl[0] ? row.employmentDtl[0].DteEnded : null }}
+              {{ row.employmentDtl[row.employmentDtl.length -1] ? row.employmentDtl[row.employmentDtl.length -1].DteEnded : null }}
             </q-chip></q-td
           >
         </template>
@@ -354,6 +354,7 @@
             :filter="filters"
             row-key="id"
             style="margin-top: -5px"
+            :rows-per-page-options="[2]"
           >
             <template v-slot:top-right>
               <q-input
@@ -501,7 +502,14 @@
               >APPOINTMENT DETAILS</span
             ></q-toolbar-title
           >
-          <q-btn flat dense icon="close" v-close-popup color="orange" />
+          <q-btn
+            flat
+            dense
+            icon="close"
+            @click="closeAppointment()"
+            color="orange"
+
+          />
         </q-toolbar>
         <q-separator />
         <q-card-section class="q-pa-md">
@@ -517,6 +525,7 @@
                 dense
                 class="q-pa-sm"
                 type="date"
+                :disable="AppointmentDtls === !isEditModeAppDtls"
               />
             </div>
             <div class="col-6 col-xs-12 col-sm-6">
@@ -530,6 +539,7 @@
                 dense
                 class="q-pa-sm"
                 type="date"
+                :disable="AppointmentDtls === !isEditModeAppDtls"
               />
             </div>
           </div>
@@ -542,6 +552,7 @@
                 dense
                 class="q-pa-sm q-mt-sm"
                 type="date"
+                :disable="AppointmentDtls === !isEditModeAppDtls"
               />
             </div>
           </div>
@@ -553,18 +564,16 @@
                 lazy-rules
                 filled
                 v-model="EmpDtl.Designation"
-
                 use-input
                 hide-selected
                 fill-input
                 input-debounce="0"
-                :options="optionsD"
-                :option-label="(val) => val.Designation"
-                :option-value="(val) => val.Designation"
+                :options="designationoptions"
                 @filter="filterFns"
                 label="Designation"
                 dense
                 class="q-pa-sm"
+                :disable="AppointmentDtls === !isEditModeAppDtls"
               />
             </div>
           </div>
@@ -579,6 +588,7 @@
                 label="Charges"
                 dense
                 class="q-pa-sm q-mt-sm"
+                :disable="AppointmentDtls === !isEditModeAppDtls"
               />
             </div>
           </div>
@@ -594,6 +604,7 @@
                 label="Employee Status"
                 class="q-pa-sm q-mt-sm"
                 dense
+                :disable="AppointmentDtls === !isEditModeAppDtls"
               />
             </div>
             <div class="col-6 col-xs-12 col-sm-6">
@@ -606,18 +617,28 @@
                 label="Salary Rate"
                 class="q-pa-sm q-mt-sm"
                 dense
+                :disable="AppointmentDtls === !isEditModeAppDtls"
               />
             </div>
           </div>
         </q-card-section>
 
         <q-card-actions align="right">
-          <q-btn flat label="Cancel" color="orange" v-close-popup size="md" />
+          <q-btn
+            flat
+            round
+            color="orange"
+            icon="edit"
+            @click="toggleEditModeAppointmentDtls()"
+            v-show="AppointmentDtls"
+          />
           <q-btn
             label="Save"
             color="green-5"
             size="md"
+            class="q-mr-md"
             @click="savehistory(editedItem.id)"
+            :disable="AppointmentDtls === !isEditModeAppDtls"
           />
         </q-card-actions>
       </q-card>
@@ -779,6 +800,7 @@ export default {
     const $q = useQuasar();
 
     return {
+      // sampledata: ref([]),
       selectedSecondTable: [],
       secondTable: [],
       ReceiveJO: false,
@@ -805,8 +827,10 @@ export default {
       DeleteHistoryId: "",
       EmployeeDelete: false,
       isEditMode: false,
+      isEditModeAppDtls: false,
       EmpHistoryDialog: false,
       employmenthistory: true,
+      AppointmentDtls: true,
       filter: "",
       filters: "",
       filterReceived: "",
@@ -1089,8 +1113,8 @@ export default {
           Drate.includes(searchTerm) ||
           EmpStatus.includes(searchTerm) ||
           statusText.includes(searchTerm)
-        );
-      });
+        )
+      })
     },
   },
   watch: {
@@ -1200,6 +1224,10 @@ export default {
     toggleEditMode() {
       console.log("toggleEditMode called");
       this.isEditMode = !this.isEditMode;
+    },
+    toggleEditModeAppointmentDtls() {
+      console.log("toggleEditMode called");
+      this.isEditModeAppDtls = !this.isEditModeAppDtls;
     },
     getStatusClass(status) {
       const mydate = new Date(status);
@@ -1327,11 +1355,9 @@ export default {
     updateEmployment(contractid) {
       this.secondDialog = true;
       const store = useStorePersonnelInfo();
-      store.GetEmployment(this.selectedID, contractid._id).then((res)=> {
-        this.EmpDtl=store.EmpContractDtls;
-
-
-      })
+      store.GetEmployment(this.selectedID, contractid._id).then((res) => {
+        this.EmpDtl = store.EmpContractDtls;
+      });
     },
 
     deleteEmployment(contractid) {
@@ -1442,6 +1468,23 @@ export default {
         }
       }
     },
+    closeAppointment() {
+      this.EmpDtl = [
+        {
+          DteStarted: "",
+          DteEnded: "",
+          DteReceived: "",
+          Designation: "",
+          Charges: "",
+          EmpStatus: "",
+          Drate: "",
+          isDeleted: false,
+        },
+      ];
+      this.isEditModeAppDtls = false;
+      this.secondDialog = false;
+
+    },
     savehistory() {
       this.$refs.dateStarted.validate();
       this.$refs.dateEnded.validate();
@@ -1449,7 +1492,7 @@ export default {
       this.$refs.charges.validate();
       this.$refs.employeeStatus.validate();
       this.$refs.salaryRate.validate();
-      console.log("edited=",this.EmpDtl)
+      console.log("edited=", this.EmpDtl);
       if (
         !this.$refs.dateStarted.hasError &&
         !this.$refs.dateEnded.hasError &&
@@ -1460,10 +1503,36 @@ export default {
       ) {
         const store = useStorePersonnelInfo();
         let editedItemCopy = { ...this.EmpDtl };
-        editedItemCopy.Designation = this.EmpDtl.Designation.Designation;
+        // editedItemCopy.Designation = this.EmpDtl.Designation.Designation;
 
         if (editedItemCopy._id) {
-          store.UpdateEmployment();
+          store
+            .UpdateEmployment(
+              this.selectedID,
+              editedItemCopy._id,
+              editedItemCopy
+            )
+            .then((res) => {
+              store.GetPersonnel(this.selectedID).then((res1) => {
+                this.editedItem = store.personnel;
+                store.GetPersonnelHistory(this.selectedID).then((res2) => {
+                  this.EmpDtl = [
+                    {
+                      DteStarted: "",
+                      DteEnded: "",
+                      DteReceived: "",
+                      Designation: "",
+                      Charges: "",
+                      EmpStatus: "",
+                      Drate: "",
+                      isDeleted: false,
+                    },
+                  ];
+
+                store.fetchPersonnel();
+                });
+              });
+            });
         } else {
           store.AddEmployment(this.selectedID, editedItemCopy).then(() => {
             store.GetPersonnel(this.selectedID).then((res1) => {
@@ -1550,6 +1619,9 @@ export default {
       XLSX.writeFile(wb, "employee_data.xlsx");
     },
   },
+  // onMounted() {
+  //   this.sampledata.value = this.origdata.value.map((element) => element.Designation);
+  // },
   setup() {
     const selected = ref([]);
     const options = ref(stringOptions);
@@ -1599,29 +1671,18 @@ export default {
     store.fetchDesignation();
     const optionsD = ref([]);
     const origdata = ref([]);
+    // const sampledata = ref([]);
     origdata.value = store.EmpDesignation;
-
+    let sampledata = [];
+    origdata.value.forEach((element) => {
+      sampledata.push(element.Designation);
+    });
+    const designationoptions = ref(sampledata);
+    // console.log("sampledata=", sampledata);
     return {
-      // lastNameRef,
-      // nameRules: [(val) => (val && val.length > 0) || "Please type something"],
-      // onSubmit() {
-      //   lastNameRef.value.validate();
-      //   firstNameRef.value.validate();
-      // },
-
-      // editedItem = {
-      //   lastName: "",
-      //   firstName: "",
-      //   middleName: "",
-      //   isDeleted: false,
-      //   resumeLink: "",
-      // },
-
-      // lastName: ref(""),
-      // lastNameRef,
-
+      designationoptions,
       nameRules: [(val) => (val && val.length > 0) || "Please type something"],
-
+      sampledata,
       remove,
       update,
       create,
@@ -1632,14 +1693,21 @@ export default {
       options,
       optionsD,
       selected,
-      filterFns(val, update, abort) {
-        const needle = (val || "").toLowerCase();
-        const filteredItems = origdata.value.filter((item) =>
-          item.Designation.toLowerCase().includes(needle)
-        );
+
+      //filter of designation q-select
+      filterFns(val, update) {
+        if (val === "") {
+          update(() => {
+            designationoptions.value = sampledata;
+          });
+          return;
+        }
 
         update(() => {
-          optionsD.value = filteredItems;
+          const needle = val.toLowerCase();
+          designationoptions.value = sampledata.filter(
+            (v) => v.toLowerCase().indexOf(needle) > -1
+          );
         });
       },
 

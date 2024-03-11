@@ -47,12 +47,12 @@ export const useStorePersonnelInfo = defineStore("personnelinfo", {
     ActiveReceivedEmployees() {
       const activeRecEmployees = this.personnels.filter((employee) => {
         if (
-          employee.employmentDtl[0] &&
-          employee.employmentDtl[0].DteEnded &&
-          (employee.employmentDtl[0].DteReceived === null ||
-            employee.employmentDtl[0].DteReceived === undefined)
+          employee.employmentDtl[employee.employmentDtl.length -1] &&
+          employee.employmentDtl[employee.employmentDtl.length -1].DteEnded &&
+          (employee.employmentDtl[employee.employmentDtl.length -1].DteReceived === null ||
+            employee.employmentDtl[employee.employmentDtl.length -1].DteReceived === undefined)
         ) {
-          return new Date(employee.employmentDtl[0].DteEnded) >= new Date();
+          return new Date(employee.employmentDtl[employee.employmentDtl.length -1].DteEnded) >= new Date();
         } else {
           return false; // If employment details are not available, consider the employee as active
         }
@@ -77,7 +77,7 @@ export const useStorePersonnelInfo = defineStore("personnelinfo", {
         this.personnels = response.data;
         this.personnelsCount = response.data.length;
 
-        // console.log("res=", this.personnels);
+        console.log("res=", this.personnels);
         // console.log("count =>", this.personnelsCount);
 
         this.filteredStatus = response.data.filter((personnel) => {
