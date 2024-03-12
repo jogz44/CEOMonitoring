@@ -374,7 +374,7 @@
                 label="Create Appointment"
                 size="x-small"
                 icon="add"
-                @click="secondDialog = true"
+                @click="createAppointment()"
                 color="green-10"
               ></q-btn>
             </template>
@@ -1126,6 +1126,10 @@ export default {
     // },
   },
   methods: {
+    createAppointment(){
+      this.secondDialog = true;
+      this.AppointmentDtls = false;
+    },
     BatchReceiveEmployees() {
       this.$refs.dateReceived.validate();
 
@@ -1483,6 +1487,7 @@ export default {
       ];
       this.isEditModeAppDtls = false;
       this.secondDialog = false;
+      this.AppointmentDtls = true;
 
     },
     savehistory() {
@@ -1528,8 +1533,9 @@ export default {
                       isDeleted: false,
                     },
                   ];
-
+                  this.AppointmentDtls = false;
                 store.fetchPersonnel();
+
                 });
               });
             });
@@ -1550,6 +1556,7 @@ export default {
                   isDeleted: false,
                 },
               ]),
+              this.AppointmentDtls = true;
                 store.fetchPersonnel();
             });
           });
