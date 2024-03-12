@@ -19,10 +19,16 @@ export const useStorePersonnelInfo = defineStore("personnelinfo", {
   }),
   persist: true,
   getters: {
+    //Count Active Employees
     ActiveCount() {
       return this.personnels.reduce((p, c) => {
-        if (c.employmentDtl[0] && c.employmentDtl[0].DteEnded) {
-          return new Date(c.employmentDtl[0].DteEnded) >= new Date()
+        if (
+          c.employmentDtl[c.employmentDtl.length - 1] &&
+          c.employmentDtl[c.employmentDtl.length - 1].DteEnded
+        ) {
+          return new Date(
+            c.employmentDtl[c.employmentDtl.length - 1].DteEnded
+          ) >= new Date()
             ? p + 1
             : p;
         } else {
@@ -30,10 +36,18 @@ export const useStorePersonnelInfo = defineStore("personnelinfo", {
         }
       }, 0);
     },
+    //Display All Active Employees
     ActiveEmployees() {
       const activeEmployees = this.personnels.filter((employee) => {
-        if (employee.employmentDtl[0] && employee.employmentDtl[0].DteEnded) {
-          return new Date(employee.employmentDtl[0].DteEnded) >= new Date();
+        if (
+          employee.employmentDtl[employee.employmentDtl.length - 1] &&
+          employee.employmentDtl[employee.employmentDtl.length - 1].DteEnded
+        ) {
+          return (
+            new Date(
+              employee.employmentDtl[employee.employmentDtl.length - 1].DteEnded
+            ) >= new Date()
+          );
         } else {
           return false; // If employment details are not available, consider the employee as active
         }
@@ -44,30 +58,32 @@ export const useStorePersonnelInfo = defineStore("personnelinfo", {
       return activeEmployees;
     },
 
+    //Display All Active Employees without Received Date
     ActiveReceivedEmployees() {
       const activeRecEmployees = this.personnels.filter((employee) => {
         if (
-          employee.employmentDtl[employee.employmentDtl.length -1] &&
-          employee.employmentDtl[employee.employmentDtl.length -1].DteEnded &&
-          (employee.employmentDtl[employee.employmentDtl.length -1].DteReceived === null ||
-            employee.employmentDtl[employee.employmentDtl.length -1].DteReceived === undefined)
+          employee.employmentDtl[employee.employmentDtl.length - 1] &&
+          employee.employmentDtl[employee.employmentDtl.length - 1].DteEnded &&
+          (employee.employmentDtl[employee.employmentDtl.length - 1]
+            .DteReceived === null ||
+            employee.employmentDtl[employee.employmentDtl.length - 1]
+              .DteReceived === undefined)
         ) {
-          return new Date(employee.employmentDtl[employee.employmentDtl.length -1].DteEnded) >= new Date();
+          return (
+            new Date(
+              employee.employmentDtl[employee.employmentDtl.length - 1].DteEnded
+            ) >= new Date()
+          );
         } else {
-          return false; // If employment details are not available, consider the employee as active
+          return false;
         }
       });
-
-      // console.log(
-      //   "Active Employees without Date Received:",
-      //   activeRecEmployees
-      // );
-
       return activeRecEmployees;
     },
   },
 
   actions: {
+    //Fetch All Personnel with Details
     async fetchPersonnel() {
       try {
         const response = await axios.get(
@@ -80,52 +96,65 @@ export const useStorePersonnelInfo = defineStore("personnelinfo", {
         console.log("res=", this.personnels);
         // console.log("count =>", this.personnelsCount);
 
-        this.filteredStatus = response.data.filter((personnel) => {
-          if (
-            personnel.employmentDtl.length !== 0 &&
-            personnel.employmentDtl[0].EmpStatus
-          ) {
-            const empStatus =
-              personnel.employmentDtl[0].EmpStatus.toLowerCase();
-            return (
-              empStatus === "regular" ||
-              empStatus === "casual" ||
-              empStatus === "job order (program-based)" ||
-              empStatus === "job order (project-based)"
-            );
-          }
-          // If employmentDtl is empty or EmpStatus is undefined, you may want to decide whether to include or exclude such items.
-          // For now, I'm assuming you want to exclude them.
-          return false;
-        });
+        // this.filteredStatus = response.data.filter((personnel) => {
+        //   if (
+        //     personnel.employmentDtl.length !== 0 &&
+        //     personnel.employmentDtl[0].EmpStatus
+        //   ) {
+        //     const empStatus =
+        //       personnel.employmentDtl[0].EmpStatus.toLowerCase();
+        //     return (
+        //       empStatus === "regular" ||
+        //       empStatus === "casual" ||
+        //       empStatus === "job order (program-based)" ||
+        //       empStatus === "job order (project-based)"
+        //     );
+        //   }
+        //   return false;
+        // });
 
+        this.filteredStatus = response.data.filter(
+          (personnel) =>
+            personnel.employmentDtl.length !== 0 &&
+            new Date(
+              personnel.employmentDtl[
+                personnel.employmentDtl.length - 1
+              ].DteEnded
+            ) >= new Date()
+        );
         this.regularCount = this.filteredStatus.filter(
-          (personnel) => personnel.employmentDtl[0].EmpStatus === "Regular"
+          (personnel) =>
+            personnel.employmentDtl[
+              personnel.employmentDtl.length - 1
+            ].EmpStatus.toLowerCase() == "regular"
         ).length;
 
         this.casualCount = this.filteredStatus.filter(
-          (personnel) => personnel.employmentDtl[0].EmpStatus === "Casual"
+          (personnel) =>
+            personnel.employmentDtl[
+              personnel.employmentDtl.length - 1
+            ].EmpStatus.toLowerCase() == "casual"
         ).length;
 
         this.programCount = this.filteredStatus.filter(
           (personnel) =>
-            personnel.employmentDtl[0].EmpStatus === "Job Order (Program-Based)"
+            personnel.employmentDtl[
+              personnel.employmentDtl.length - 1
+            ].EmpStatus.toLowerCase() == "job order (program-based)"
         ).length;
-
+        console.log("program=", this.filteredStatus);
         this.projectCount = this.filteredStatus.filter(
           (personnel) =>
-            personnel.employmentDtl[0].EmpStatus === "Job Order (Project-Based)"
+            personnel.employmentDtl[
+              personnel.employmentDtl.length - 1
+            ].EmpStatus.toLowerCase() == "job order (project-based)"
         ).length;
-
-        // console.log("Regular Count:", this.regularCount);
-        // console.log("Casual Count:", this.casualCount);
-        // console.log("Program-Based Count:", this.programCount);
-        // console.log("Project-Based Count:", this.projectCount);
       } catch (error) {
         console.log(`Error fetching tasks: ${error}`);
       }
     },
 
+    //Add Employee
     async AddPersonnel(payload) {
       try {
         const response = await axios.post(
@@ -138,6 +167,7 @@ export const useStorePersonnelInfo = defineStore("personnelinfo", {
       }
     },
 
+    // Delete Personnel
     async DeletePersonnel(id, payload) {
       try {
         await axios.put(
@@ -149,6 +179,7 @@ export const useStorePersonnelInfo = defineStore("personnelinfo", {
       }
     },
 
+    // Update Personnel
     async UpdatePersonnel(id, payload) {
       try {
         const response = await axios.put(
@@ -215,7 +246,7 @@ export const useStorePersonnelInfo = defineStore("personnelinfo", {
             contractid
         );
         this.EmpContractDtls = response.data;
-        console.log("This is the Appointment =>", this.EmpContractDtls)
+        console.log("This is the Appointment =>", this.EmpContractDtls);
       } catch (error) {
         console.log(`Error fetching Employment: ${error}`);
       }

@@ -42,7 +42,7 @@
             debounce="300"
             v-model="filter"
             :filter="filter"
-            style="margin-bottom: 20px"
+            style="margin-bottom: 20px; "
             placeholder="Search"
           >
             <template v-slot:append>
@@ -1065,7 +1065,7 @@ export default {
     filteredEmployees() {
       const searchTerm = this.filter.toLowerCase();
       return this.store.personnels.filter((employee) => {
-        const employmentDtl = employee.employmentDtl[0] || {};
+        const employmentDtl = employee.employmentDtl[employee.employmentDtl.length-1] || {};
         const statusText = this.getStatusClass2(
           employmentDtl.DteEnded
         ).status.toLowerCase();

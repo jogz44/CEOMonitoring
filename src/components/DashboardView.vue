@@ -150,7 +150,7 @@
               <div class="col-2">
                 <b>
                   <span style="font-size: 18px; color: #057407">{{
-                    store.ActiveCount
+                    store.programCount
                   }}</span>
                 </b>
               </div>
