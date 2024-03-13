@@ -93,7 +93,7 @@ export const useStorePersonnelInfo = defineStore("personnelinfo", {
         this.personnels = response.data;
         this.personnelsCount = response.data.length;
 
-        console.log("res=", this.personnels);
+        // console.log("res=", this.personnels);
         // console.log("count =>", this.personnelsCount);
 
         // this.filteredStatus = response.data.filter((personnel) => {
@@ -142,7 +142,7 @@ export const useStorePersonnelInfo = defineStore("personnelinfo", {
               personnel.employmentDtl.length - 1
             ].EmpStatus.toLowerCase() == "job order (program-based)"
         ).length;
-        console.log("program=", this.filteredStatus);
+        // console.log("program=", this.filteredStatus);
         this.projectCount = this.filteredStatus.filter(
           (personnel) =>
             personnel.employmentDtl[

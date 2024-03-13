@@ -17,6 +17,7 @@
     ></q-btn>
     <q-table
       class="my-sticky-header-table"
+      wrap-cells=""
       flat
       bordered
       title="IT EQUIPMENT LIST"
@@ -285,6 +286,7 @@
             flat
             bordered
             title=""
+            wrap-cells=""
             dense
             :rows="store.itequipmenthistory"
             :columns="history"
@@ -985,7 +987,7 @@ export default {
               Remarks: "",
             };
             store.fetchITEquipment().then((res) => {
-    
+
             });
           });
           console.log("save=", editedItemCopy);

@@ -29,6 +29,7 @@
         bordered
         title="EMPLOYEE LIST"
         dense
+         wrap-cells=""
         virtual-scroll
         :rows="filteredEmployees"
         :columns="columns"
@@ -409,17 +410,17 @@
               </q-td>
             </template>
 
-            <template v-slot:body-cell-status="{ row }">
+            <!-- <template v-slot:body-cell-status="{ row }">
               <q-td
                 ><q-chip :class="getStatusClass(row.employmentDtl[0].DteEnded)">
                   {{ getStatusClass2(row.employmentDtl[0].DteEnded).status }}
                 </q-chip></q-td
               >
-            </template>
+            </template> -->
             <template v-slot:body-cell-actions="{ row }">
               <div class="actionsbtn">
                 <q-btn
-                  icon="edit"
+                  icon="visibility"
                   flat
                   round
                   color="green-8"

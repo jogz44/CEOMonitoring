@@ -22,6 +22,7 @@
       bordered
       title="MACHINE LIST"
       dense
+      wrap-cells=""
       :rows="filteredMachine"
       :columns="columns"
       row-key="id"
@@ -316,6 +317,7 @@
           flat
           bordered
           title=""
+          wrap-cells=""
           dense
           :rows="store.equipmenthistory"
           :columns="history"

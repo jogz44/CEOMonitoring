@@ -22,6 +22,7 @@
       bordered
       title="PROJECT LIST"
       dense
+      wrap-cells=""
       :rows="store.projects"
       :columns="columns"
       :filter="filter"
