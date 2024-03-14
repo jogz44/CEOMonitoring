@@ -29,7 +29,7 @@
         bordered
         title="EMPLOYEE LIST"
         dense
-         wrap-cells=""
+        wrap-cells=""
         virtual-scroll
         :rows="filteredEmployees"
         :columns="columns"
@@ -43,7 +43,7 @@
             debounce="300"
             v-model="filter"
             :filter="filter"
-            style="margin-bottom: 20px; "
+            style="margin-bottom: 20px"
             placeholder="Search"
           >
             <template v-slot:append>
@@ -54,43 +54,71 @@
 
         <template v-slot:body-cell-EmpStatus="{ row }">
           <q-td>
-            {{ row.employmentDtl[row.employmentDtl.length -1] ? row.employmentDtl[row.employmentDtl.length -1].EmpStatus : null }}
+            {{
+              row.employmentDtl[row.employmentDtl.length - 1]
+                ? row.employmentDtl[row.employmentDtl.length - 1].EmpStatus
+                : null
+            }}
           </q-td>
         </template>
 
         <template v-slot:body-cell-Drate="{ row }">
           <q-td>
-            {{ row.employmentDtl[row.employmentDtl.length -1] ? row.employmentDtl[row.employmentDtl.length -1].Drate : null }}
+            {{
+              row.employmentDtl[row.employmentDtl.length - 1]
+                ? row.employmentDtl[row.employmentDtl.length - 1].Drate
+                : null
+            }}
           </q-td>
         </template>
 
         <template v-slot:body-cell-DteStarted="{ row }">
           <q-td>
-            {{ row.employmentDtl[row.employmentDtl.length -1] ? row.employmentDtl[row.employmentDtl.length -1].DteStarted : null }}
+            {{
+              row.employmentDtl[row.employmentDtl.length - 1]
+                ? row.employmentDtl[row.employmentDtl.length - 1].DteStarted
+                : null
+            }}
           </q-td>
         </template>
 
         <template v-slot:body-cell-DteReceived="{ row }">
           <q-td>
-            {{ row.employmentDtl[row.employmentDtl.length -1] ? row.employmentDtl[row.employmentDtl.length -1].DteReceived : null }}
+            {{
+              row.employmentDtl[row.employmentDtl.length - 1]
+                ? row.employmentDtl[row.employmentDtl.length - 1].DteReceived
+                : null
+            }}
           </q-td>
         </template>
 
         <template v-slot:body-cell-de="{ row }">
           <q-td>
-            {{ row.employmentDtl[row.employmentDtl.length -1] ? row.employmentDtl[row.employmentDtl.length -1].DteEnded : null }}
+            {{
+              row.employmentDtl[row.employmentDtl.length - 1]
+                ? row.employmentDtl[row.employmentDtl.length - 1].DteEnded
+                : null
+            }}
           </q-td>
         </template>
 
         <template v-slot:body-cell-designation="{ row }">
           <q-td>
-            {{ row.employmentDtl[row.employmentDtl.length -1] ? row.employmentDtl[row.employmentDtl.length -1].Designation : null }}
+            {{
+              row.employmentDtl[row.employmentDtl.length - 1]
+                ? row.employmentDtl[row.employmentDtl.length - 1].Designation
+                : null
+            }}
           </q-td>
         </template>
 
         <template v-slot:body-cell-charges="{ row }">
           <q-td class="charges">
-            {{ row.employmentDtl[row.employmentDtl.length -1] ? row.employmentDtl[row.employmentDtl.length -1].Charges : null }}
+            {{
+              row.employmentDtl[row.employmentDtl.length - 1]
+                ? row.employmentDtl[row.employmentDtl.length - 1].Charges
+                : null
+            }}
           </q-td>
         </template>
 
@@ -100,17 +128,25 @@
               style="height: auto"
               :class="
                 getStatusClass(
-                  row.employmentDtl[row.employmentDtl.length -1] ? row.employmentDtl[row.employmentDtl.length -1].DteEnded : null
+                  row.employmentDtl[row.employmentDtl.length - 1]
+                    ? row.employmentDtl[row.employmentDtl.length - 1].DteEnded
+                    : null
                 )
               "
             >
               {{
                 getStatusClass2(
-                  row.employmentDtl[row.employmentDtl.length -1] ? row.employmentDtl[row.employmentDtl.length -1].DteEnded : null
+                  row.employmentDtl[row.employmentDtl.length - 1]
+                    ? row.employmentDtl[row.employmentDtl.length - 1].DteEnded
+                    : null
                 ).status
               }}
               <br />
-              {{ row.employmentDtl[row.employmentDtl.length -1] ? row.employmentDtl[row.employmentDtl.length -1].DteEnded : null }}
+              {{
+                row.employmentDtl[row.employmentDtl.length - 1]
+                  ? row.employmentDtl[row.employmentDtl.length - 1].DteEnded
+                  : null
+              }}
             </q-chip></q-td
           >
         </template>
@@ -509,7 +545,6 @@
             icon="close"
             @click="closeAppointment()"
             color="orange"
-
           />
         </q-toolbar>
         <q-separator />
@@ -584,6 +619,7 @@
                 ref="charges"
                 :rules="[this.required]"
                 lazy-rules
+                autogrow
                 filled
                 v-model="EmpDtl.Charges"
                 label="Charges"
@@ -620,6 +656,22 @@
                 dense
                 :disable="AppointmentDtls === !isEditModeAppDtls"
               />
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <q-select
+                ref="employeeRemarks"
+                v-model="EmpDtl.Remarks"
+                filled
+                dense
+                class="q-pa-sm q-mt-sm"
+                label="Remarks"
+                :options="EmpRemarks"
+                :disable="AppointmentDtls === !isEditModeAppDtls"
+                v-show="AppointmentDtls"
+              >
+              </q-select>
             </div>
           </div>
         </q-card-section>
@@ -818,6 +870,7 @@ export default {
         "Job Order (Program-Based)",
         "Job Order (Project-Based)",
       ],
+      EmpRemarks: ["Returned", "Cancelled"],
       isFormValid: false,
       $q,
       // nameRules: [(val) => (val && val.length > 0) || "Please type something"],
@@ -852,6 +905,7 @@ export default {
             Designation: "",
             Charges: "",
             EmpStatus: "",
+            Remarks:"",
             Drate: "",
             isDeleted: false,
           },
@@ -867,6 +921,7 @@ export default {
           Charges: "",
           EmpStatus: "",
           Drate: "",
+          Remarks: "",
           isDeleted: false,
         },
       ],
@@ -1054,6 +1109,7 @@ export default {
           Designation: "",
           Charges: "",
           EmpStatus: "",
+          Remarks: "",
           Drate: "",
           IsDeleted: false,
         },
@@ -1066,7 +1122,8 @@ export default {
     filteredEmployees() {
       const searchTerm = this.filter.toLowerCase();
       return this.store.personnels.filter((employee) => {
-        const employmentDtl = employee.employmentDtl[employee.employmentDtl.length-1] || {};
+        const employmentDtl =
+          employee.employmentDtl[employee.employmentDtl.length - 1] || {};
         const statusText = this.getStatusClass2(
           employmentDtl.DteEnded
         ).status.toLowerCase();
@@ -1114,8 +1171,8 @@ export default {
           Drate.includes(searchTerm) ||
           EmpStatus.includes(searchTerm) ||
           statusText.includes(searchTerm)
-        )
-      })
+        );
+      });
     },
   },
   watch: {
@@ -1127,7 +1184,7 @@ export default {
     // },
   },
   methods: {
-    createAppointment(){
+    createAppointment() {
       this.secondDialog = true;
       this.AppointmentDtls = false;
     },
@@ -1400,6 +1457,7 @@ export default {
           Designation: "",
           Charges: "",
           EmpStatus: "",
+          Remarks:"",
           Drate: "",
         },
         resumeLink: "",
@@ -1489,7 +1547,6 @@ export default {
       this.isEditModeAppDtls = false;
       this.secondDialog = false;
       this.AppointmentDtls = true;
-
     },
     savehistory() {
       this.$refs.dateStarted.validate();
@@ -1511,6 +1568,14 @@ export default {
         let editedItemCopy = { ...this.EmpDtl };
         // editedItemCopy.Designation = this.EmpDtl.Designation.Designation;
 
+        //add remarks
+        if (this.EmpDtl.Remarks = "Returned") {
+          this.EmpDtl.DteEnded = "1900-01-01"
+        }else {
+
+        }
+
+
         if (editedItemCopy._id) {
           store
             .UpdateEmployment(
@@ -1531,12 +1596,12 @@ export default {
                       Charges: "",
                       EmpStatus: "",
                       Drate: "",
+                      Remarks: "",
                       isDeleted: false,
                     },
                   ];
-                  this.AppointmentDtls = false;
-                store.fetchPersonnel();
-
+                  this.AppointmentDtls = true;
+                  store.fetchPersonnel();
                 });
               });
             });
@@ -1554,11 +1619,12 @@ export default {
                   Charges: "",
                   EmpStatus: "",
                   Drate: "",
+                  Remarks: "",
                   isDeleted: false,
                 },
               ]),
-              this.AppointmentDtls = true;
-                store.fetchPersonnel();
+                (this.AppointmentDtls = true);
+              store.fetchPersonnel();
             });
           });
         }
@@ -1580,6 +1646,7 @@ export default {
           Designation: "",
           Charges: "",
           EmpStatus: "",
+          Remarks: "",
           Drate: "",
         },
 

@@ -273,6 +273,11 @@ export const useStorePersonnelInfo = defineStore("personnelinfo", {
             contractid,
           payload
         );
+        if (this.EmpDtl.Remarks = "Returned") {
+          this.EmpDtl.DteEnded = "1900-01-01"
+        }else {
+
+        }
       } catch (error) {
         console.log(`Cannot Update ${error}`);
       }
