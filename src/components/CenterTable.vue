@@ -905,7 +905,7 @@ export default {
             Designation: "",
             Charges: "",
             EmpStatus: "",
-            Remarks:"",
+            Remarks: "",
             Drate: "",
             isDeleted: false,
           },
@@ -1358,8 +1358,8 @@ export default {
       });
       store.GetPersonnelHistory(item._id).then((res) => {
         console.log("sdasda=", this.editedItem);
+        this.dialogVisibles = true;
       });
-      this.dialogVisibles = true;
     },
 
     // viewItem(item) {
@@ -1457,7 +1457,7 @@ export default {
           Designation: "",
           Charges: "",
           EmpStatus: "",
-          Remarks:"",
+          Remarks: "",
           Drate: "",
         },
         resumeLink: "",
@@ -1566,22 +1566,32 @@ export default {
       ) {
         const store = useStorePersonnelInfo();
         let editedItemCopy = { ...this.EmpDtl };
+
+        // Remarks to be 1900 if cancelled or returned
+        if (this.EmpDtl.Remarks === "Returned" ||  this.EmpDtl.Remarks === "Cancelled") {
+            const dateParts = this.EmpDtl.DteEnded.split("-");
+            const month = dateParts[1];
+            const day = dateParts[2];
+            this.EmpDtl.DteEnded = "1900-" + month + "-" + day;
+          }
+          console.log("this is the hotdog=>", this.EmpDtl.DteEnded);
+          console.log("this is edited=>", this.EmpDtl)
+
         // editedItemCopy.Designation = this.EmpDtl.Designation.Designation;
 
         //add remarks
-        if (this.EmpDtl.Remarks = "Returned") {
-          this.EmpDtl.DteEnded = "1900-01-01"
-        }else {
-
-        }
-
+        // if ((this.EmpDtl.Remarks = "Returned")) {
+        //   this.EmpDtl.DteEnded = "1900-01-01";
+        // } else {
+        // }
 
         if (editedItemCopy._id) {
+
           store
             .UpdateEmployment(
               this.selectedID,
               editedItemCopy._id,
-              editedItemCopy
+              this.EmpDtl
             )
             .then((res) => {
               store.GetPersonnel(this.selectedID).then((res1) => {

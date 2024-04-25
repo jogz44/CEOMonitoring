@@ -134,7 +134,7 @@
 
     <!-- the main dialog -->
     <q-dialog v-model="dialogVisible" persistent>
-      <q-card style="width: 500px; max-width: 80vw; height: 480px" class="">
+      <q-card style="width: 500px; max-width: 80vw; height: 80%" class="">
         <q-toolbar class="q-pa-md">
           <q-toolbar-title
             ><span class="text-weight-bold"
@@ -172,11 +172,12 @@
         </q-card-section> -->
         <q-separator />
 
-        <q-card-section style="max-height: 50vh" class="scroll">
+        <q-card-section style="max-height: 70vh" class="scroll">
           <q-form>
             <div class="row">
               <div class="col-12">
-                <q-input
+                <q-select dense filled label="Item Type" class="q-pa-sm q-mb-sm"></q-select>
+                <!-- <q-input
                   ref="machinename"
                   :rules="[this.required]"
                   lazy-rules
@@ -186,7 +187,7 @@
                   label="Machine Name"
                   dense
                   class="q-pa-sm q-mb-sm"
-                />
+                /> -->
               </div>
               <div class="col-12">
                 <div class="q-gutter-md">
@@ -214,7 +215,93 @@
                   filled
                   v-model="editedItem.PropertyCustodian"
                   :disable="maintenancehistory === !isEditMode"
+                  label="Body No."
+                  dense
+                  class="q-pa-sm q-mb-sm"
+                />
+              </div>
+              <div class="col">
+                <q-input
+                  ref="propertyCustodian"
+                  :rules="[this.required]"
+                  lazy-rules
+                  filled
+                  v-model="editedItem.PropertyCustodian"
+                  :disable="maintenancehistory === !isEditMode"
+                  label="Serial No."
+                  dense
+                  class="q-pa-sm q-mb-sm"
+                />
+              </div>
+              <div class="col">
+                <q-input
+                  ref="propertyCustodian"
+                  :rules="[this.required]"
+                  lazy-rules
+                  filled
+                  v-model="editedItem.PropertyCustodian"
+                  :disable="maintenancehistory === !isEditMode"
+                  label="Plate No."
+                  dense
+                  class="q-pa-sm q-mb-sm"
+                />
+              </div>
+            </div>
+            <div class="row">
+              <div class="col">
+                <q-input
+                  ref="propertyCustodian"
+                  :rules="[this.required]"
+                  lazy-rules
+                  filled
+                  v-model="editedItem.PropertyCustodian"
+                  :disable="maintenancehistory === !isEditMode"
                   label="Property Custodian"
+                  dense
+                  class="q-pa-sm q-mb-sm"
+                />
+              </div>
+            </div>
+            <div class="row">
+              <div class="col">
+                <q-input
+                  ref="propertyCustodian"
+                  :rules="[this.required]"
+                  lazy-rules
+                  filled
+                  v-model="editedItem.PropertyCustodian"
+                  :disable="maintenancehistory === !isEditMode"
+                  label="Operator"
+                  dense
+                  class="q-pa-sm q-mb-sm"
+                />
+              </div>
+            </div>
+            <div class="row">
+              <div class="col">
+                <q-input
+                  ref="propertyCustodian"
+                  :rules="[this.required]"
+                  lazy-rules
+                  filled
+                  v-model="editedItem.PropertyCustodian"
+                  :disable="maintenancehistory === !isEditMode"
+                  label="Date Acquired"
+                  dense
+                  class="q-pa-sm q-mb-sm"
+                />
+              </div>
+            </div>
+            <div class="row">
+              <div class="col">
+                <q-input
+                  ref="propertyCustodian"
+                  :rules="[this.required]"
+                  lazy-rules
+                  filled
+                  v-model="editedItem.PropertyCustodian"
+                  :disable="maintenancehistory === !isEditMode"
+                  label="Cost"
                   dense
                   class="q-pa-sm q-mb-sm"
                 />

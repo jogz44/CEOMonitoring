@@ -95,7 +95,7 @@
             </q-item-section>
 
             <q-item-section class="responsive-text">
-              <q-item-label> <b>Home</b> </q-item-label>
+              <q-item-label> <b>Dashboard</b> </q-item-label>
             </q-item-section>
           </q-item>
 

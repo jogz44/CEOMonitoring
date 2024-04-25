@@ -266,6 +266,9 @@ export const useStorePersonnelInfo = defineStore("personnelinfo", {
 
     async UpdateEmployment(id, contractid, payload) {
       try {
+        // if (this.EmpDtl.Remarks === "Returned") {
+        //   this.EmpDtl.DteEnded = "1900-01-01"
+        // }
         const response = await axios.put(
           `http://10.0.1.23:5000/api/Personnels/` +
             id +
@@ -273,11 +276,9 @@ export const useStorePersonnelInfo = defineStore("personnelinfo", {
             contractid,
           payload
         );
-        if (this.EmpDtl.Remarks = "Returned") {
-          this.EmpDtl.DteEnded = "1900-01-01"
-        }else {
-
-        }
+        // if (this.EmpDtl.Remarks === "Returned") {
+        //   this.EmpDtl.DteEnded = "1900-01-01"
+        // }
       } catch (error) {
         console.log(`Cannot Update ${error}`);
       }

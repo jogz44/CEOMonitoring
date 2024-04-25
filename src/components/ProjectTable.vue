@@ -92,10 +92,14 @@
       </template>
     </q-table>
 
+    <q-dialog v-model="ProjectExtension">
+        <ProjExt />
+    </q-dialog>
+
     <!-- the main dialog -->
 
     <q-dialog persistent v-model="dialogVisible">
-      <q-card style="width: 500px; max-width: 80vw; height: 510px">
+      <q-card style="width: 500px; max-width: 80vw; height: auto">
         <q-toolbar class="q-pa-md">
           <q-toolbar-title
             ><span class="text-weight-bold"
@@ -148,7 +152,7 @@
             </div>
 
             <div class="row">
-              <div class="col">
+              <div class="col-6 col-md-6 col-sm-6 col-xs-12">
                 <q-input
                   ref="referenceNo"
                   :rules="[this.required]"
@@ -162,7 +166,7 @@
                 />
               </div>
 
-              <div class="col">
+              <div class="col-6 col-md-6 col-sm-6 col-xs-12">
                 <q-input
                   ref="totalProjectCost"
                   :rules="[this.required]"
@@ -178,7 +182,7 @@
               </div>
             </div>
             <div class="row">
-              <div class="col">
+              <div class="col-6 col-md-6 col-sm-6 col-xs-12">
                 <q-input
                   ref="dateStarted"
                   :rules="[this.required]"
@@ -192,7 +196,7 @@
                   type="date"
                 />
               </div>
-              <div class="col">
+              <div class="col-6 col-md-6 col-sm-6 col-xs-12">
                 <q-input
                   ref="targetAccomplished"
                   :rules="[this.required]"
@@ -278,6 +282,47 @@
             v-show="updateproject"
           />
         </q-card> -->
+        <q-separator v-show="updateproject" />
+
+        <q-card-section>
+          <div class="q-gutter-y-md column items-start" v-show="updateproject">
+            <q-btn-group push>
+              <q-btn
+                label="Extension"
+                icon="extension"
+                color="green-7"
+                glossy
+                size="sm"
+                @click="ProjectExtension = true"
+              >
+              </q-btn>
+              <q-btn
+                label="Suspension"
+                icon="stop_circle"
+                color="green-7"
+                glossy
+                size="sm"
+              >
+              </q-btn>
+              <q-btn
+                label="Revision"
+                icon="edit"
+                color="green-7"
+                glossy
+                size="sm"
+              >
+              </q-btn>
+              <q-btn
+                label="Resumption"
+                icon="start"
+                color="green-7"
+                glossy
+                size="sm"
+              >
+              </q-btn>
+            </q-btn-group>
+          </div>
+        </q-card-section>
       </q-card>
 
       <!-- DIALOG FOR UPDATE -->
@@ -618,10 +663,16 @@ import { ref } from "vue";
 import { useStoreProjectInfo } from "../stores/ProjectStore";
 import { useLoginStore } from "src/stores/LoginStore";
 import * as XLSX from "xlsx";
+import ProjExt from "../components/ProjectModule/ProjectExtension.vue";
 
 export default {
+  components: {
+    ProjExt,
+  },
   data() {
     return {
+      ProjectExtension: false,
+
       selectedID: ref(""),
       DeletedItem: "",
       DeleteId: "",
@@ -861,6 +912,7 @@ export default {
 
       store.GetProjectUpdateDetails(item._id);
       this.dialogVisible = true;
+      console.log("this item=>", item);
     },
     viewItem(item) {
       this.UpdateProjectDialog = true;
@@ -1160,4 +1212,10 @@ export default {
 /* .actionsbtn {
   margin-left: 90px;
 } */
+@media (max-width: 768px) {
+  .q-btn-group {
+    flex-direction: column;
+    size: small;
+  }
+}
 </style>
