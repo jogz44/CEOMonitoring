@@ -134,7 +134,7 @@
 
     <!-- the main dialog -->
     <q-dialog v-model="dialogVisible" persistent>
-      <q-card style="width: 500px; max-width: 80vw; height: 80%" class="">
+      <q-card style="width: 500px; max-width: 80vw; height: 75%" class="">
         <q-toolbar class="q-pa-md">
           <q-toolbar-title
             ><span class="text-weight-bold"
@@ -176,7 +176,13 @@
           <q-form>
             <div class="row">
               <div class="col-12">
-                <q-select dense filled label="Item Type" class="q-pa-sm q-mb-sm"></q-select>
+                <q-select
+                  dense
+                  filled
+                  label="Item Type"
+                  class="q-pa-sm q-mb-sm"
+                  :options="itemtype"
+                ></q-select>
                 <!-- <q-input
                   ref="machinename"
                   :rules="[this.required]"
@@ -209,11 +215,10 @@
             <div class="row">
               <div class="col">
                 <q-input
-                  ref="propertyCustodian"
+                  ref=""
                   :rules="[this.required]"
                   lazy-rules
                   filled
-                  v-model="editedItem.PropertyCustodian"
                   :disable="maintenancehistory === !isEditMode"
                   label="Body No."
                   dense
@@ -222,11 +227,10 @@
               </div>
               <div class="col">
                 <q-input
-                  ref="propertyCustodian"
+                  ref=""
                   :rules="[this.required]"
                   lazy-rules
                   filled
-                  v-model="editedItem.PropertyCustodian"
                   :disable="maintenancehistory === !isEditMode"
                   label="Serial No."
                   dense
@@ -235,11 +239,11 @@
               </div>
               <div class="col">
                 <q-input
-                  ref="propertyCustodian"
+                  ref="plateno"
                   :rules="[this.required]"
                   lazy-rules
                   filled
-                  v-model="editedItem.PropertyCustodian"
+                  v-model="editedItem.PlateNo"
                   :disable="maintenancehistory === !isEditMode"
                   label="Plate No."
                   dense
@@ -280,47 +284,35 @@
             <div class="row">
               <div class="col">
                 <q-input
-                  ref="propertyCustodian"
+                  ref=""
                   :rules="[this.required]"
                   lazy-rules
                   filled
-                  v-model="editedItem.PropertyCustodian"
                   :disable="maintenancehistory === !isEditMode"
                   label="Date Acquired"
                   dense
                   class="q-pa-sm q-mb-sm"
+                  type="date"
                 />
               </div>
             </div>
             <div class="row">
               <div class="col">
                 <q-input
-                  ref="propertyCustodian"
+                  ref=""
                   :rules="[this.required]"
                   lazy-rules
                   filled
-                  v-model="editedItem.PropertyCustodian"
                   :disable="maintenancehistory === !isEditMode"
                   label="Cost"
                   dense
                   class="q-pa-sm q-mb-sm"
+                  type="number"
                 />
               </div>
             </div>
             <div class="row">
-              <div class="col-12">
-                <q-input
-                  ref="plateno"
-                  :rules="[this.required]"
-                  lazy-rules
-                  filled
-                  v-model="editedItem.PlateNo"
-                  :disable="maintenancehistory === !isEditMode"
-                  label="Plate Number"
-                  dense
-                  class="q-pa-sm q-mb-sm"
-                />
-              </div>
+
               <div class="col-12">
                 <q-input
                   filled
@@ -399,78 +391,78 @@
           </div>
         </q-card-section> -->
         <q-card-section>
-        <q-table
-          class="my-sticky-header-table"
-          flat
-          bordered
-          title=""
-          wrap-cells=""
-          dense
-          :rows="store.equipmenthistory"
-          :columns="history"
-          :filter="filters"
-          row-key="_id"
-        >
-          <template v-slot:top-right>
-            <q-input
-              color="green"
-              dense
-              debounce="300"
-              v-model="filters"
-              placeholder="Search"
-            >
-              <template v-slot:append>
-                <q-icon name="search" />
-              </template>
-            </q-input>
-          </template>
-          <template v-slot:top-left>
-            <q-btn
-              label="Add Maintenance"
-              size="x-small"
-              icon="add"
-              @click="secondDialog = true"
-              color="green-10"
-            ></q-btn>
-          </template>
-
-          <template v-slot:body-cell-MaintenanceType="{ row }">
-            <q-td>
-              {{ row.MaintenanceType }}
-            </q-td>
-          </template>
-          <template v-slot:body-cell-MaintenanceDate="{ row }">
-            <q-td>
-              {{ formatDate(row.MaintenanceDate) }}
-            </q-td>
-          </template>
-          <template v-slot:body-cell-MaintenanceDesc="{ row }">
-            <q-td>
-              {{ row.MaintenanceDesc }}
-            </q-td>
-          </template>
-
-          <template v-slot:body-cell-actions="{ row }">
-            <div class="actionsbtn">
-              <q-btn
-                icon="visibility"
-                flat
-                round
+          <q-table
+            class="my-sticky-header-table"
+            flat
+            bordered
+            title=""
+            wrap-cells=""
+            dense
+            :rows="store.equipmenthistory"
+            :columns="history"
+            :filter="filters"
+            row-key="_id"
+          >
+            <template v-slot:top-right>
+              <q-input
                 color="green"
-                @click="viewUpdate(row)"
+                dense
+                debounce="300"
+                v-model="filters"
+                placeholder="Search"
               >
-              </q-btn>
+                <template v-slot:append>
+                  <q-icon name="search" />
+                </template>
+              </q-input>
+            </template>
+            <template v-slot:top-left>
               <q-btn
-                icon="delete"
-                flat
-                round
-                color="deep-orange"
-                @click="deleteMaintenance(row._id)"
-              >
-              </q-btn>
-            </div>
-          </template>
-        </q-table>
+                label="Add Maintenance"
+                size="x-small"
+                icon="add"
+                @click="secondDialog = true"
+                color="green-10"
+              ></q-btn>
+            </template>
+
+            <template v-slot:body-cell-MaintenanceType="{ row }">
+              <q-td>
+                {{ row.MaintenanceType }}
+              </q-td>
+            </template>
+            <template v-slot:body-cell-MaintenanceDate="{ row }">
+              <q-td>
+                {{ formatDate(row.MaintenanceDate) }}
+              </q-td>
+            </template>
+            <template v-slot:body-cell-MaintenanceDesc="{ row }">
+              <q-td>
+                {{ row.MaintenanceDesc }}
+              </q-td>
+            </template>
+
+            <template v-slot:body-cell-actions="{ row }">
+              <div class="actionsbtn">
+                <q-btn
+                  icon="visibility"
+                  flat
+                  round
+                  color="green"
+                  @click="viewUpdate(row)"
+                >
+                </q-btn>
+                <q-btn
+                  icon="delete"
+                  flat
+                  round
+                  color="deep-orange"
+                  @click="deleteMaintenance(row._id)"
+                >
+                </q-btn>
+              </div>
+            </template>
+          </q-table>
         </q-card-section>
       </q-card>
     </q-dialog>
@@ -755,17 +747,23 @@ export default {
         Remarks: "",
       },
       options: ["Heavy", "Light"],
+      itemtype: [
+        "Heavy Equipment",
+        "Light Vehicle",
+        "Motor Vehicle",
+        "Machinery",
+        "IT Equipment",
+      ],
       columns: [
-        {
+      {
           name: "MachineName",
           required: true,
-          label: "MACHINE NAME",
+          label: "ITEM TYPE",
           align: "left",
           field: (row) => row.MachineName,
           format: (val) => `${val}`,
           sortable: true,
         },
-
         {
           name: "EquipmentType",
           label: "EQUIPMENT TYPE",
@@ -774,31 +772,85 @@ export default {
           sortable: true,
         },
         {
+          name: "BodyNo",
+          align: "left",
+          label: "BODY #",
+          field: "BodyNo",
+        },
+        {
+          name: "PlateNo",
+          align: "left",
+          label: "PLATE #",
+          field: "PlateNo",
+        },
+        {
+          name: "SerialNo",
+          align: "left",
+          label: "SERIAL #",
+          field: "SerialNo",
+        },
+        // {
+        //   name: "MachineName",
+        //   required: true,
+        //   label: "MACHINE NAME",
+        //   align: "left",
+        //   field: (row) => row.MachineName,
+        //   format: (val) => `${val}`,
+        //   sortable: true,
+        // },
+
+        // {
+        //   name: "EquipmentType",
+        //   label: "EQUIPMENT TYPE",
+        //   field: "EquipmentType",
+        //   align: "left",
+        //   sortable: true,
+        // },
+        {
           name: "PropertyCustodian",
           label: "PROPERTY CUSTODIAN",
           field: "PropertyCustodian",
           align: "left",
         },
         {
-          name: "PlateNo",
+          name: "Operator",
+          label: "OPERATOR",
+          field: "Operator",
           align: "left",
-          label: "PLATE / SERIAL NUMBER",
-          field: "PlateNo",
         },
         {
-          name: "MaintenanceDate",
+          name: "DateAcquired",
+          label: "DATE ACQUIRED",
+          field: "DateAcquired",
           align: "left",
-          label: "MAINTENANCE DATE",
-          field: (row) => row.MaintenanceDate,
-          sortable: true,
         },
         {
-          name: "MaintenanceType",
+          name: "Cost",
+          label: "COST",
+          field: "Cost",
           align: "left",
-          label: "MAINTENANCE TYPE",
-          field: "row.MaintenanceDtls.MaintenanceType",
-          sortable: true,
         },
+
+        // {
+        //   name: "PlateNo",
+        //   align: "left",
+        //   label: "PLATE / SERIAL NUMBER",
+        //   field: "PlateNo",
+        // },
+        // {
+        //   name: "MaintenanceDate",
+        //   align: "left",
+        //   label: "MAINTENANCE DATE",
+        //   field: (row) => row.MaintenanceDate,
+        //   sortable: true,
+        // },
+        // {
+        //   name: "MaintenanceType",
+        //   align: "left",
+        //   label: "MAINTENANCE TYPE",
+        //   field: "row.MaintenanceDtls.MaintenanceType",
+        //   sortable: true,
+        // },
         {
           name: "actions",
           label: "ACTIONS",
@@ -1048,7 +1100,6 @@ export default {
                 Remarks: "",
               };
               store.fetchEquipment().then((res) => {
-
                 this.isEditMode = false;
               });
             });
@@ -1065,9 +1116,7 @@ export default {
               PlateNo: "",
               Remarks: "",
             };
-            store.fetchEquipment().then((res) => {
-
-            });
+            store.fetchEquipment().then((res) => {});
           });
           console.log("save=", editedItemCopy);
         }

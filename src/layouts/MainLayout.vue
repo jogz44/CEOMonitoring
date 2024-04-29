@@ -1,8 +1,8 @@
 <template>
-  <q-layout view="hHh lpR fFf" class="bg-grey-1">
-    <q-header elevated class="bg-white text-grey-8" height-hint="64">
+  <q-layout view="hHh lpR fFf">
+    <q-header elevated class="bg-white text-grey-8">
       <q-toolbar class="GNL__toolbar">
-        <q-btn
+        <!-- <q-btn
           flat
           dense
           round
@@ -10,18 +10,23 @@
           aria-label="Menu"
           icon="menu"
           class="q-mr-sm"
-        />
+        /> -->
 
-        <q-toolbar-title
-          v-if="$q.screen.gt.xs"
-          shrink
-          class="row items-center no-wrap"
+        <q-btn
+          round
+          style="background-color: white"
+          size="15px"
+          @click="toggleLeftDrawer"
         >
-          <img
-            src="https://img.icons8.com/?size=50&id=fX3mLjrxmRp3&format=png"
-          />
-          <span class="q-ml-xs" style="font-size: 15px">ENGINEERING</span>
-        </q-toolbar-title>
+          <q-avatar size="35px">
+            <img
+              src="https://img.icons8.com/?size=50&id=fX3mLjrxmRp3&format=png"
+              size="30px"
+            />
+          </q-avatar>
+        </q-btn>
+
+        <q-toolbar-title> ENGINEERING </q-toolbar-title>
 
         <q-space />
 
@@ -30,50 +35,52 @@
             <q-avatar size="26px">
               <img src="https://cdn.quasar.dev/img/boy-avatar.png" />
             </q-avatar>
-            <!-- <q-tooltip>Account</q-tooltip> -->
             <q-menu>
-          <q-list style="min-width: 100px">
-            <q-item
-              clickable
-              v-ripple
-              @click="toggleSection('view')"
-              :class="{ 'active-item': selectedSection === 'view' }"
-            >
-              <q-item-section>
-                <q-item-label>
-                  <q-icon
-                    :style="{
-                      color: selectedSection === 'view' ? '#006400' : 'inherit',
-                    }"
-                    name="person"
-                    class=" q-mr-md"
-                  />
-                  My Profile</q-item-label
+              <q-list style="min-width: 100px">
+                <q-item
+                  clickable
+                  v-ripple
+                  @click="toggleSection('view')"
+                  :class="{ 'active-item': selectedSection === 'view' }"
                 >
-              </q-item-section>
-            </q-item>
-            <q-separator></q-separator>
-            <q-item clickable v-ripple @click="logout()">
-              <q-item-section><q-item-label>
-                  <q-icon name="logout" class=" q-mr-md" />
-                  Logout</q-item-label
-                ></q-item-section>
-            </q-item>
-          </q-list>
-        </q-menu>
+                  <q-item-section>
+                    <q-item-label>
+                      <q-icon
+                        :style="{
+                          color:
+                            selectedSection === 'view' ? '#006400' : 'inherit',
+                        }"
+                        name="person"
+                        class="q-mr-md"
+                      />
+                      My Profile</q-item-label
+                    >
+                  </q-item-section>
+                </q-item>
+                <q-separator></q-separator>
+                <q-item clickable v-ripple @click="logout()">
+                  <q-item-section
+                    ><q-item-label>
+                      <q-icon name="logout" class="q-mr-md" />
+                      Logout</q-item-label
+                    ></q-item-section
+                  >
+                </q-item>
+              </q-list>
+            </q-menu>
           </q-btn>
         </div>
       </q-toolbar>
     </q-header>
 
+
     <q-drawer
       v-model="leftDrawerOpen"
       show-if-above
-      bordered
-      class="bg-white"
       :width="280"
+      :breakpoint="850"
     >
-      <q-scroll-area class="fit">
+      <q-scroll-area style="border-right: 1px solid #ddd" class="fit">
         <q-list padding class="text-grey-8">
           <q-item
             clickable
@@ -158,7 +165,7 @@
                 >
               </q-item-section>
             </q-item>
-            <q-item
+            <!-- <q-item
               v-if="view('IT Equipment')"
               clickable
               v-ripple
@@ -175,7 +182,7 @@
                   />IT Equipment</q-item-label
                 >
               </q-item-section>
-            </q-item>
+            </q-item> -->
             <q-item
               v-if="view('Project')"
               clickable
@@ -371,6 +378,7 @@ export default defineComponent({
   },
   data() {
     return {
+    drawer: false,
       selectedSection: "dashboard",
       submenuOpen: false,
       showEmployee: false,
@@ -432,10 +440,6 @@ export default defineComponent({
 <style scoped>
 .GNL__toolbar {
   height: 64px;
-}
-
-.GNL__toolbar-input {
-  width: 55%;
 }
 
 .GNL__drawer-item {

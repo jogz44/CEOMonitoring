@@ -30,7 +30,6 @@
         title="EMPLOYEE LIST"
         dense
         wrap-cells=""
-        virtual-scroll
         :rows="filteredEmployees"
         :columns="columns"
         row-key="id"
@@ -1826,8 +1825,7 @@ export default {
 
 <style scoped>
 .my-sticky-header-table {
-  width: 100%;
-  table-layout: fixed;
+ height: 810px;
 }
 /* for the table ellipses */
 .charges {
