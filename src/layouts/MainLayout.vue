@@ -73,7 +73,6 @@
       </q-toolbar>
     </q-header>
 
-
     <q-drawer
       v-model="leftDrawerOpen"
       show-if-above
@@ -378,7 +377,7 @@ export default defineComponent({
   },
   data() {
     return {
-    drawer: false,
+      drawer: false,
       selectedSection: "dashboard",
       submenuOpen: false,
       showEmployee: false,

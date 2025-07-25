@@ -39,7 +39,6 @@
           <q-input
             color="green"
             dense
-            debounce="300"
             v-model="filter"
             :filter="filter"
             style="margin-bottom: 20px"
@@ -262,7 +261,7 @@
         </q-card-section> -->
         <q-separator />
 
-        <q-card-section style="max-height: 50vh" class="scroll">
+        <q-card-section style="max-height: 50vh">
           <q-form>
             <div class="row">
               <div class="col-12">
@@ -377,7 +376,7 @@
         </q-toolbar>
         <q-separator />
 
-        <q-card-section style="max-height: 50vh" class="scroll">
+        <q-card-section style="max-height: 50vh">
           <q-table
             class="my-sticky-header-table"
             flat
@@ -391,6 +390,7 @@
             row-key="id"
             style="margin-top: -5px"
             :rows-per-page-options="[2]"
+            virtual-scroll
           >
             <template v-slot:top-right>
               <q-input
@@ -1567,14 +1567,17 @@ export default {
         let editedItemCopy = { ...this.EmpDtl };
 
         // Remarks to be 1900 if cancelled or returned
-        if (this.EmpDtl.Remarks === "Returned" ||  this.EmpDtl.Remarks === "Cancelled") {
-            const dateParts = this.EmpDtl.DteEnded.split("-");
-            const month = dateParts[1];
-            const day = dateParts[2];
-            this.EmpDtl.DteEnded = "1900-" + month + "-" + day;
-          }
-          console.log("this is the hotdog=>", this.EmpDtl.DteEnded);
-          console.log("this is edited=>", this.EmpDtl)
+        if (
+          this.EmpDtl.Remarks === "Returned" ||
+          this.EmpDtl.Remarks === "Cancelled"
+        ) {
+          const dateParts = this.EmpDtl.DteEnded.split("-");
+          const month = dateParts[1];
+          const day = dateParts[2];
+          this.EmpDtl.DteEnded = "1900-" + month + "-" + day;
+        }
+        console.log("this is the hotdog=>", this.EmpDtl.DteEnded);
+        console.log("this is edited=>", this.EmpDtl);
 
         // editedItemCopy.Designation = this.EmpDtl.Designation.Designation;
 
@@ -1585,13 +1588,8 @@ export default {
         // }
 
         if (editedItemCopy._id) {
-
           store
-            .UpdateEmployment(
-              this.selectedID,
-              editedItemCopy._id,
-              this.EmpDtl
-            )
+            .UpdateEmployment(this.selectedID, editedItemCopy._id, this.EmpDtl)
             .then((res) => {
               store.GetPersonnel(this.selectedID).then((res1) => {
                 this.editedItem = store.personnel;
@@ -1684,16 +1682,16 @@ export default {
           row.lastName || "",
           row.firstName || "",
           row.middleName || "",
-          this.formatDate(row.employmentDtl[0]?.DteStarted) || "",
-          this.formatDate(row.employmentDtl[0]?.DteEnded) || "",
-          this.formatDate(row.employmentDtl[0]?.DteReceived) || "",
-          row.employmentDtl[0]?.Designation || "",
-          row.employmentDtl[0]?.Charges || "",
-          this.getStatusClass2(row.employmentDtl[0]?.DteEnded || "").status ||
+          this.formatDate(row.employmentDtl[row.employmentDtl.length - 1]?.DteStarted) || "",
+          this.formatDate(row.employmentDtl[row.employmentDtl.length - 1]?.DteEnded) || "",
+          this.formatDate(row.employmentDtl[row.employmentDtl.length - 1]?.DteReceived) || "",
+          row.employmentDtl[row.employmentDtl.length - 1]?.Designation || "",
+          row.employmentDtl[row.employmentDtl.length - 1]?.Charges || "",
+          this.getStatusClass2(row.employmentDtl[row.employmentDtl.length - 1]?.DteEnded || "").status ||
             "",
         ]),
       ];
-
+      // console.log("date=>",data)
       // Create a workbook with a worksheet
       const ws = XLSX.utils.aoa_to_sheet(data);
       const wb = XLSX.utils.book_new();
@@ -1825,7 +1823,7 @@ export default {
 
 <style scoped>
 .my-sticky-header-table {
- height: 810px;
+  height: 810px;
 }
 /* for the table ellipses */
 .charges {
