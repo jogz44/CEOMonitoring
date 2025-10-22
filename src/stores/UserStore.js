@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
 import axios from "axios";
+import { api } from "src/boot/axios";
 
 export const useStoreUserInfo = defineStore("userinfo", {
   state: () => ({
@@ -12,7 +13,7 @@ export const useStoreUserInfo = defineStore("userinfo", {
   actions: {
     async fetchUser() {
       try {
-        const response = await axios.get("http://10.0.1.23:5000/api/Users/");
+        const response = await api.get("/api/Users/");
 
         this.users = response.data;
         this.usersCount = response.data.length;
@@ -24,10 +25,7 @@ export const useStoreUserInfo = defineStore("userinfo", {
     },
     async AddUser(payload) {
       try {
-        const response = await axios.post(
-          "http://10.0.1.23:5000/api/Users/",
-          payload
-        );
+        const response = await api.post("/api/Users/", payload);
 
         this.users.push(response.data);
       } catch (error) {
@@ -38,10 +36,7 @@ export const useStoreUserInfo = defineStore("userinfo", {
     // FOR CREDENTAILS
     async AddCred(id, payload) {
       try {
-        const response = await axios.post(
-          "http://10.0.1.23:5000/api/Users/" + id + "/creds",
-          payload
-        );
+        const response = await api.post("/api/Users/" + id + "/creds", payload);
         this.creds.push(response.data);
       } catch (error) {
         console.log(`Error fetching creds: ${error}`);
@@ -50,7 +45,7 @@ export const useStoreUserInfo = defineStore("userinfo", {
 
     async DeleteUser(id) {
       try {
-        await axios.delete(`http://10.0.1.23:5000/api/Users/` + id);
+        await api.delete(`/api/Users/` + id);
         this.users = this.users.filter((e) => e.id !== id);
       } catch (error) {
         console.log(`Unable to Delete ${error}`);
@@ -59,10 +54,7 @@ export const useStoreUserInfo = defineStore("userinfo", {
 
     async UpdateUser(id, payload) {
       try {
-        const response = await axios.put(
-          `http://10.0.1.23:5000/api/Users/` + id,
-          payload
-        );
+        const response = await api.put(`/api/Users/` + id, payload);
         const index = this.user.findIndex((e) => e._id === payload._id);
         if (index !== -1) {
           this.user[index] = response.data;
@@ -75,9 +67,7 @@ export const useStoreUserInfo = defineStore("userinfo", {
     async GetUserCredentials(id) {
       console.log("getuser=", id);
       try {
-        const response = await axios.get(
-          `http://10.0.1.23:5000/api/Users/` + id + `/creds`
-        );
+        const response = await api.get(`/api/Users/` + id + `/creds`);
         this.user = response.data;
       } catch (error) {
         console.log("Unable to retrieve=", error);
@@ -86,9 +76,7 @@ export const useStoreUserInfo = defineStore("userinfo", {
 
     async GetUser(id) {
       try {
-        const response = await axios.get(
-          `http://10.0.1.23:5000/api/Users/` + id
-        );
+        const response = await api.get(`/api/Users/` + id);
         this.user = response.data;
       } catch (error) {
         console.log("Unable to retrieve=", error);
@@ -97,9 +85,9 @@ export const useStoreUserInfo = defineStore("userinfo", {
 
     async UpdateCredentialsSpec(id, cid, payload) {
       try {
-        const response = await axios.put(
-          `http://10.0.1.23:5000/api/Users/` + id + `/creds/` + cid,
-          payload
+        const response = await api.put(
+          `/api/Users/` + id + `/creds/` + cid,
+          payload,
         );
       } catch (error) {
         console.log("Unable to retrieve=", error);
@@ -109,11 +97,11 @@ export const useStoreUserInfo = defineStore("userinfo", {
     async DeleteCredentialsSpec(id, cid) {
       // console.log("UserID====" + id + "===== CredID======" + cid)
       try {
-      const CredsToDelete =  await axios.delete(
-          `http://10.0.1.23:5000/api/Users/` + id + `/creds/` + cid
+        const CredsToDelete = await api.delete(
+          `/api/Users/` + id + `/creds/` + cid,
         );
         //this.user = this.user.Credentials.filter((e) => e.id !== id);
-        console.log(CredsToDelete)
+        console.log(CredsToDelete);
       } catch (error) {
         console.log(`Unable to Delete ${error}`);
       }

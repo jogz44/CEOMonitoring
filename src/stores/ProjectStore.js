@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
 import axios from "axios";
+import { api } from "src/boot/axios";
 
 export const useStoreProjectInfo = defineStore("projectinfo", {
   state: () => ({
@@ -13,7 +14,7 @@ export const useStoreProjectInfo = defineStore("projectinfo", {
   actions: {
     async fetchProject() {
       try {
-        const response = await axios.get("http://10.0.1.23:5000/api/Projects/");
+        const response = await api.get("/api/Projects/");
 
         this.projects = response.data;
         this.projectsCount = response.data.length;
@@ -31,10 +32,7 @@ export const useStoreProjectInfo = defineStore("projectinfo", {
     },
     async AddProject(payload) {
       try {
-        const response = await axios.post(
-          "http://10.0.1.23:5000/api/Projects/",
-          payload
-        );
+        const response = await api.post("/api/Projects/", payload);
 
         this.projects.push(response.data);
       } catch (error) {
@@ -44,7 +42,7 @@ export const useStoreProjectInfo = defineStore("projectinfo", {
 
     async DeleteProject(id, payload) {
       try {
-        await axios.put(`http://10.0.1.23:5000/api/Projects/` + id + `/remove`, payload);
+        await api.put(`/api/Projects/` + id + `/remove`, payload);
         // this.projects = this.projects.filter((e) => e.id !== id);
       } catch (error) {
         console.log(`Unable to Delete ${error}`);
@@ -53,9 +51,9 @@ export const useStoreProjectInfo = defineStore("projectinfo", {
 
     async UpdateProject(id, payload) {
       try {
-        const response = await axios.put(
-          `http://10.0.1.23:5000/api/Projects/` + id + `/update`,
-          payload
+        const response = await api.put(
+          `/api/Projects/` + id + `/update`,
+          payload,
         );
         const index = this.project.findIndex((e) => e._id === payload._id);
         if (index !== -1) {
@@ -70,9 +68,7 @@ export const useStoreProjectInfo = defineStore("projectinfo", {
     async GetProject(id) {
       console.log("getproject=", id);
       try {
-        const response = await axios.get(
-          `http://10.0.1.23:5000/api/Projects/` + id
-        );
+        const response = await api.get(`/api/Projects/` + id);
 
         this.project = response.data;
         // this.projecthistory = Object.values(response.data.ProjectUpdates);
@@ -84,10 +80,10 @@ export const useStoreProjectInfo = defineStore("projectinfo", {
 
     async AddUpdate(id, payload) {
       try {
-        const response = await axios.post(
-          "http://10.0.1.23:5000/api/Projects/" + id + "/projectupdate",
+        const response = await api.post(
+          "/api/Projects/" + id + "/projectupdate",
           payload,
-          console.log("mao ni=>", response)
+          console.log("mao ni=>", response),
         );
       } catch (error) {
         console.log(`Error fetching tasks: ${error}`);
@@ -95,9 +91,9 @@ export const useStoreProjectInfo = defineStore("projectinfo", {
     },
     async UploadImage(id, payload) {
       try {
-        let response = await axios.post(
-          "http://10.0.1.23:5000/api/Projects/" + id + "/projectupdate",
-          payload
+        let response = await api.post(
+          "/api/Projects/" + id + "/projectupdate",
+          payload,
         );
         console.log("response=", response);
         // this.equipment.push(response.data);
@@ -107,12 +103,7 @@ export const useStoreProjectInfo = defineStore("projectinfo", {
     },
     async DeleteUpdate(id, updateid) {
       try {
-        await axios.put(
-          `http://10.0.1.23:5000/api/Projects/` +
-            id +
-            `/updates/remove/` +
-            updateid
-        );
+        await api.put(`/api/Projects/` + id + `/updates/remove/` + updateid);
       } catch (error) {
         console.log(`Unable to Delete ${error}`);
       }
@@ -120,11 +111,9 @@ export const useStoreProjectInfo = defineStore("projectinfo", {
 
     async GetProjectUpdateDetails(id) {
       try {
-        const response = await axios.get(
-          `http://10.0.1.23:5000/api/Projects/` + id + `/updates`
-        );
+        const response = await api.get(`/api/Projects/` + id + `/updates`);
         this.projecthistory = response.data;
-        console.log("history=>", this.projecthistory)
+        console.log("history=>", this.projecthistory);
       } catch (error) {
         console.log("Unable to retrieve=", error);
       }

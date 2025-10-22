@@ -128,7 +128,7 @@
                 getStatusClass(
                   row.employmentDtl[row.employmentDtl.length - 1]
                     ? row.employmentDtl[row.employmentDtl.length - 1].DteEnded
-                    : null
+                    : null,
                 )
               "
             >
@@ -136,7 +136,7 @@
                 getStatusClass2(
                   row.employmentDtl[row.employmentDtl.length - 1]
                     ? row.employmentDtl[row.employmentDtl.length - 1].DteEnded
-                    : null
+                    : null,
                 ).status
               }}
               <br />
@@ -243,22 +243,7 @@
             v-show="exitBtn"
           />
         </q-toolbar>
-        <!-- <q-card-section class="">
-          <div class="row">
-            <div class="col-11 text-h6">EMPLOYEE DETAILS</div>
-            <div class="col-1">
-              <q-btn
-                flat
-                round
-                color="orange"
-                icon="close"
-                v-close-popup
-                @click="this.isEditMode = false"
-                v-show="exitBtn"
-              />
-            </div>
-          </div>
-        </q-card-section> -->
+
         <q-separator />
 
         <q-card-section style="max-height: 50vh">
@@ -845,7 +830,7 @@ import { store } from "quasar/wrappers";
 
 const stringOptions = ["Active", "End of Contract"];
 
-//const API_URL ='http://10.0.1.23:5000/api/Personnels/'
+//const API_URL ='/api/Personnels/'
 
 export default {
   data() {
@@ -896,6 +881,7 @@ export default {
         firstName: "",
         middleName: "",
         isDeleted: false,
+        encodedBy: "",
         employmentDtl: {
           0: {
             DteStarted: "",
@@ -907,6 +893,7 @@ export default {
             Remarks: "",
             Drate: "",
             isDeleted: false,
+            encodedBy: "",
           },
         },
         resumeLink: "",
@@ -1124,7 +1111,7 @@ export default {
         const employmentDtl =
           employee.employmentDtl[employee.employmentDtl.length - 1] || {};
         const statusText = this.getStatusClass2(
-          employmentDtl.DteEnded
+          employmentDtl.DteEnded,
         ).status.toLowerCase();
         const lastName = employee.lastName
           ? employee.lastName.toLowerCase()
@@ -1183,7 +1170,14 @@ export default {
     // },
   },
   methods: {
+    getdesignationOptions() {
+      const store = useStorePersonnelInfo();
+      store.fetchDesignation();
+      this.designationoptions = store.EmpDesignation.map((item) => item.Designation);
+    },
+
     createAppointment() {
+      this.getdesignationOptions();
       this.secondDialog = true;
       this.AppointmentDtls = false;
     },
@@ -1204,7 +1198,7 @@ export default {
               .AddReceive(
                 this.secondTable[i]._id,
                 this.secondTable[i].employmentDtl[0]._id,
-                this.secondTable[i].employmentDtl[0]
+                this.secondTable[i].employmentDtl[0],
               )
               .then((fin = true))
               .then((res) => {
@@ -1236,7 +1230,7 @@ export default {
     moveSelectedToSecondTable() {
       this.selected.forEach((employee) => {
         const index = this.store.personnels.findIndex(
-          (e) => e._id === employee._id
+          (e) => e._id === employee._id,
         );
         if (index !== -1) {
           this.store.personnels.splice(index, 1);
@@ -1347,9 +1341,9 @@ export default {
     },
 
     editItem(item) {
-      (this.selectedID = item._id),
+      ((this.selectedID = item._id),
         (this.exitBtn = false),
-        (this.employmenthistory = true);
+        (this.employmenthistory = true));
       const store = useStorePersonnelInfo();
       store.GetPersonnel(item._id).then((res) => {
         this.editedItem = store.personnel;
@@ -1617,7 +1611,7 @@ export default {
             store.GetPersonnel(this.selectedID).then((res1) => {
               this.editedItem = store.personnel;
               store.GetPersonnelHistory(this.selectedID);
-              (this.EmpDtl = [
+              ((this.EmpDtl = [
                 {
                   DteStarted: "",
                   DteEnded: "",
@@ -1630,7 +1624,7 @@ export default {
                   isDeleted: false,
                 },
               ]),
-                (this.AppointmentDtls = true);
+                (this.AppointmentDtls = true));
               store.fetchPersonnel();
             });
           });
@@ -1682,13 +1676,20 @@ export default {
           row.lastName || "",
           row.firstName || "",
           row.middleName || "",
-          this.formatDate(row.employmentDtl[row.employmentDtl.length - 1]?.DteStarted) || "",
-          this.formatDate(row.employmentDtl[row.employmentDtl.length - 1]?.DteEnded) || "",
-          this.formatDate(row.employmentDtl[row.employmentDtl.length - 1]?.DteReceived) || "",
+          this.formatDate(
+            row.employmentDtl[row.employmentDtl.length - 1]?.DteStarted,
+          ) || "",
+          this.formatDate(
+            row.employmentDtl[row.employmentDtl.length - 1]?.DteEnded,
+          ) || "",
+          this.formatDate(
+            row.employmentDtl[row.employmentDtl.length - 1]?.DteReceived,
+          ) || "",
           row.employmentDtl[row.employmentDtl.length - 1]?.Designation || "",
           row.employmentDtl[row.employmentDtl.length - 1]?.Charges || "",
-          this.getStatusClass2(row.employmentDtl[row.employmentDtl.length - 1]?.DteEnded || "").status ||
-            "",
+          this.getStatusClass2(
+            row.employmentDtl[row.employmentDtl.length - 1]?.DteEnded || "",
+          ).status || "",
         ]),
       ];
       // console.log("date=>",data)
@@ -1713,7 +1714,7 @@ export default {
     function remove(module) {
       const userCredentials = loginstore.user.Credentials;
       const moduleCredentials = userCredentials.find(
-        (cred) => cred.Module === module
+        (cred) => cred.Module === module,
       );
       // console.log("credentials=", moduleCredentials);
       if (moduleCredentials.Remove) {
@@ -1726,7 +1727,7 @@ export default {
     function update(module) {
       const userCredentials = loginstore.user.Credentials;
       const moduleCredentials = userCredentials.find(
-        (cred) => cred.Module === module
+        (cred) => cred.Module === module,
       );
       // console.log("credentials=", moduleCredentials);
       if (moduleCredentials.Update) {
@@ -1739,7 +1740,7 @@ export default {
     function create(module) {
       const userCredentials = loginstore.user.Credentials;
       const moduleCredentials = userCredentials.find(
-        (cred) => cred.Module === module
+        (cred) => cred.Module === module,
       );
       // console.log("credentials=", moduleCredentials);
       if (moduleCredentials.Create) {
@@ -1760,7 +1761,8 @@ export default {
       sampledata.push(element.Designation);
     });
     const designationoptions = ref(sampledata);
-    // console.log("sampledata=", sampledata);
+    console.log("sampledata=", sampledata);
+    // const designationoptions = ref(sampledata);
     return {
       designationoptions,
       nameRules: [(val) => (val && val.length > 0) || "Please type something"],
@@ -1788,7 +1790,7 @@ export default {
         update(() => {
           const needle = val.toLowerCase();
           designationoptions.value = sampledata.filter(
-            (v) => v.toLowerCase().indexOf(needle) > -1
+            (v) => v.toLowerCase().indexOf(needle) > -1,
           );
         });
       },
@@ -1804,7 +1806,7 @@ export default {
         update(() => {
           const needle = val.toLowerCase();
           options.value = stringOptions.filter(
-            (v) => v.toLowerCase().indexOf(needle) > -1
+            (v) => v.toLowerCase().indexOf(needle) > -1,
           );
         });
       },

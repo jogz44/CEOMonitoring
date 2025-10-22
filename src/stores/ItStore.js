@@ -1,21 +1,20 @@
 import { defineStore } from "pinia";
 import axios from "axios";
+import { api } from "src/boot/axios";
 
 export const useITEquipmentInfo = defineStore("itequipmentinfo", {
   state: () => ({
-    itequipmenthistory:[],
+    itequipmenthistory: [],
     itequipments: [],
     itequipment: [],
     itequipmentsCount: 0,
-    itequipmenttype:[]
+    itequipmenttype: [],
   }),
 
   actions: {
     async fetchITEquipment() {
       try {
-        const response = await axios.get(
-          "http://10.0.1.23:5000/api/ITEquipments/"
-        );
+        const response = await api.get("/api/ITEquipments/");
 
         this.itequipments = response.data;
         this.itequipmentsCount = response.data.length;
@@ -27,10 +26,7 @@ export const useITEquipmentInfo = defineStore("itequipmentinfo", {
     },
     async AddITEquipment(payload) {
       try {
-        const response = await axios.post(
-          "http://10.0.1.23:5000/api/ITEquipments/",
-          payload
-        );
+        const response = await api.post("/api/ITEquipments/", payload);
         this.itequipments.push(response.data);
       } catch (error) {
         console.log(`Error fetching tasks: ${error}`);
@@ -38,10 +34,7 @@ export const useITEquipmentInfo = defineStore("itequipmentinfo", {
     },
     async UpdateITEquipment(id, payload) {
       try {
-        const response = await axios.put(
-          `http://10.0.1.23:5000/api/ITEquipments/` + id,
-          payload
-        );
+        const response = await api.put(`/api/ITEquipments/` + id, payload);
 
         const index = this.itequipment.findIndex((e) => e._id === payload._id);
         if (index !== -1) {
@@ -53,7 +46,7 @@ export const useITEquipmentInfo = defineStore("itequipmentinfo", {
     },
     async DeleteITEquipment(id, payload) {
       try {
-        await axios.put(`http://10.0.1.23:5000/api/ITEquipments/` + id + `/remove`, payload);
+        await api.put(`/api/ITEquipments/` + id + `/remove`, payload);
         this.itequipments = this.itequipments.filter((e) => e.id !== id);
         if (index !== -1) {
           this.itequipment[index] = response.data;
@@ -68,9 +61,7 @@ export const useITEquipmentInfo = defineStore("itequipmentinfo", {
     async GetITEquipment(id) {
       console.log("getitequipment=", id);
       try {
-        const response = await axios.get(
-          `http://10.0.1.23:5000/api/ITEquipments/` + id
-        );
+        const response = await api.get(`/api/ITEquipments/` + id);
         this.itequipment = response.data;
         // this.itequipmenthistory = Object.values(response.data.MaintenanceDtls);
         //  console.log("itequipment=",this.itequipmenthistory);
@@ -81,8 +72,8 @@ export const useITEquipmentInfo = defineStore("itequipmentinfo", {
 
     async GetITEquipmentmaintenanceDetails(id) {
       try {
-        const response = await axios.get(
-          `http://10.0.1.23:5000/api/ITEquipments/` + id + `/maintenance`
+        const response = await api.get(
+          `/api/ITEquipments/` + id + `/maintenance`,
         );
         this.itequipmenthistory = response.data;
       } catch (error) {
@@ -92,9 +83,9 @@ export const useITEquipmentInfo = defineStore("itequipmentinfo", {
 
     async AddITMaintenance(id, payload) {
       try {
-        const response = await axios.post(
-          "http://10.0.1.23:5000/api/ITEquipments/" + id + "/maintenance",
-          payload
+        const response = await api.post(
+          "/api/ITEquipments/" + id + "/maintenance",
+          payload,
         );
         // this.equipment.push(response.data);
       } catch (error) {
@@ -103,23 +94,20 @@ export const useITEquipmentInfo = defineStore("itequipmentinfo", {
     },
     async DeleteITMaintenance(id, maintenanceid) {
       try {
-        await axios.put(
-          `http://10.0.1.23:5000/api/ITEquipments/` +
-            id +
-            `/maintenance/remove/` +
-            maintenanceid
+        await api.put(
+          `/api/ITEquipments/` + id + `/maintenance/remove/` + maintenanceid,
         );
       } catch (error) {
         console.log(`Unable to Delete ${error}`);
       }
     },
-    async UploadImage (id, payload) {
+    async UploadImage(id, payload) {
       try {
-        let response = await axios.post(
-          "http://10.0.1.23:5000/api/ITEquipments/" + id + "/maintenance",
-          payload
+        let response = await api.post(
+          "/api/ITEquipments/" + id + "/maintenance",
+          payload,
         );
-        console.log("response=",response)
+        console.log("response=", response);
         // this.equipment.push(response.data);
       } catch (error) {
         console.log(`Error fetching tasks: ${error}`);
@@ -127,16 +115,13 @@ export const useITEquipmentInfo = defineStore("itequipmentinfo", {
     },
     async fetchDashboard() {
       try {
-        const response = await axios.get(
-          "http://10.0.1.23:5000/api/ITEquipments/dashboard"
-        );
+        const response = await api.get("/api/ITEquipments/dashboard");
 
         // this.itequipments = response.data;
         // this.itequipmentsCount = response.data.length;
         // console.log("resItEquipment=", this.itequipments);
         // console.log("resEquipment=", response.data);
-          this.itequipmenttype=response.data
-
+        this.itequipmenttype = response.data;
       } catch (error) {
         console.log(`Error fetching tasks: ${error}`);
       }

@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
 import axios from "axios";
+import { api } from "src/boot/axios";
 
 export const useEquipmentInfo = defineStore("equipmentinfo", {
   state: () => ({
@@ -15,9 +16,9 @@ export const useEquipmentInfo = defineStore("equipmentinfo", {
   actions: {
     async UploadImage(id, payload) {
       try {
-        let response = await axios.post(
-          "http://10.0.1.23:5000/api/Equipments/" + id + "/maintenance",
-          payload
+        let response = await api.post(
+          "/api/Equipments/" + id + "/maintenance",
+          payload,
         );
         console.log("response=", response);
         // this.equipment.push(response.data);
@@ -28,9 +29,9 @@ export const useEquipmentInfo = defineStore("equipmentinfo", {
 
     async AddMaintenance(id, payload) {
       try {
-        const response = await axios.post(
-          "http://10.0.1.23:5000/api/Equipments/" + id + "/maintenance",
-          payload
+        const response = await api.post(
+          "/api/Equipments/" + id + "/maintenance",
+          payload,
         );
         // this.equipment.push(response.data);
       } catch (error) {
@@ -40,9 +41,7 @@ export const useEquipmentInfo = defineStore("equipmentinfo", {
 
     async fetchEquipment() {
       try {
-        const response = await axios.get(
-          "http://10.0.1.23:5000/api/Equipments/"
-        );
+        const response = await api.get("/api/Equipments/");
 
         this.equipments = response.data;
         this.equipmentsCount = response.data.length;
@@ -50,15 +49,15 @@ export const useEquipmentInfo = defineStore("equipmentinfo", {
         this.filteredEquipments = response.data.filter(
           (equipments) =>
             equipments.EquipmentType === "Heavy" ||
-            equipments.EquipmentType === "Light"
+            equipments.EquipmentType === "Light",
         );
 
         this.heavyEquipmentsCount = this.filteredEquipments.filter(
-          (equipments) => equipments.EquipmentType === "Heavy"
+          (equipments) => equipments.EquipmentType === "Heavy",
         ).length;
 
         this.lightEquipmentsCount = this.filteredEquipments.filter(
-          (equipments) => equipments.EquipmentType === "Light"
+          (equipments) => equipments.EquipmentType === "Light",
         ).length;
         // Count the occurrences of the selected equipment type
 
@@ -73,10 +72,7 @@ export const useEquipmentInfo = defineStore("equipmentinfo", {
     },
     async AddEquipment(payload) {
       try {
-        const response = await axios.post(
-          "http://10.0.1.23:5000/api/Equipments/",
-          payload
-        );
+        const response = await api.post("/api/Equipments/", payload);
         this.equipments.push(response.data);
       } catch (error) {
         console.log(`Error fetching tasks: ${error}`);
@@ -85,10 +81,7 @@ export const useEquipmentInfo = defineStore("equipmentinfo", {
 
     async UpdateEquipment(id, payload) {
       try {
-        const response = await axios.put(
-          `http://10.0.1.23:5000/api/Equipments/` + id,
-          payload
-        );
+        const response = await api.put(`/api/Equipments/` + id, payload);
 
         const index = this.equipment.findIndex((e) => e._id === payload._id);
         if (index !== -1) {
@@ -100,10 +93,7 @@ export const useEquipmentInfo = defineStore("equipmentinfo", {
     },
     async DeleteEquipment(id, payload) {
       try {
-        await axios.put(
-          `http://10.0.1.23:5000/api/Equipments/remove/` + id,
-          payload
-        );
+        await api.put(`/api/Equipments/remove/` + id, payload);
         const index = this.equipment.findIndex((e) => e._id === payload._id);
         if (index !== -1) {
           this.equipment[index] = response.data;
@@ -119,9 +109,7 @@ export const useEquipmentInfo = defineStore("equipmentinfo", {
     async GetEquipment(id) {
       console.log("getequipment=", id);
       try {
-        const response = await axios.get(
-          `http://10.0.1.23:5000/api/Equipments/` + id
-        );
+        const response = await api.get(`/api/Equipments/` + id);
         this.equipment = response.data;
         // this.equipmenthistory = Object.values(response.data.MaintenanceDtls);
         // console.log("equipment=",this.equipment);
@@ -132,8 +120,8 @@ export const useEquipmentInfo = defineStore("equipmentinfo", {
 
     async GetEquipmentmaintenanceDetails(id) {
       try {
-        const response = await axios.get(
-          `http://10.0.1.23:5000/api/Equipments/` + id + `/maintenance`
+        const response = await api.get(
+          `/api/Equipments/` + id + `/maintenance`,
         );
         this.equipmenthistory = response.data;
       } catch (error) {
@@ -143,11 +131,8 @@ export const useEquipmentInfo = defineStore("equipmentinfo", {
 
     async DeleteMaintenance(id, maintenanceid) {
       try {
-        let res = await axios.put(
-          `http://10.0.1.23:5000/api/Equipments/` +
-            id +
-            `/maintenance/remove/` +
-            maintenanceid
+        let res = await api.put(
+          `/api/Equipments/` + id + `/maintenance/remove/` + maintenanceid,
         );
         // console.log("res =", res.data);
       } catch (error) {

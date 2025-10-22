@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
 import axios from "axios";
+import { api } from "src/boot/axios";
 
 export const useLoginStore = defineStore("LoginStore", {
   state: () => ({
@@ -8,12 +9,9 @@ export const useLoginStore = defineStore("LoginStore", {
   }),
   actions: {
     async userlogin(payload) {
-      // console.log("Payload =", payload);
+       console.log("Payload =", payload);
       try {
-        let res = await axios.post(
-          "http://10.0.1.23:5000/api/auth/login",
-          payload
-        );
+        let res = await api.post("/api/auth/login", payload);
         this.user = res.data;
         console.log("data=", this.user);
 
@@ -25,5 +23,5 @@ export const useLoginStore = defineStore("LoginStore", {
       }
     },
   },
-  persist: true
+  persist: true,
 });
