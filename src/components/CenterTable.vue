@@ -1,49 +1,15 @@
 <template>
   <div class="q-pa-md">
-    <q-btn
-      icon="add"
-      color="green-10"
-      label="Add Employee"
-      @click="Rowclick"
-      class="q-mb-sm q-mr-md"
-      v-if="create('Employee')"
-    />
-    <q-btn
-      icon="add"
-      color="green-8"
-      label="Receive Multiple J.O"
-      @click="AddJo"
-      class="q-mb-sm q-mr-md"
-    />
-    <q-btn
-      label="Download CSV"
-      flat
-      class="q-mb-sm"
-      style="color: green"
-      @click="exportToExcel"
-    ></q-btn>
+    <q-btn icon="add" color="green-10" label="Add Employee" @click="Rowclick" class="q-mb-sm q-mr-md"
+      v-if="create('Employee')" />
+    <q-btn icon="add" color="green-8" label="Receive Multiple J.O" @click="AddJo" class="q-mb-sm q-mr-md" />
+    <q-btn label="Download CSV" flat class="q-mb-sm" style="color: green" @click="exportToExcel"></q-btn>
     <div style="width: auto">
-      <q-table
-        class="my-sticky-header-table"
-        flat
-        bordered
-        title="EMPLOYEE LIST"
-        dense
-        wrap-cells=""
-        :rows="filteredEmployees"
-        :columns="columns"
-        row-key="id"
-        :rows-per-page-options="[20]"
-      >
+      <q-table class="my-sticky-header-table" flat bordered title="EMPLOYEE LIST" dense wrap-cells=""
+        :rows="filteredEmployees" :columns="columns" row-key="id" :rows-per-page-options="[20]">
         <template v-slot:top-right>
-          <q-input
-            color="green"
-            dense
-            v-model="filter"
-            :filter="filter"
-            style="margin-bottom: 20px"
-            placeholder="Search"
-          >
+          <q-input color="green" dense v-model="filter" :filter="filter" style="margin-bottom: 20px"
+            placeholder="Search">
             <template v-slot:append>
               <q-icon name="search" />
             </template>
@@ -121,17 +87,12 @@
         </template>
 
         <template v-slot:body-cell-status="{ row }">
-          <q-td
-            ><q-chip
-              style="height: auto"
-              :class="
-                getStatusClass(
-                  row.employmentDtl[row.employmentDtl.length - 1]
-                    ? row.employmentDtl[row.employmentDtl.length - 1].DteEnded
-                    : null,
-                )
-              "
-            >
+          <q-td><q-chip style="height: auto" :class="getStatusClass(
+            row.employmentDtl[row.employmentDtl.length - 1]
+              ? row.employmentDtl[row.employmentDtl.length - 1].DteEnded
+              : null,
+          )
+            ">
               {{
                 getStatusClass2(
                   row.employmentDtl[row.employmentDtl.length - 1]
@@ -145,21 +106,13 @@
                   ? row.employmentDtl[row.employmentDtl.length - 1].DteEnded
                   : null
               }}
-            </q-chip></q-td
-          >
+            </q-chip></q-td>
         </template>
 
         <template v-slot:body-cell-actions="{ row }">
           <div class="actionsbtn">
-            <q-btn
-              v-if="update('Employee')"
-              icon="visibility"
-              flat
-              round
-              color="green-8"
-              @click="editItem(row)"
-              style="margin-right: -10px"
-            >
+            <q-btn v-if="update('Employee')" icon="visibility" flat round color="green-8" @click="editItem(row)"
+              style="margin-right: -10px">
             </q-btn>
             <!-- <q-btn
               v-if="update('Employee')"
@@ -172,14 +125,7 @@
               <q-tooltip class="">Create Appointment</q-tooltip>
             </q-btn> -->
 
-            <q-btn
-              v-if="remove('Employee')"
-              icon="delete"
-              flat
-              round
-              color="deep-orange"
-              @click="deleteItem(row)"
-            >
+            <q-btn v-if="remove('Employee')" icon="delete" flat round color="deep-orange" @click="deleteItem(row)">
             </q-btn>
           </div>
         </template>
@@ -187,12 +133,7 @@
     </div>
 
     <!-- For the Delete of the Employee -->
-    <q-dialog
-      v-model="EmployeeDelete"
-      persistent
-      transition-show="scale"
-      transition-hide="scale"
-    >
+    <q-dialog v-model="EmployeeDelete" persistent transition-show="scale" transition-hide="scale">
       <q-card class="bg-red text-white" style="width: 400px">
         <q-card-section>
           <div class="text-h6">Delete Employee</div>
@@ -203,21 +144,8 @@
         </q-card-section>
 
         <q-card-actions align="right" class="bg-white text-teal">
-          <q-btn
-            flat
-            label="Cancel"
-            size="small"
-            color="orange"
-            autofocus
-            v-close-popup
-          />
-          <q-btn
-            label="OK"
-            flat
-            color="green-5"
-            v-close-popup
-            @click="deleteItemConfirm(this.DeleteId)"
-          />
+          <q-btn flat label="Cancel" size="small" color="orange" autofocus v-close-popup />
+          <q-btn label="OK" flat color="green-5" v-close-popup @click="deleteItemConfirm(this.DeleteId)" />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -226,22 +154,10 @@
     <q-dialog v-model="dialogVisibles" persistent="">
       <q-card style="width: 500px; max-width: 80vw; height: 450px" class="">
         <q-toolbar class="q-pa-md">
-          <q-toolbar-title
-            ><span class="text-weight-bold"
-              >EMPLOYEE DETAILS</span
-            ></q-toolbar-title
-          >
+          <q-toolbar-title><span class="text-weight-bold">EMPLOYEE DETAILS</span></q-toolbar-title>
 
-          <q-btn
-            flat
-            round
-            dense
-            icon="close"
-            v-close-popup
-            color="orange"
-            @click="this.isEditMode = false"
-            v-show="exitBtn"
-          />
+          <q-btn flat round dense icon="close" v-close-popup color="orange" @click="this.isEditMode = false"
+            v-show="exitBtn" />
         </q-toolbar>
 
         <q-separator />
@@ -250,56 +166,22 @@
           <q-form>
             <div class="row">
               <div class="col-12">
-                <q-input
-                  ref="lastname"
-                  :rules="[this.required]"
-                  filled
-                  v-model="editedItem.lastName"
-                  label="Lastname"
-                  dense
-                  class="q-pa-md"
-                  :disable="employmenthistory === !isEditMode"
-                  lazy-rules
-                />
+                <q-input ref="lastname" :rules="[this.required]" filled v-model="editedItem.lastName" label="Lastname"
+                  dense class="q-pa-md" :disable="employmenthistory === !isEditMode" lazy-rules />
               </div>
               <div class="col-12">
-                <q-input
-                  ref="firstname"
-                  :rules="[this.required]"
-                  filled
-                  v-model="editedItem.firstName"
-                  label="Firstname"
-                  class="q-pa-md"
-                  dense
-                  :disable="employmenthistory === !isEditMode"
-                  lazy-rules
-                />
+                <q-input ref="firstname" :rules="[this.required]" filled v-model="editedItem.firstName"
+                  label="Firstname" class="q-pa-md" dense :disable="employmenthistory === !isEditMode" lazy-rules />
               </div>
               <div class="col-12">
-                <q-input
-                  ref="middlename"
-                  :rules="[this.required]"
-                  filled
-                  v-model="editedItem.middleName"
-                  label="Middlename"
-                  class="q-pa-md"
-                  dense
-                  :disable="employmenthistory === !isEditMode"
-                />
+                <q-input ref="middlename" :rules="[this.required]" filled v-model="editedItem.middleName"
+                  label="Middlename" class="q-pa-md" dense :disable="employmenthistory === !isEditMode" />
               </div>
             </div>
             <div class="row">
               <div class="col">
-                <q-file
-                  dense
-                  filled
-                  accept=".pdf"
-                  v-model="editedItem.resumeLink"
-                  label="Resume"
-                  class="q-ma-md"
-                  icon="file"
-                  lazy-rules
-                >
+                <q-file dense filled accept=".pdf" v-model="editedItem.resumeLink" label="Resume" class="q-ma-md"
+                  icon="file" lazy-rules>
                   <template v-slot:prepend>
                     <q-icon name="attach_file" />
                   </template>
@@ -312,30 +194,14 @@
         </q-card-section>
 
         <q-card-actions align="right">
-          <q-btn
-            flat
-            round
-            color="orange"
-            icon="edit"
-            @click="toggleEditMode()"
-            v-show="employmenthistory"
-          />
-          <q-btn
-            type="submit"
-            label="Save"
-            color="green-5"
-            @click="save"
-            class="q-mr-md"
-            :disable="employmenthistory === !isEditMode"
-          />
+          <q-btn flat round color="orange" icon="edit" @click="toggleEditMode()" v-show="employmenthistory" />
+          <q-btn type="submit" label="Save" color="green-5" @click="save" class="q-mr-md"
+            :disable="employmenthistory === !isEditMode" />
         </q-card-actions>
       </q-card>
 
       <!-- EMPLOYMENT DETAILS -->
-      <q-card
-        style="width: 500px; max-width: 80vw; height: 450px"
-        v-show="employmenthistory"
-      >
+      <q-card style="width: 500px; max-width: 80vw; height: 450px" v-show="employmenthistory">
         <!-- <q-card-section style="max-height: " class="scroll">
           <div class="row">
             <div class="col-11 text-h6">EMPLOYMENT DETAILS</div>
@@ -352,52 +218,25 @@
           </div>
         </q-card-section> -->
         <q-toolbar class="q-pa-md">
-          <q-toolbar-title
-            ><span class="text-weight-bold"
-              >EMPLOYMENT DETAILS</span
-            ></q-toolbar-title
-          >
+          <q-toolbar-title><span class="text-weight-bold">EMPLOYMENT DETAILS</span></q-toolbar-title>
           <q-btn flat dense icon="close" v-close-popup color="orange" />
         </q-toolbar>
         <q-separator />
 
         <q-card-section style="max-height: 50vh">
-          <q-table
-            class="my-sticky-header-table"
-            flat
-            bordered
-            title=""
-            wrap-cells=""
-            dense
-            :rows="store.EmpDtls"
-            :columns="history"
-            :filter="filters"
-            row-key="id"
-            style="margin-top: -5px"
-            :rows-per-page-options="[2]"
-            virtual-scroll
-          >
+          <q-table class="my-sticky-header-table" flat bordered title="" wrap-cells="" dense :rows="store.EmpDtls"
+            :columns="history" :filter="filters" row-key="id" style="margin-top: -5px" :rows-per-page-options="[2]"
+            virtual-scroll>
             <template v-slot:top-right>
-              <q-input
-                dense
-                debounce="300"
-                v-model="filters"
-                placeholder="Search"
-                color="green-10"
-              >
+              <q-input dense debounce="300" v-model="filters" placeholder="Search" color="green-10">
                 <template v-slot:append>
                   <q-icon name="search" />
                 </template>
               </q-input>
             </template>
             <template v-slot:top-left>
-              <q-btn
-                label="Create Appointment"
-                size="x-small"
-                icon="add"
-                @click="createAppointment()"
-                color="green-10"
-              ></q-btn>
+              <q-btn label="Create Appointment" size="x-small" icon="add" @click="createAppointment()"
+                color="green-10"></q-btn>
             </template>
 
             <template v-slot:body-cell-DteStarted="{ row }">
@@ -439,21 +278,9 @@
             </template> -->
             <template v-slot:body-cell-actions="{ row }">
               <div class="actionsbtn">
-                <q-btn
-                  icon="visibility"
-                  flat
-                  round
-                  color="green-8"
-                  @click="updateEmployment(row)"
-                >
+                <q-btn icon="visibility" flat round color="green-8" @click="updateEmployment(row)">
                 </q-btn>
-                <q-btn
-                  icon="delete"
-                  flat
-                  round
-                  color="deep-orange"
-                  @click="deleteEmployment(row)"
-                >
+                <q-btn icon="delete" flat round color="deep-orange" @click="deleteEmployment(row)">
                 </q-btn>
               </div>
             </template>
@@ -464,12 +291,7 @@
           </template> -->
           </q-table>
         </q-card-section>
-        <q-dialog
-          v-model="EmployeeDeleteHistory"
-          persistent
-          transition-show="scale"
-          transition-hide="scale"
-        >
+        <q-dialog v-model="EmployeeDeleteHistory" persistent transition-show="scale" transition-hide="scale">
           <q-card class="bg-red text-white" style="width: 400px">
             <q-card-section>
               <div class="text-h6">Delete Employment History</div>
@@ -480,34 +302,15 @@
             </q-card-section>
 
             <q-card-actions align="right" class="bg-white text-teal">
-              <q-btn
-                flat
-                label="Cancel"
-                size="small"
-                color="orange"
-                v-close-popup
-                autofocus
-              />
-              <q-btn
-                label="OK"
-                flat
-                color="green-5"
-                size="small"
-                v-close-popup
-                @click="deleteEmploymentHistory()"
-              />
+              <q-btn flat label="Cancel" size="small" color="orange" v-close-popup autofocus />
+              <q-btn label="OK" flat color="green-5" size="small" v-close-popup @click="deleteEmploymentHistory()" />
             </q-card-actions>
           </q-card>
         </q-dialog>
       </q-card>
     </q-dialog>
 
-    <q-dialog
-      v-model="secondDialog"
-      persistent
-      transition-show="scale"
-      transition-hide="scale"
-    >
+    <q-dialog v-model="secondDialog" persistent transition-show="scale" transition-hide="scale">
       <q-card class="" style="width: 500px">
         <!-- <q-card-section>
           <div class="row">
@@ -518,165 +321,69 @@
           </div>
         </q-card-section> -->
         <q-toolbar>
-          <q-toolbar-title
-            ><span class="text-weight-bold"
-              >APPOINTMENT DETAILS</span
-            ></q-toolbar-title
-          >
-          <q-btn
-            flat
-            dense
-            icon="close"
-            @click="closeAppointment()"
-            color="orange"
-          />
+          <q-toolbar-title><span class="text-weight-bold">APPOINTMENT DETAILS</span></q-toolbar-title>
+          <q-btn flat dense icon="close" @click="closeAppointment()" color="orange" />
         </q-toolbar>
         <q-separator />
         <q-card-section class="q-pa-md">
           <div class="row">
             <div class="col-6 col-xs-12 col-sm-6">
-              <q-input
-                ref="dateStarted"
-                :rules="[this.required]"
-                lazy-rules
-                filled
-                v-model="EmpDtl.DteStarted"
-                label="Date Started"
-                dense
-                class="q-pa-sm"
-                type="date"
-                :disable="AppointmentDtls === !isEditModeAppDtls"
-              />
+              <q-input ref="dateStarted" :rules="[this.required]" lazy-rules filled v-model="EmpDtl.DteStarted"
+                label="Date Started" dense class="q-pa-sm" type="date"
+                :disable="AppointmentDtls === !isEditModeAppDtls" />
             </div>
             <div class="col-6 col-xs-12 col-sm-6">
-              <q-input
-                ref="dateEnded"
-                :rules="[this.required]"
-                lazy-rules
-                filled
-                v-model="EmpDtl.DteEnded"
-                label="Date Ended"
-                dense
-                class="q-pa-sm"
-                type="date"
-                :disable="AppointmentDtls === !isEditModeAppDtls"
-              />
+              <q-input ref="dateEnded" :rules="[this.required]" lazy-rules filled v-model="EmpDtl.DteEnded"
+                label="Date Ended" dense class="q-pa-sm" type="date"
+                :disable="AppointmentDtls === !isEditModeAppDtls" />
             </div>
           </div>
           <div row>
             <div class="col">
-              <q-input
-                filled
-                v-model="EmpDtl.DteReceived"
-                label="Date Received"
-                dense
-                class="q-pa-sm q-mt-sm"
-                type="date"
-                :disable="AppointmentDtls === !isEditModeAppDtls"
-              />
+              <q-input filled v-model="EmpDtl.DteReceived" label="Date Received" dense class="q-pa-sm q-mt-sm"
+                type="date" :disable="AppointmentDtls === !isEditModeAppDtls" />
             </div>
           </div>
           <div class="row">
             <div class="col">
-              <q-select
-                ref="designation"
-                :rules="[this.requiredDesignation]"
-                lazy-rules
-                filled
-                v-model="EmpDtl.Designation"
-                use-input
-                hide-selected
-                fill-input
-                input-debounce="0"
-                :options="designationoptions"
-                @filter="filterFns"
-                label="Designation"
-                dense
-                class="q-pa-sm"
-                :disable="AppointmentDtls === !isEditModeAppDtls"
-              />
+              <q-select ref="designation" :rules="[this.requiredDesignation]" lazy-rules filled
+                v-model="EmpDtl.Designation" use-input hide-selected fill-input input-debounce="0"
+                :options="designationoptions" @filter="filterFns" label="Designation" dense class="q-pa-sm"
+                :disable="AppointmentDtls === !isEditModeAppDtls" />
             </div>
           </div>
           <div class="row">
             <div class="col">
-              <q-input
-                ref="charges"
-                :rules="[this.required]"
-                lazy-rules
-                autogrow
-                filled
-                v-model="EmpDtl.Charges"
-                label="Charges"
-                dense
-                class="q-pa-sm q-mt-sm"
-                :disable="AppointmentDtls === !isEditModeAppDtls"
-              />
+              <q-input ref="charges" :rules="[this.required]" lazy-rules autogrow filled v-model="EmpDtl.Charges"
+                label="Charges" dense class="q-pa-sm q-mt-sm" :disable="AppointmentDtls === !isEditModeAppDtls" />
             </div>
           </div>
           <div class="row">
             <div class="col-6 col-xs-12 col-sm-6">
-              <q-select
-                ref="employeeStatus"
-                :rules="[this.required]"
-                lazy-rules
-                filled
-                v-model="EmpDtl.EmpStatus"
-                :options="EmpStatus"
-                label="Employee Status"
-                class="q-pa-sm q-mt-sm"
-                dense
-                :disable="AppointmentDtls === !isEditModeAppDtls"
-              />
+              <q-select ref="employeeStatus" :rules="[this.required]" lazy-rules filled v-model="EmpDtl.EmpStatus"
+                :options="EmpStatus" label="Employee Status" class="q-pa-sm q-mt-sm" dense
+                :disable="AppointmentDtls === !isEditModeAppDtls" />
             </div>
             <div class="col-6 col-xs-12 col-sm-6">
-              <q-input
-                ref="salaryRate"
-                :rules="[this.required]"
-                lazy-rules
-                filled
-                v-model="EmpDtl.Drate"
-                label="Salary Rate"
-                class="q-pa-sm q-mt-sm"
-                dense
-                :disable="AppointmentDtls === !isEditModeAppDtls"
-              />
+              <q-input ref="salaryRate" :rules="[this.required]" lazy-rules filled v-model="EmpDtl.Drate"
+                label="Salary Rate" class="q-pa-sm q-mt-sm" dense :disable="AppointmentDtls === !isEditModeAppDtls" />
             </div>
           </div>
           <div class="row">
             <div class="col">
-              <q-select
-                ref="employeeRemarks"
-                v-model="EmpDtl.Remarks"
-                filled
-                dense
-                class="q-pa-sm q-mt-sm"
-                label="Remarks"
-                :options="EmpRemarks"
-                :disable="AppointmentDtls === !isEditModeAppDtls"
-                v-show="AppointmentDtls"
-              >
+              <q-select ref="employeeRemarks" v-model="EmpDtl.Remarks" filled dense class="q-pa-sm q-mt-sm"
+                label="Remarks" :options="EmpRemarks" :disable="AppointmentDtls === !isEditModeAppDtls"
+                v-show="AppointmentDtls">
               </q-select>
             </div>
           </div>
         </q-card-section>
 
         <q-card-actions align="right">
-          <q-btn
-            flat
-            round
-            color="orange"
-            icon="edit"
-            @click="toggleEditModeAppointmentDtls()"
-            v-show="AppointmentDtls"
-          />
-          <q-btn
-            label="Save"
-            color="green-5"
-            size="md"
-            class="q-mr-md"
-            @click="savehistory(editedItem.id)"
-            :disable="AppointmentDtls === !isEditModeAppDtls"
-          />
+          <q-btn flat round color="orange" icon="edit" @click="toggleEditModeAppointmentDtls()"
+            v-show="AppointmentDtls" />
+          <q-btn label="Save" color="green-5" size="md" class="q-mr-md" @click="savehistory(editedItem.id)"
+            :disable="AppointmentDtls === !isEditModeAppDtls" />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -686,11 +393,8 @@
     <q-dialog v-model="ReceiveJO">
       <q-card style="width: 500px; height: 65%">
         <q-toolbar class="q-pa-md">
-          <q-toolbar-title
-            ><span class="text-weight-bold">
-              EMPLOYEE LIST</span
-            ></q-toolbar-title
-          >
+          <q-toolbar-title><span class="text-weight-bold">
+              EMPLOYEE LIST</span></q-toolbar-title>
         </q-toolbar>
 
         <!-- <q-card-section style="max-height: " class="scroll">
@@ -700,37 +404,16 @@
           </q-card-section> -->
         <q-separator />
         <q-card-section>
-          <q-table
-            flat
-            :filter="filterReceived"
-            bordered
-            dense
-            :rows="store.ActiveReceivedEmployees"
-            :columns="columnsAdd"
-            row-key="_id"
-            :selected-rows-label="getSelectedString"
-            selection="multiple"
-            v-model:selected="selected"
-            :rows-per-page-options="[10]"
-          >
+          <q-table flat :filter="filterReceived" bordered dense :rows="store.ActiveReceivedEmployees"
+            :columns="columnsAdd" row-key="_id" :selected-rows-label="getSelectedString" selection="multiple"
+            v-model:selected="selected" :rows-per-page-options="[10]">
             <template v-slot:top-right>
-              <q-btn
-                label="Add Selected Employee"
-                size="x-small"
-                icon="chevron_right"
-                @click="moveSelectedToSecondTable"
-                color="green-10"
-              ></q-btn>
+              <q-btn label="Add Selected Employee" size="x-small" icon="chevron_right"
+                @click="moveSelectedToSecondTable" color="green-10"></q-btn>
             </template>
             <template v-slot:top-left>
-              <q-input
-                color="green"
-                dense
-                debounce="300"
-                v-model="filterReceived"
-                style="margin-bottom: 20px"
-                placeholder="Search"
-              >
+              <q-input color="green" dense debounce="300" v-model="filterReceived" style="margin-bottom: 20px"
+                placeholder="Search">
                 <template v-slot:append>
                   <q-icon name="search" />
                 </template>
@@ -742,11 +425,7 @@
 
       <q-card style="width: 500px; height: 65%">
         <q-toolbar class="q-pa-md">
-          <q-toolbar-title
-            ><span class="text-weight-bold"
-              >SELECTED EMPLOYEE</span
-            ></q-toolbar-title
-          >
+          <q-toolbar-title><span class="text-weight-bold">SELECTED EMPLOYEE</span></q-toolbar-title>
           <q-btn flat dense icon="close" v-close-popup color="orange" />
         </q-toolbar>
         <q-separator></q-separator>
@@ -767,52 +446,24 @@
             </div>
           </q-card-section> -->
         <q-card-section>
-          <q-table
-            flat
-            dense
-            bordered
-            :rows="secondTable"
-            :columns="columnsAdd"
-            row-key="_id"
-            selection="multiple"
-            v-model:selected="selectedSecondTable"
-            table-style="width: 100%; max-height: 300px;"
-            :rows-per-page-options="[10]"
-          >
+          <q-table flat dense bordered :rows="secondTable" :columns="columnsAdd" row-key="_id" selection="multiple"
+            v-model:selected="selectedSecondTable" table-style="width: 100%; max-height: 300px;"
+            :rows-per-page-options="[10]">
             <template v-slot:top-left>
-              <q-btn
-                label="Remove Selected Employee"
-                size="x-small"
-                icon="chevron_left"
-                @click="removeSelectedFromSecondTable"
-                color="green-10"
-                style="margin-bottom: 20px; margin-top: 20px"
-              ></q-btn>
+              <q-btn label="Remove Selected Employee" size="x-small" icon="chevron_left"
+                @click="removeSelectedFromSecondTable" color="green-10"
+                style="margin-bottom: 20px; margin-top: 20px"></q-btn>
             </template>
           </q-table>
         </q-card-section>
 
         <div class="row">
           <div class="col-9">
-            <q-input
-              filled
-              v-model="recieveDate"
-              label="Date Received"
-              dense
-              ref="dateReceived"
-              lazy-rules
-              :rules="[this.required]"
-              class="q-ml-md"
-              type="date"
-            />
+            <q-input filled v-model="recieveDate" label="Date Received" dense ref="dateReceived" lazy-rules
+              :rules="[this.required]" class="q-ml-md" type="date" />
           </div>
           <div class="col-3">
-            <q-btn
-              label="RECEIVE"
-              style="color: green"
-              class="q-ml-md"
-              @click="BatchReceiveEmployees()"
-            />
+            <q-btn label="RECEIVE" style="color: green" class="q-ml-md" @click="BatchReceiveEmployees()" />
           </div>
         </div>
       </q-card>
@@ -1171,13 +822,19 @@ export default {
   },
   methods: {
     getdesignationOptions() {
+      console.log("Fetching designation options...");
       const store = useStorePersonnelInfo();
-      store.fetchDesignation();
-      this.designationoptions = store.EmpDesignation.map((item) => item.Designation);
+      // fetchDesignation may be async, so return the promise and wait for it where called
+      return store.fetchDesignation().then(() => {
+        this.designationoptions = store.EmpDesignation.map((item) => item.Designation);
+      });
     },
 
-    createAppointment() {
-      this.getdesignationOptions();
+    async createAppointment() {
+      console.log("Creating appointment...");
+      // Ensure designation options are loaded before opening the dialog
+      await this.getdesignationOptions();
+      console.log("Designation options loaded:", this.designationoptions);
       this.secondDialog = true;
       this.AppointmentDtls = false;
     },
@@ -1518,7 +1175,7 @@ export default {
               middleName: "",
               resumeLink: "",
             };
-            store.fetchPersonnel().then((res) => {});
+            store.fetchPersonnel().then((res) => { });
           });
           console.log("save=", editedItemCopy);
         }
@@ -1751,22 +1408,22 @@ export default {
     }
 
     store.fetchPersonnel();
-    store.fetchDesignation();
+    // fetch designations and initialize designation-related refs
     const optionsD = ref([]);
     const origdata = ref([]);
-    // const sampledata = ref([]);
-    origdata.value = store.EmpDesignation;
-    let sampledata = [];
-    origdata.value.forEach((element) => {
-      sampledata.push(element.Designation);
+    const sampledata = ref([]); // array of designation strings
+    const designationoptions = ref([]);
+
+    // populate designation lists from store (fetchDesignation returns a promise)
+    store.fetchDesignation().then(() => {
+      origdata.value = store.EmpDesignation || [];
+      sampledata.value = origdata.value.map((el) => el.Designation || "");
+      designationoptions.value = sampledata.value.slice();
     });
-    const designationoptions = ref(sampledata);
-    console.log("sampledata=", sampledata);
-    // const designationoptions = ref(sampledata);
     return {
-      designationoptions,
+      // designationoptions,
       nameRules: [(val) => (val && val.length > 0) || "Please type something"],
-      sampledata,
+      // sampledata,
       remove,
       update,
       create,
@@ -1782,14 +1439,14 @@ export default {
       filterFns(val, update) {
         if (val === "") {
           update(() => {
-            designationoptions.value = sampledata;
+            designationoptions.value = sampledata.value.slice();
           });
           return;
         }
 
         update(() => {
           const needle = val.toLowerCase();
-          designationoptions.value = sampledata.filter(
+          designationoptions.value = sampledata.value.filter(
             (v) => v.toLowerCase().indexOf(needle) > -1,
           );
         });
@@ -1814,10 +1471,12 @@ export default {
         // this.rowsAdd =this.store.personnels;
         return selected.value.length === 0
           ? ""
-          : `${selected.value.length} record${
-              selected.value.length > 1 ? "s" : ""
-            } selected of ${store.personnels.length}`;
+          : `${selected.value.length} record${selected.value.length > 1 ? "s" : ""
+          } selected of ${store.personnels.length}`;
       },
+      // expose designation data for template binding
+      designationoptions,
+      sampledata,
     };
   },
 };
@@ -1827,6 +1486,7 @@ export default {
 .my-sticky-header-table {
   height: 810px;
 }
+
 /* for the table ellipses */
 .charges {
   max-width: 100px;
@@ -1834,23 +1494,27 @@ export default {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
 .my-card {
   width: 100%;
   max-width: 250px;
   margin: 10px;
 }
+
 .text-red {
   background-color: red;
   color: white !important;
 }
+
 .text-green {
   background-color: rgb(103, 228, 72);
   color: white !important;
 }
+
 .custom-table-cell {
   white-space: normal;
   word-wrap: break-word;
 }
-td {
-}
+
+/* removed empty td rule */
 </style>

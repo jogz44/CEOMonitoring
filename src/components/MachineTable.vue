@@ -178,6 +178,7 @@
               <div class="col-12">
                 <q-select
                   dense
+                  v-model="selecteditemtype"
                   filled
                   label="Item Type"
                   class="q-pa-sm q-mb-sm"
@@ -687,6 +688,7 @@ import * as XLSX from "xlsx";
 export default {
   data() {
     return {
+      selecteditemtype:"",
       selectedID: ref(""),
       MachineDeleteHistory: false,
       DeleteHistoryId: "",
@@ -748,9 +750,6 @@ export default {
       },
       options: ["Heavy", "Light"],
       itemtype: [
-        "Heavy Equipment",
-        "Light Vehicle",
-        "Motor Vehicle",
         "Machinery",
         "IT Equipment",
       ],
@@ -1105,6 +1104,7 @@ export default {
             });
           console.log("Item Updated: ", editedItemCopy);
         } else {
+          
           store.AddEquipment(editedItemCopy).then((res) => {
             this.closeDialog();
             this.editedItem = {

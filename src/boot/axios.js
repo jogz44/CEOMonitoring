@@ -8,7 +8,7 @@ import axios from "axios";
 // "export default () => {}" function below (which runs individually
 // for each client)
 const api = axios.create({
-  baseURL: "http://10.0.1.23:5000",
+  baseURL: "http://192.168.8.11:5000",
   withCredentials: false,
 });
 
