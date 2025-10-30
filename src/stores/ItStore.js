@@ -6,7 +6,7 @@ export const useITEquipmentInfo = defineStore("itequipmentinfo", {
   state: () => ({
     itequipmenthistory: [],
     itequipments: [],
-    itequipment: [],
+    itequipment: {},
     itequipmentsCount: 0,
     itequipmenttype: [],
   }),
@@ -26,7 +26,11 @@ export const useITEquipmentInfo = defineStore("itequipmentinfo", {
     },
     async AddITEquipment(payload) {
       try {
-        const response = await api.post("/api/ITEquipments/", payload);
+        console.log("payload => ", payload);
+        const response = await api.post("/api/ITEquipments/", payload,
+          { headers: {"Content-Type": "multipart/form-data"} }
+        );
+
         this.itequipments.push(response.data);
       } catch (error) {
         console.log(`Error fetching tasks: ${error}`);
@@ -34,12 +38,10 @@ export const useITEquipmentInfo = defineStore("itequipmentinfo", {
     },
     async UpdateITEquipment(id, payload) {
       try {
-        const response = await api.put(`/api/ITEquipments/` + id, payload);
-
-        const index = this.itequipment.findIndex((e) => e._id === payload._id);
-        if (index !== -1) {
-          this.itequipment[index] = response.data;
-        }
+        const response = await api.put(`/api/ITEquipments/` + id, payload,{
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+        console.log("response=", response);
       } catch (error) {
         console.log(`Cannot Update ${error}`);
       }

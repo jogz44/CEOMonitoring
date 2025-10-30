@@ -4,7 +4,7 @@
       icon="add"
       color="green-10"
       label="Add Machine"
-      @click="Rowclick"
+      @click="ShowNewMachineDialog"
       class="q-mb-sm"
       v-if="create('Machine Equipment')"
     />
@@ -20,13 +20,14 @@
       class="my-sticky-header-table"
       flat
       bordered
-      title="MACHINE LIST"
+      title="EQUIPMENT LIST"
       dense
       wrap-cells=""
-      :rows="filteredMachine"
+      :rows="MachineList"
       :columns="columns"
       row-key="id"
       :rows-per-page-options="[20]"
+      :filter="filters"
     >
       <template v-slot:top-right>
         <q-input
@@ -34,7 +35,7 @@
           style="margin-bottom: 20px"
           dense
           debounce="300"
-          v-model="filter"
+          v-model="filters"
           placeholder="Search"
         >
           <template v-slot:append>
@@ -43,56 +44,56 @@
         </q-input>
       </template>
 
-      <template v-slot:body-cell-MaintenanceType="{ row }">
-        <q-td>
-          {{
-            row.MaintenanceDtls[0]
-              ? row.MaintenanceDtls[0].MaintenanceType
-              : null
-          }}
-        </q-td>
-      </template>
-      <template v-slot:body-cell-MaintenanceDate="{ row }">
-        <q-td>
-          {{
-            row.MaintenanceDtls[0]
-              ? formatDate(row.MaintenanceDtls[0].MaintenanceDate)
-              : null
-          }}
-        </q-td>
-      </template>
-      <template v-slot:body-cell-MaintenanceDesc="{ row }">
-        <q-td>
-          {{
-            row.MaintenanceDtls[0]
-              ? row.MaintenanceDtls[0].MaintenanceDesc
-              : null
-          }}
-        </q-td>
-      </template>
-
-      <template v-slot:body-cell-actions="{ row }">
-        <div class="actionsbtn">
-          <q-btn
-            v-if="update('Machine Equipment')"
-            icon="visibility"
-            flat
-            round
-            color="green-8"
-            style="margin-right: -10px"
-            @click="editItem(row)"
-          >
-          </q-btn>
-          <q-btn
-            v-if="remove('Machine Equipment')"
-            icon="delete"
-            flat
-            round
-            color="deep-orange"
-            @click="deleteItem(row)"
-          >
-          </q-btn>
-        </div>
+      <template #body="props">
+        <q-tr :v-bind="props">
+          <q-td key="EquipmentCategory" style="font-size: 11px" align="left">
+            {{ props.row.EquipmentCategory }}
+          </q-td>
+          <q-td key="EquipmentType" style="font-size: 11px" align="left">
+            {{ props.row.EquipmentType }}
+          </q-td>
+          <q-td key="BodyNo" style="font-size: 11px" align="left">
+            {{ props.row.BodyNo }}
+          </q-td>
+          <q-td key="PlateNo" style="font-size: 11px" align="left">
+            {{ props.row.PlateNo }}
+          </q-td>
+          <q-td key="SerialNo" style="font-size: 11px" align="left">
+            {{ props.row.SerialNo }}
+          </q-td>
+          <q-td key="Operator" style="font-size: 11px" align="left">
+            {{ props.row.Operator }}
+          </q-td>
+          <q-td key="DateAquired" style="font-size: 11px" align="left">
+            {{ formatDate(props.row.DateAquired) }}
+          </q-td>
+          <q-td key="Cost" style="font-size: 11px" align="left">
+            {{ formatCost(props.row.Cost) }}
+          </q-td>
+          <q-td key="actions" style="font-size: 11px" align="left">
+            <div class="actionsbtn">
+              <q-btn
+                v-if="update('Machine Equipment')"
+                icon="visibility"
+                flat
+                round
+                color="green-8"
+                style="margin-right: -10px"
+                @click="ShowItem(props.row._id)"
+              >
+              </q-btn>
+              <q-btn
+                v-if="remove('Machine Equipment')"
+                icon="delete"
+                flat
+                round
+                color="deep-orange"
+                @click="deleteItem(props.row)"
+              >
+              </q-btn>
+            </div>
+          </q-td>
+        </q-tr>
       </template>
     </q-table>
 
@@ -134,7 +135,7 @@
 
     <!-- the main dialog -->
     <q-dialog v-model="dialogVisible" persistent>
-      <q-card style="width: 500px; max-width: 80vw; height: 75%" class="">
+      <q-card style="width: 500px; max-width: 80vw; height: 85vh" class="">
         <q-toolbar class="q-pa-md">
           <q-toolbar-title
             ><span class="text-weight-bold"
@@ -177,10 +178,11 @@
             <div class="row">
               <div class="col-12">
                 <q-select
+                  ref="equipmentCategory"
                   dense
-                  v-model="selecteditemtype"
+                  v-model="editedItem.EquipmentCategory"
                   filled
-                  label="Item Type"
+                  label="Equipment Category"
                   class="q-pa-sm q-mb-sm"
                   :options="itemtype"
                 ></q-select>
@@ -203,7 +205,7 @@
                     :rules="[this.required]"
                     lazy-rules
                     filled
-                    v-model="editedItem.EquipmentType"
+                    v-model="MachineDetails.EquipmentType"
                     :disable="maintenancehistory === !isEditMode"
                     dense
                     class="q-pa-sm q-mb-sm"
@@ -214,9 +216,25 @@
               </div>
             </div>
             <div class="row">
+              <div class="col-12">
+                <q-input
+                  v-model="MachineDetails.MachineName"
+                  ref="machinename"
+                  :rules="[this.required]"
+                  lazy-rules
+                  filled
+                  :disable="maintenancehistory === !isEditMode"
+                  label="Equipment Description / Name"
+                  dense
+                  class="q-pa-sm q-mb-sm"
+                />
+              </div>
+            </div>
+            <div class="row">
               <div class="col">
                 <q-input
-                  ref=""
+                  v-model="MachineDetails.BodyNo"
+                  ref="bodyno"
                   :rules="[this.required]"
                   lazy-rules
                   filled
@@ -228,7 +246,8 @@
               </div>
               <div class="col">
                 <q-input
-                  ref=""
+                  v-model="MachineDetails.SerialNo"
+                  ref="serialno"
                   :rules="[this.required]"
                   lazy-rules
                   filled
@@ -244,7 +263,7 @@
                   :rules="[this.required]"
                   lazy-rules
                   filled
-                  v-model="editedItem.PlateNo"
+                  v-model="MachineDetails.PlateNo"
                   :disable="maintenancehistory === !isEditMode"
                   label="Plate No."
                   dense
@@ -259,7 +278,7 @@
                   :rules="[this.required]"
                   lazy-rules
                   filled
-                  v-model="editedItem.PropertyCustodian"
+                  v-model="MachineDetails.PropertyCustodian"
                   :disable="maintenancehistory === !isEditMode"
                   label="Property Custodian"
                   dense
@@ -270,11 +289,11 @@
             <div class="row">
               <div class="col">
                 <q-input
-                  ref="propertyCustodian"
+                  ref="operator"
                   :rules="[this.required]"
                   lazy-rules
                   filled
-                  v-model="editedItem.PropertyCustodian"
+                  v-model="MachineDetails.Operator"
                   :disable="maintenancehistory === !isEditMode"
                   label="Operator"
                   dense
@@ -285,7 +304,8 @@
             <div class="row">
               <div class="col">
                 <q-input
-                  ref=""
+                  v-model="MachineDetails.DateAquired"
+                  ref="acquireddate"
                   :rules="[this.required]"
                   lazy-rules
                   filled
@@ -300,9 +320,8 @@
             <div class="row">
               <div class="col">
                 <q-input
-                  ref=""
-                  :rules="[this.required]"
-                  lazy-rules
+                  v-model="MachineDetails.Cost"
+                  ref="cost"
                   filled
                   :disable="maintenancehistory === !isEditMode"
                   label="Cost"
@@ -313,16 +332,43 @@
               </div>
             </div>
             <div class="row">
-
               <div class="col-12">
                 <q-input
                   filled
-                  v-model="editedItem.Remarks"
+                  v-model="MachineDetails.Remarks"
                   :disable="maintenancehistory === !isEditMode"
                   label="Remarks"
                   dense
-                  autogrow=""
+                  autogrow
                   class="q-pa-sm"
+                />
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-12">
+                <q-file
+                  filled
+                  ref="MachineImg"
+                  v-model="file_input"
+                  @update:model-value="onImageSelected"
+                  :disable="maintenancehistory === !isEditMode"
+                  label="Attach Equipment Image"
+                  dense
+                  class="q-pa-sm"
+                >
+                  <template v-slot:prepend>
+                    <q-icon class="text-orange" name="attach_file" />
+                  </template>
+                </q-file>
+              </div>
+              <div class="col-12">
+                <q-img
+                  v-if="editedItem.EquipmentImage"
+                  :src="editedItem.EquipmentImage"
+                  style="max-width: 300px; max-height: 300px"
+                  class="q-ma-sm q-mb-sm"
+                  fit="scale-down"
                 />
               </div>
             </div>
@@ -362,8 +408,8 @@
 
       <!-- DIALOG FOR MAINTENANCE -->
       <q-card
-        style="width: 500px; max-width: 80vw; height: 480px"
-        class=""
+        style="width: 500px; max-width: 80vw; height: 85vh"
+        class="q-ml-xs"
         v-show="maintenancehistory"
       >
         <q-toolbar class="q-pa-md">
@@ -652,30 +698,6 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
-
-    <!-- For the Delete of the Maintenance -->
-
-    <!-- <q-dialog
-      v-model="MaintenanceDelete"
-      persistent
-      transition-show="scale"
-      transition-hide="scale"
-    >
-      <q-card class="bg-teal text-white" style="width: 400px">
-        <q-card-section>
-          <div class="text-h6">Delete Maintenance</div>
-        </q-card-section>
-
-        <q-card-section class="q-pt-none">
-          Do you want to delete this Machine Maintenance History?
-        </q-card-section>
-
-        <q-card-actions align="right" class="bg-white text-teal">
-          <q-btn flat label="Cancel" color="red" v-close-popup />
-          <q-btn label="OK" color="secondary" v-close-popup @click="deleteMaintenance(editedItem._id,editedItem.MaintenanceDtls._id )" />
-        </q-card-actions>
-      </q-card>
-    </q-dialog> -->
   </div>
 </template>
 
@@ -688,84 +710,202 @@ import * as XLSX from "xlsx";
 export default {
   data() {
     return {
-      selecteditemtype:"",
-      selectedID: ref(""),
-      MachineDeleteHistory: false,
-      DeleteHistoryId: "",
-      exitBtn: false,
-      DeletedItem: [],
-      DeleteId: "",
-      viewUpdateId: false,
-      selectedUpdate: null,
-      maintenancehistory: true,
-      myEquipments: [],
-      filter: "",
-      filters: "",
-      isEditMode: false,
-      MaintenanceDialog: false,
+      MachineDetails: {},
+      MachineMaintenanceDetails: {},
+      MachineList: [],
+      MachineMaintenanceList: [],
+      file_input: null,
+      preview_img: null,
       dialogVisible: false,
+      isEditMode: false,
+      exitBtn: true,
       secondDialog: false,
+      MaintenanceDialog: false,
+      maintenancehistory: false,
       MaintenanceDelete: false,
-      editedIndex: -1,
-      editedItem: {
-        id: null,
-        MachineName: "",
-        EquipmentType: "",
-        PropertyCustodian: "",
-        PlateNo: "",
-        IsDeleted: false,
-        MaintenanceDtls: {
-          0: {
-            MaintenanceType: "",
-            MaintenanceDate: "",
-            MaintenanceImageProof: "",
-            MaintenanceDesc: "",
-            IsDeleted: false,
-          },
-        },
-        Remarks: "",
-      },
-      MaintDtl: [
-        {
-          MaintenanceType: "",
-          MaintenanceDate: "",
-          MaintenanceImageProof: "",
-          MaintenanceDesc: "",
-          IsDeleted: false,
-        },
-      ],
-      defaultItem: {
-        id: null,
-        MachineName: "",
-        EquipmentType: "",
-        PropertyCustodian: "",
-        PlateNo: "",
-        MaintenanceDtls: {
-          MaintenanceType: "",
-          MaintenanceDate: "",
-          MaintenanceImageProof: "",
-          MaintenanceDesc: "",
-        },
-        Remarks: "",
-      },
+      MachineDeleteHistory: false,
+      viewUpdateId: false,
+      selectedUpdate: {},
+      filters: "",
+
       options: ["Heavy", "Light"],
-      itemtype: [
-        "Machinery",
-        "IT Equipment",
-      ],
+      itemtype: ["Machinery", "Vehicle"],
+    };
+  },
+  computed: {
+    maintenancedetailsOptions() {
+      if (this.editedItem.MaintenanceDtls) {
+        console.log(
+          "maintenancedetails=",
+          Object.values(this.editItem.MaintenanceDtls),
+        );
+        return Object.values(this.editedItem.MaintenanceDtls);
+      } else {
+        return {};
+      }
+    },
+  },
+
+  methods: {
+    formatDate(val) {
+    if (!val) return "";
+    const d = new Date(val);
+    if (isNaN(d)) return "";
+    return d.toISOString().split("T")[0]; // → "2025-10-29"
+  },
+    formatCost(val) {
+      if (!val) return "₱0.00";
+      const num = parseFloat(val.$numberDecimal || val);
+      if (isNaN(num)) return "₱0.00";
+      return new Intl.NumberFormat("en-PH", {
+        style: "currency",
+        currency: "PHP",
+        minimumFractionDigits: 2,
+      }).format(num);
+    },
+
+    async ShowItem(payload) {
+      console.log("ShowItem payload:", payload);
+      try {
+        await this.Equipmentstore.GetEquipment(payload);
+        this.MachineDetails = this.Equipmentstore.equipment;
+        console.log("MachineDetails:", this.MachineDetails);
+      } catch (error) {
+        console.error("Error showing item:", error);
+        this.$q.notify({
+          type: "negative",
+          message: "Failed to show item." + error.message,
+        });
+      }
+    },
+
+    ShowNewMachineDialog() {
+      this.dialogVisible = true;
+    },
+
+    async getMachineList() {
+      try {
+        await this.Equipmentstore.fetchEquipment();
+        this.MachineList = this.Equipmentstore.equipments;
+      } catch (error) {
+        console.error("Error fetching machine list:", error);
+        this.$q.notify({
+          type: "negative",
+          message: "Failed to fetch machine list." + error.message,
+        });
+      }
+    },
+
+    onImageSelected(file) {
+      // when user uploads a new file
+      if (file && file instanceof File) {
+        this.preview_img = URL.createObjectURL(file);
+        //console.log("preview_img:", this.preview_img);
+        // create a preview URL
+        this.MachineDetails.EquipmentImage = file;
+        // console.log("file selected:",  this.editedItem.EquipmentImage);
+      } else if (!file) {
+        this.preview_img = "";
+        // if cleared, remove image
+        this.MachineDetails.EquipmentImage = "";
+      }
+    },
+
+    exportToExcel() {
+      const data = [
+        [
+          "EquipmentType",
+          "MachineName",
+          "PropertyCustodian",
+          "MaintenanceType",
+          "MaintenanceDate",
+          "MaintenanceDesc",
+        ],
+        ...this.filteredMachine.map((row) => [
+          row.EquipmentType || "",
+          row.MachineName || "",
+          row.PropertyCustodian || "",
+          row.MaintenanceDtls[0]?.MaintenanceType || "",
+          this.formatDate(row.MaintenanceDtls[0]?.MaintenanceDate) || "",
+          row.MaintenanceDtls[0]?.MaintenanceDesc || "",
+        ]),
+      ];
+
+      // Create a workbook with a worksheet
+      const ws = XLSX.utils.aoa_to_sheet(data);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Machine Data");
+
+      // Save the workbook as a .xlsx file
+      XLSX.writeFile(wb, "Machine_Data.xlsx");
+    },
+  },
+
+  created() {
+    this.getMachineList();
+  },
+
+  setup() {
+    const Equipmentstore = useEquipmentInfo();
+    const loginstore = useLoginStore();
+
+    //REMOVE FUNCTION
+    function remove(module) {
+      const userCredentials = loginstore.user.Credentials;
+      const moduleCredentials = userCredentials.find(
+        (cred) => cred.Module === module,
+      );
+      // console.log("credentials=", moduleCredentials);
+      if (moduleCredentials.Remove) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+    //EDIT FUNCTION
+    function update(module) {
+      const userCredentials = loginstore.user.Credentials;
+      const moduleCredentials = userCredentials.find(
+        (cred) => cred.Module === module,
+      );
+      // console.log("credentials=", moduleCredentials);
+      if (moduleCredentials.Update) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+    //CREATE FUNCTION
+    function create(module) {
+      const userCredentials = loginstore.user.Credentials;
+      const moduleCredentials = userCredentials.find(
+        (cred) => cred.Module === module,
+      );
+      // console.log("credentials=", moduleCredentials);
+      if (moduleCredentials.Create) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+
+    return {
+      Equipmentstore,
+      loginstore,
+      remove,
+      update,
+      create,
       columns: [
-      {
-          name: "MachineName",
-          required: true,
-          label: "ITEM TYPE",
+        {
+          name: "EquipmentCategory",
+          label: "CATEGORY",
+          field: "EquipmentCategory",
           align: "left",
-          field: (row) => row.MachineName,
-          format: (val) => `${val}`,
           sortable: true,
         },
         {
           name: "EquipmentType",
-          label: "EQUIPMENT TYPE",
+          label: "TYPE",
           field: "EquipmentType",
           align: "left",
           sortable: true,
@@ -788,29 +928,6 @@ export default {
           label: "SERIAL #",
           field: "SerialNo",
         },
-        // {
-        //   name: "MachineName",
-        //   required: true,
-        //   label: "MACHINE NAME",
-        //   align: "left",
-        //   field: (row) => row.MachineName,
-        //   format: (val) => `${val}`,
-        //   sortable: true,
-        // },
-
-        // {
-        //   name: "EquipmentType",
-        //   label: "EQUIPMENT TYPE",
-        //   field: "EquipmentType",
-        //   align: "left",
-        //   sortable: true,
-        // },
-        {
-          name: "PropertyCustodian",
-          label: "PROPERTY CUSTODIAN",
-          field: "PropertyCustodian",
-          align: "left",
-        },
         {
           name: "Operator",
           label: "OPERATOR",
@@ -818,38 +935,32 @@ export default {
           align: "left",
         },
         {
-          name: "DateAcquired",
+          name: "DateAquired",
           label: "DATE ACQUIRED",
-          field: "DateAcquired",
+          field: "DateAquired",
           align: "left",
+          format: (val) => {
+            if (!val) return ""; // null/undefined/empty -> ""
+            const d = new Date(val);
+            if (Number.isNaN(d.getTime())) return ""; // invalid date -> ""
+            return d.toLocaleDateString(); // valid -> formatted (change as needed)
+          },
         },
         {
           name: "Cost",
           label: "COST",
           field: "Cost",
           align: "left",
+          format: (val) => {
+            const num = parseFloat(val); // safely convert string -> number
+            if (isNaN(num)) return "₱0.00"; // handle invalid or null values
+            return new Intl.NumberFormat("en-PH", {
+              style: "currency",
+              currency: "PHP",
+              minimumFractionDigits: 2,
+            }).format(num);
+          },
         },
-
-        // {
-        //   name: "PlateNo",
-        //   align: "left",
-        //   label: "PLATE / SERIAL NUMBER",
-        //   field: "PlateNo",
-        // },
-        // {
-        //   name: "MaintenanceDate",
-        //   align: "left",
-        //   label: "MAINTENANCE DATE",
-        //   field: (row) => row.MaintenanceDate,
-        //   sortable: true,
-        // },
-        // {
-        //   name: "MaintenanceType",
-        //   align: "left",
-        //   label: "MAINTENANCE TYPE",
-        //   field: "row.MaintenanceDtls.MaintenanceType",
-        //   sortable: true,
-        // },
         {
           name: "actions",
           label: "ACTIONS",
@@ -887,383 +998,6 @@ export default {
           sortable: true,
         },
       ],
-    };
-  },
-  computed: {
-    maintenancedetailsOptions() {
-      if (this.editedItem.MaintenanceDtls) {
-        console.log(
-          "maintenancedetails=",
-          Object.values(this.editItem.MaintenanceDtls)
-        );
-        return Object.values(this.editedItem.MaintenanceDtls);
-      } else {
-        return {};
-      }
-    },
-    filteredMachine() {
-      const searchTerm = this.filter.toLowerCase();
-      return this.store.equipments.filter((machine) => {
-        const EquipmentType = machine.EquipmentType
-          ? machine.EquipmentType.toLowerCase()
-          : "";
-        const MachineName = machine.MachineName
-          ? machine.MachineName.toLowerCase()
-          : "";
-        const PropertyCustodian = machine.PropertyCustodian
-          ? machine.PropertyCustodian.toLowerCase()
-          : "";
-        const MaintenanceDtls = machine.MaintenanceDtls[0] || {}; // Assuming there's at least one employment detail
-
-        const MaintenanceType = MaintenanceDtls.MaintenanceType
-          ? MaintenanceDtls.MaintenanceType.toLowerCase()
-          : "";
-        const MaintenanceDate = MaintenanceDtls.MaintenanceDate
-          ? MaintenanceDtls.MaintenanceDate.toLowerCase()
-          : "";
-        const MaintenanceDesc = MaintenanceDtls.MaintenanceDesc
-          ? MaintenanceDtls.MaintenanceDesc.toLowerCase()
-          : "";
-
-        return (
-          EquipmentType.includes(searchTerm) ||
-          MachineName.includes(searchTerm) ||
-          PropertyCustodian.includes(searchTerm) ||
-          MaintenanceType.includes(searchTerm) ||
-          MaintenanceDate.includes(searchTerm) ||
-          MaintenanceDesc.includes(searchTerm)
-        );
-      });
-    },
-  },
-  methods: {
-    toggleEditMode() {
-      console.log("toggleEditMode called");
-      this.isEditMode = !this.isEditMode;
-    },
-    Rowclick() {
-      this.maintenancehistory = false;
-      this.exitBtn = true;
-
-      this.editedItem = {
-        id: null,
-        MachineName: "",
-        EquipmentType: "",
-        PropertyCustodian: "",
-        IsDeleted: false,
-        PlateNo: "",
-        // MaintenanceDtls: {
-        //   MaintenanceType: "",
-        //   MaintenanceDate: "",
-        //   MaintenanceDesc: "",
-        // },
-        Remarks: "",
-      };
-      this.dialogVisible = true;
-    },
-    formatDate(value) {
-      if (!value) return "";
-
-      const date = new Date(value);
-
-      const year = date.getFullYear();
-      const month = (date.getMonth() + 1).toString().padStart(2, "0");
-      const day = date.getDate().toString().padStart(2, "0");
-
-      return `${year}-${month}-${day}`;
-    },
-    editItem(item) {
-      this.selectedID = item._id;
-      this.maintenancehistory = true;
-      this.exitBtn = false;
-      const store = useEquipmentInfo();
-
-      store.GetEquipment(item._id).then((res) => {
-        this.editedItem = store.equipment;
-        // store.fetchEquipment();
-        console.log("sdasda=", this.editedItem);
-      });
-
-      store.GetEquipmentmaintenanceDetails(item._id);
-
-      this.dialogVisible = true;
-    },
-
-    viewItem(item) {
-      this.MaintenanceDialog = true;
-      const store = useEquipmentInfo();
-
-      store.GetEquipment(item._id).then((res) => {
-        this.editedItem = store.equipment;
-
-        // store.fetchEquipment();
-        console.log("sdasda11=", this.editedItem);
-      });
-
-      this.dialogVisible = false;
-    },
-
-    deleteItem(id) {
-      console.log("Delete Item ID => ", id._id);
-      // const store = useEquipmentInfo();
-      // store.DeleteEquipment(id._id).then((res) => {
-      //   store.fetchEquipment();
-      // });
-      this.DeletedItem = id;
-      this.DeleteId = id._id;
-      this.MaintenanceDelete = true;
-    },
-
-    deleteItemConfirm() {
-      const editedItemCopy = { ...this.editedItem };
-      // console.log("Delete Item ID => ", this.DeleteId);
-      const store = useEquipmentInfo();
-      editedItemCopy.IsDeleted = true;
-
-      store.DeleteEquipment(this.DeleteId, this.DeletedItem).then((res) => {
-        store.fetchEquipment();
-      });
-    },
-
-    deleteMaintenance(maintenanceid) {
-      this.DeleteHistoryId = maintenanceid;
-      this.MachineDeleteHistory = true;
-      console.log(
-        "EQUIPMENT ID AND Maintenance ID =>",
-        this.selectedID + "----" + this.DeleteHistoryId
-      );
-    },
-
-    deleteMachineHistory() {
-      console.log("Machine Maintenance ID =>", this.DeleteHistoryId);
-      const store = useEquipmentInfo();
-      store
-        .DeleteMaintenance(this.selectedID, this.DeleteHistoryId)
-        .then((req) => {
-          store.fetchEquipment();
-          store.GetEquipmentmaintenanceDetails(this.selectedID).then((res) => {
-            this.editedItem = store.equipment;
-            // store.GetEquipmentmaintenanceDetails()
-            store.fetchEquipment();
-          });
-        });
-    },
-
-    // VIEWING OF EACH MAINTENANCE HISTORY
-    viewUpdate(row) {
-      this.selectedUpdate = row;
-      this.viewUpdateId = true;
-    },
-
-    viewAllMaintenance(id) {
-      console.log(`nisulod sa viewAllMaintenance with ID` + id);
-
-      const store = useEquipmentInfo();
-      store.GetEquipmentmaintenanceDetails(id).then((res) => {
-        this.MaintDtl = res.data;
-      });
-    },
-    required(val) {
-      return (val && val.length > 0) || "Field must be filled in";
-    },
-    requiredProof(val) {
-      return (val !== null && val !== undefined) || "Field must be filled in";
-    },
-    save() {
-      this.$refs.machinename.validate();
-      this.$refs.equipmentType.validate();
-      this.$refs.propertyCustodian.validate();
-      this.$refs.plateno.validate();
-
-      if (
-        !this.$refs.machinename.hasError &&
-        !this.$refs.equipmentType.hasError &&
-        !this.$refs.propertyCustodian.hasError &&
-        !this.$refs.plateno.hasError
-      ) {
-        const store = useEquipmentInfo();
-        const editedItemCopy = { ...this.editedItem };
-        console.log("edited item =>", editedItemCopy._id);
-
-        if (editedItemCopy._id) {
-          store
-            .UpdateEquipment(editedItemCopy._id, editedItemCopy)
-            .then((res) => {
-              this.closeDialog();
-              this.editedItem = {
-                MachineName: "",
-                EquipmentType: "",
-                PropertyCustodian: "",
-                IsDeleted: false,
-                PlateNo: "",
-                Remarks: "",
-              };
-              store.fetchEquipment().then((res) => {
-                this.isEditMode = false;
-              });
-            });
-          console.log("Item Updated: ", editedItemCopy);
-        } else {
-          
-          store.AddEquipment(editedItemCopy).then((res) => {
-            this.closeDialog();
-            this.editedItem = {
-              id: null,
-              MachineName: "",
-              EquipmentType: "",
-              PropertyCustodian: "",
-              IsDeleted: false,
-              PlateNo: "",
-              Remarks: "",
-            };
-            store.fetchEquipment().then((res) => {});
-          });
-          console.log("save=", editedItemCopy);
-        }
-      }
-    },
-    savehistory() {
-      this.$refs.maintenanceType.validate();
-      this.$refs.maintenanceDate.validate();
-      this.$refs.maintenanceProof.validate();
-      this.$refs.maintenanceDesc.validate();
-
-      if (
-        !this.$refs.maintenanceType.hasError &&
-        !this.$refs.maintenanceDate.hasError &&
-        !this.$refs.maintenanceProof.hasError &&
-        !this.$refs.maintenanceProof.hasError
-      ) {
-        console.log("ID NAKO >> ", this.selectedID);
-        const store = useEquipmentInfo();
-
-        const formData = new FormData();
-        formData.append("MaintenanceType", this.MaintDtl.MaintenanceType);
-        formData.append("MaintenanceDate", this.MaintDtl.MaintenanceDate);
-        formData.append("file", this.MaintDtl.MaintenanceImageProof);
-        formData.append("MaintenanceImageProof", "");
-        formData.append("MaintenanceDesc", this.MaintDtl.MaintenanceDesc);
-
-        store.UploadImage(this.selectedID, formData).then((res) => {
-          //   //store.GetEquipment(id._id);
-          store.GetEquipmentmaintenanceDetails(this.selectedID);
-          store.fetchEquipment();
-          this.MaintDtl = [
-            {
-              MaintenanceType: "",
-              MaintenanceDate: "",
-              MaintenanceImageProof: "",
-              MaintenanceDesc: "",
-              IsDeleted: false,
-            },
-          ];
-        });
-
-        this.secondDialog = false;
-      }
-    },
-    closeDialog() {
-      this.editedItem = {
-        id: null,
-        MachineName: "",
-        EquipmentType: "",
-        PropertyCustodian: "",
-        PlateNo: "",
-        MaintenanceDtls: {
-          MaintenanceType: "",
-          MaintenanceDate: "",
-          MaintenanceImageProof: "",
-          MaintenanceDesc: "",
-        },
-        Remarks: "",
-      };
-      this.dialogVisible = false;
-    },
-    getNextId() {
-      const ids = this.rows.map((item) => item.id);
-      return Math.max(...ids) + 1;
-    },
-    exportToExcel() {
-      const data = [
-        [
-          "EquipmentType",
-          "MachineName",
-          "PropertyCustodian",
-          "MaintenanceType",
-          "MaintenanceDate",
-          "MaintenanceDesc",
-        ],
-        ...this.filteredMachine.map((row) => [
-          row.EquipmentType || "",
-          row.MachineName || "",
-          row.PropertyCustodian || "",
-          row.MaintenanceDtls[0]?.MaintenanceType || "",
-          this.formatDate(row.MaintenanceDtls[0]?.MaintenanceDate) || "",
-          row.MaintenanceDtls[0]?.MaintenanceDesc || "",
-        ]),
-      ];
-
-      // Create a workbook with a worksheet
-      const ws = XLSX.utils.aoa_to_sheet(data);
-      const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, "Machine Data");
-
-      // Save the workbook as a .xlsx file
-      XLSX.writeFile(wb, "Machine_Data.xlsx");
-    },
-  },
-
-  setup() {
-    const store = useEquipmentInfo();
-    store.fetchEquipment();
-    const loginstore = useLoginStore();
-
-    //REMOVE FUNCTION
-    function remove(module) {
-      const userCredentials = loginstore.user.Credentials;
-      const moduleCredentials = userCredentials.find(
-        (cred) => cred.Module === module
-      );
-      // console.log("credentials=", moduleCredentials);
-      if (moduleCredentials.Remove) {
-        return true;
-      } else {
-        return false;
-      }
-    }
-    //EDIT FUNCTION
-    function update(module) {
-      const userCredentials = loginstore.user.Credentials;
-      const moduleCredentials = userCredentials.find(
-        (cred) => cred.Module === module
-      );
-      // console.log("credentials=", moduleCredentials);
-      if (moduleCredentials.Update) {
-        return true;
-      } else {
-        return false;
-      }
-    }
-    //CREATE FUNCTION
-    function create(module) {
-      const userCredentials = loginstore.user.Credentials;
-      const moduleCredentials = userCredentials.find(
-        (cred) => cred.Module === module
-      );
-      // console.log("credentials=", moduleCredentials);
-      if (moduleCredentials.Create) {
-        return true;
-      } else {
-        return false;
-      }
-    }
-
-    return {
-      remove,
-      update,
-      create,
-      store,
-      model: ref(null),
     };
   },
 };

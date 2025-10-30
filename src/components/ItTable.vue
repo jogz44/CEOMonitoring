@@ -106,7 +106,7 @@
 
     <!-- DIALOG FOR DETAILS -->
     <q-dialog v-model="dialogVisible" persistent>
-      <q-card style="width: 500px; max-width: 80vw; height: 470px; ">
+      <q-card style="width: 500px; max-width: 80vw; height: 570px">
         <q-toolbar class="q-pa-md">
           <q-toolbar-title
             ><span class="text-weight-bold"
@@ -142,9 +142,16 @@
         </q-card-section> -->
         <q-separator />
 
-        <q-card-section style="max-height: 50vh" class="scroll">
+        <q-card-section style="max-height: 80vh" class="scroll">
           <q-form>
             <div class="row">
+              <div class="col-12" v-if="editedItem.ITEquipmentImage">
+                <q-img
+                  style="height: 200px; max-width: 100%"
+                  :src="editedItem.ITEquipmentImage"
+                  fit="scale-down"
+                />
+              </div>
               <div class="col-12">
                 <q-input
                   ref="machinename"
@@ -215,6 +222,24 @@
                   class="q-pa-sm"
                 />
               </div>
+
+              <div class="col-12">
+                <q-file
+
+                  filled
+                  ref="itImg"
+                  v-model="preview_img"
+                  @update:model-value="onImageSelected"
+                  :disable="maintenancehistory === !isEditMode"
+                  label="Attach IT Equipment Image"
+                  dense
+                  class="q-pa-sm"
+                >
+                  <template v-slot:prepend>
+                    <q-icon class="text-orange" name="attach_file" />
+                  </template>
+                </q-file>
+              </div>
             </div>
           </q-form>
         </q-card-section>
@@ -252,7 +277,7 @@
 
       <!-- DIALOG FOR MAINTENANCE -->
       <q-card
-      style="width: 500px; max-width: 80vw; height: 470px; "
+        style="width: 500px; max-width: 80vw; height: 570px"
         v-show="maintenancehistory"
       >
         <q-toolbar class="q-pa-md">
@@ -596,6 +621,7 @@ import * as XLSX from "xlsx";
 export default {
   data() {
     return {
+      preview_img: null,
       selectedID: ref(""),
       MachineDeleteHistory: false,
       DeleteHistoryId: "",
@@ -620,11 +646,12 @@ export default {
         PropertyCustodian: "",
         SerialNo: "",
         IsDeleted: false,
+        ITEquipmentImage: null,
         MaintenanceDtls: {
           0: {
             MaintenanceType: "",
             MaintenanceDate: "",
-            MaintenanceImage: "",
+            MaintenanceImage: null,
             MaintenanceDesc: "",
             IsDeleted: false,
           },
@@ -635,7 +662,7 @@ export default {
         {
           MaintenanceType: "",
           MaintenanceDate: "",
-          MaintenanceImageProof: "",
+          MaintenanceImageProof: null,
           MaintenanceDesc: "",
           IsDeleted: false,
         },
@@ -647,10 +674,11 @@ export default {
         PropertyCustodian: "",
         IsDeleted: false,
         SerialNo: "",
+        ITEquipmentImage: null,
         MaintenanceDtls: {
           MaintenanceType: "",
           MaintenanceDate: "",
-          MaintenanceImage: "",
+          MaintenanceImage: null,
           MaintenanceDesc: "",
           IsDeleted: false,
         },
@@ -794,7 +822,18 @@ export default {
       });
     },
   },
+  watch: {},
   methods: {
+    onImageSelected(file) {
+      // when user uploads a new file
+      if (file && file instanceof File) {
+        // create a preview URL
+        this.editedItem.ITEquipmentImage = URL.createObjectURL(file);
+      } else if (!file) {
+        // if cleared, remove image
+        this.editedItem.ITEquipmentImage = "";
+      }
+    },
     // MaintenanceDelete1(id){
     //   this.MaintenanceDelete=true;
     //   console.log("Delete =>", id._id)
@@ -944,12 +983,14 @@ export default {
       this.$refs.equipmentType.validate();
       this.$refs.propertyCustodian.validate();
       this.$refs.serialno.validate();
+      this.$refs.itImg.validate();
 
       if (
         !this.$refs.machinename.hasError &&
         !this.$refs.equipmentType.hasError &&
         !this.$refs.propertyCustodian.hasError &&
-        !this.$refs.serialno.hasError
+        !this.$refs.serialno.hasError &&
+        !this.$refs.itImg.hasError
       ) {
         const store = useITEquipmentInfo();
         const editedItemCopy = { ...this.editedItem };
@@ -967,12 +1008,13 @@ export default {
                 PropertyCustodian: "",
                 SerialNo: "",
                 Remarks: "",
+                ITEquipmentImage: null,
               };
               store.fetchITEquipment().then((res) => {
-
                 this.isEditMode = false;
               });
             });
+          this.preview_img = null;
           console.log("Item Updated: ", editedItemCopy);
         } else {
           store.AddITEquipment(editedItemCopy).then((res) => {
@@ -983,11 +1025,12 @@ export default {
               EquipmentType: "",
               PropertyCustodian: "",
               SerialNo: "",
+              ITEquipmentImage: null,
               IsDeleted: false,
               Remarks: "",
             };
             store.fetchITEquipment().then((res) => {
-
+              this.preview_img = null;
             });
           });
           console.log("save=", editedItemCopy);
@@ -1090,7 +1133,7 @@ export default {
     function remove(module) {
       const userCredentials = loginstore.user.Credentials;
       const moduleCredentials = userCredentials.find(
-        (cred) => cred.Module === module
+        (cred) => cred.Module === module,
       );
       // console.log("credentials=", moduleCredentials);
       if (moduleCredentials.Remove) {
@@ -1103,7 +1146,7 @@ export default {
     function update(module) {
       const userCredentials = loginstore.user.Credentials;
       const moduleCredentials = userCredentials.find(
-        (cred) => cred.Module === module
+        (cred) => cred.Module === module,
       );
       // console.log("credentials=", moduleCredentials);
       if (moduleCredentials.Update) {
@@ -1116,7 +1159,7 @@ export default {
     function create(module) {
       const userCredentials = loginstore.user.Credentials;
       const moduleCredentials = userCredentials.find(
-        (cred) => cred.Module === module
+        (cred) => cred.Module === module,
       );
       // console.log("credentials=", moduleCredentials);
       if (moduleCredentials.Create) {

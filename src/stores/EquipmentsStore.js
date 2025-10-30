@@ -72,7 +72,11 @@ export const useEquipmentInfo = defineStore("equipmentinfo", {
     },
     async AddEquipment(payload) {
       try {
-        const response = await api.post("/api/Equipments/", payload);
+        const response = await api.post("/api/Equipments/", payload, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
         this.equipments.push(response.data);
       } catch (error) {
         console.log(`Error fetching tasks: ${error}`);
@@ -81,12 +85,13 @@ export const useEquipmentInfo = defineStore("equipmentinfo", {
 
     async UpdateEquipment(id, payload) {
       try {
-        const response = await api.put(`/api/Equipments/` + id, payload);
+        const response = await api.put(`/api/Equipments/` + id, payload,{
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+        console.log("Equipment updatted");
 
-        const index = this.equipment.findIndex((e) => e._id === payload._id);
-        if (index !== -1) {
-          this.equipment[index] = response.data;
-        }
       } catch (error) {
         console.log(`Cannot Update ${error}`);
       }

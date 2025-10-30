@@ -147,7 +147,7 @@
                   >
                 </q-item-section>
               </q-item>
-              <!-- <q-item
+              <q-item
               v-if="view('IT Equipment')"
               clickable
               v-ripple
@@ -164,7 +164,7 @@
                   />IT Equipment</q-item-label
                 >
               </q-item-section>
-            </q-item> -->
+            </q-item>
               <q-item
                 v-if="view('Project')"
                 clickable
