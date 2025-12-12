@@ -27,7 +27,7 @@
       :columns="columns"
       row-key="id"
       :rows-per-page-options="[20]"
-      :filter="filters"
+      :filter="Machinefilters"
     >
       <template v-slot:top-right>
         <q-input
@@ -35,7 +35,7 @@
           style="margin-bottom: 20px"
           dense
           debounce="300"
-          v-model="filters"
+          v-model="Machinefilters"
           placeholder="Search"
         >
           <template v-slot:append>
@@ -46,6 +46,9 @@
 
       <template #body="props">
         <q-tr :v-bind="props">
+          <q-td key="index" style="font-size: 11px" align="left">
+            {{ props.rowIndex + 1 }}
+          </q-td>
           <q-td key="EquipmentCategory" style="font-size: 11px" align="left">
             {{ props.row.EquipmentCategory }}
           </q-td>
@@ -127,7 +130,7 @@
             flat
             color="green-5"
             v-close-popup
-            @click="deleteItemConfirm()"
+            @click="deleteMachineHistory()"
           />
         </q-card-actions>
       </q-card>
@@ -180,8 +183,9 @@
                 <q-select
                   ref="equipmentCategory"
                   dense
-                  v-model="editedItem.EquipmentCategory"
+                  v-model="MachineDetails.EquipmentCategory"
                   filled
+                  :disable="maintenancehistory === !isEditMode"
                   label="Equipment Category"
                   class="q-pa-sm q-mb-sm"
                   :options="itemtype"
@@ -327,7 +331,10 @@
                   label="Cost"
                   dense
                   class="q-pa-sm q-mb-sm"
-                  type="number"
+                  prefix="₱"
+                  @blur="formatCost"
+                  @focus="unformatCost"
+                  inputmode="decimal"
                 />
               </div>
             </div>
@@ -364,8 +371,8 @@
               </div>
               <div class="col-12">
                 <q-img
-                  v-if="editedItem.EquipmentImage"
-                  :src="editedItem.EquipmentImage"
+                  v-if="MachineDetails.EquipmentImage"
+                  :src="displayImage()"
                   style="max-width: 300px; max-height: 300px"
                   class="q-ma-sm q-mb-sm"
                   fit="scale-down"
@@ -381,29 +388,30 @@
             icon="edit"
             color="orange"
             size="md"
-            @click="toggleEditMode()"
+            @click="toggleEditMode"
             v-show="maintenancehistory"
           />
           <q-btn
+            label="Update"
+            color="orange"
+            size="md"
+            class="q-mr-md"
+            :disable="isEditMode === false"
+            @click="
+              () => {
+                this.UpdateMachineDetails(this.MachineDetails);
+              }
+            "
+          />
+          <q-btn
+            v-if="hideSaveBtn"
             label="Save"
             color="green-5"
             size="md"
-            @click="save"
+            @click="SaveMachineDetails"
             class="q-mr-md"
-            :disable="maintenancehistory === !isEditMode"
           />
         </q-card-actions>
-        <!-- <q-card class="q-px-lg q-pt-sm q-mb-md">
-          <q-btn
-            style="width: 100%"
-            class="btn-fixed-width"
-            color="green-10"
-            label="VIEW MAINTENANCE HISTORY"
-            icon="lightbulb_outline"
-            @click="MaintenanceDialog = true"
-            v-show="maintenancehistory"
-          />
-        </q-card> -->
       </q-card>
 
       <!-- DIALOG FOR MAINTENANCE -->
@@ -422,21 +430,6 @@
         </q-toolbar>
         <q-separator></q-separator>
 
-        <!-- <q-card-section style="max-height: " class="scroll">
-          <div class="row">
-            <div class="col-11 text-h6">MACHINE MAINTENANCE HISTORY</div>
-            <div class="col-1">
-              <q-btn
-                flat
-                round
-                color="orange"
-                icon="close"
-                v-close-popup
-                style="margin-bottom: -5px; margin-top: -5px"
-              />
-            </div>
-          </div>
-        </q-card-section> -->
         <q-card-section>
           <q-table
             class="my-sticky-header-table"
@@ -445,9 +438,9 @@
             title=""
             wrap-cells=""
             dense
-            :rows="store.equipmenthistory"
+            :rows="MachineMaintenanceList"
             :columns="history"
-            :filter="filters"
+            :filter="MachineMaintenancefilters"
             row-key="_id"
           >
             <template v-slot:top-right>
@@ -455,7 +448,7 @@
                 color="green"
                 dense
                 debounce="300"
-                v-model="filters"
+                v-model="MachineMaintenancefilters"
                 placeholder="Search"
               >
                 <template v-slot:append>
@@ -496,7 +489,7 @@
                   flat
                   round
                   color="green"
-                  @click="viewUpdate(row)"
+                  @click="showMaintenanceDetails(row)"
                 >
                 </q-btn>
                 <q-btn
@@ -504,7 +497,7 @@
                   flat
                   round
                   color="deep-orange"
-                  @click="deleteMaintenance(row._id)"
+                  @click="removeMaintenance(row)"
                 >
                 </q-btn>
               </div>
@@ -523,41 +516,50 @@
       transition-show="scale"
       transition-hide="scale"
     >
-      <q-card class="" style="min-width: 50%">
-        <q-card-section style="max-height: 50vh" class="scroll">
-          <div class="row text-h6">
-            <div class="col-11">MAINTENANCE HISTORY VIEW</div>
-            <div class="col-1">
-              <q-btn
-                flat
-                round
-                color="orange"
-                icon="close"
-                @click="this.viewUpdateId = false"
-              />
-            </div>
+      <q-card style="min-width: 50%">
+        <!-- HEADER -->
+        <q-card-section class="q-pb-none">
+          <div class="row items-center justify-between">
+            <div class="text-h6 text-green">MAINTENANCE HISTORY VIEW</div>
+
+            <q-btn
+              flat
+              round
+              dense
+              color="orange"
+              icon="close"
+              @click="viewUpdateId = false"
+            />
           </div>
         </q-card-section>
-        <q-separator />
-        <q-card-section>
-          <div class="row">
-            <div class="col-12">
-              <!-- Display details from the selected row in the dialog -->
-              <p>
-                <b>DATE:</b> {{ formatDate(selectedUpdate.MaintenanceDate) }}
-              </p>
-              <p class="q-mb-sm"><b>TYPE: </b></p>
-              <p class="q-ml-md">{{ selectedUpdate.MaintenanceType }}</p>
-              <p class="q-mb-sm"><b>DESCRIPTION: </b></p>
-              <p class="q-ml-md">{{ selectedUpdate.MaintenanceDesc }}</p>
-              <p class="q-mb-sm"><b>PROOF:</b></p>
-              <q-img
-                style="height: 400px; max-width: 100%"
-                :src="selectedUpdate.MaintenanceImageProof"
-              />
 
-              <!-- Add more details as needed -->
-            </div>
+        <q-separator />
+
+        <!-- BODY -->
+        <q-card-section style="max-height: 50vh" class="scroll">
+          <div>
+            <p>
+              <b>DATE:</b>
+              {{ formatDate(MachineMaintenanceDetails.MaintenanceDate) }}
+            </p>
+
+            <p class="q-mb-sm"><b>TYPE:</b></p>
+            <p class="q-ml-md">
+              {{ MachineMaintenanceDetails.MaintenanceType }}
+            </p>
+
+            <p class="q-mb-sm"><b>DESCRIPTION:</b></p>
+            <p class="q-ml-md">
+              {{ MachineMaintenanceDetails.MaintenanceDesc }}
+            </p>
+
+            <p class="q-mb-sm"><b>PROOF:</b></p>
+
+            <q-img
+              style="height: 400px; max-width: 100%"
+              :src="MachineMaintenanceDetails.MaintenanceImageProof"
+              fit="contain"
+            />
           </div>
         </q-card-section>
       </q-card>
@@ -606,19 +608,10 @@
       transition-hide="scale"
     >
       <q-card class="" style="width: 500px">
-        <!-- <q-card-section>
-          <div class="row text-h6">
-            <div class="col-11">ADD MAINTENANCE</div>
-            <div class="col-1">
-              <q-btn flat round color="orange" icon="close" v-close-popup />
-            </div>
-          </div>
-        </q-card-section> -->
-
         <q-toolbar>
           <q-toolbar-title
-            ><span class="text-weight-bold"
-              >ADD MAINTENANCE</span
+            ><span class="text-weight-bold text-green"
+              >New Maintenance Information</span
             ></q-toolbar-title
           >
           <q-btn flat round dense icon="close" v-close-popup color="orange" />
@@ -633,8 +626,8 @@
                 :rules="[this.required]"
                 lazy-rules
                 filled
-                v-model="MaintDtl.MaintenanceType"
-                label="Maintenance Type"
+                v-model="MachineMaintenanceDetails.MaintenanceType"
+                label="Maintenance Title"
                 dense
                 class="q-pa-sm q-mb-sm"
               />
@@ -645,7 +638,7 @@
                 :rules="[this.required]"
                 lazy-rules
                 filled
-                v-model="MaintDtl.MaintenanceDate"
+                v-model="MachineMaintenanceDetails.MaintenanceDate"
                 label="Maintenance Date"
                 dense
                 class="q-pa-sm"
@@ -661,13 +654,17 @@
                 :rules="[this.requiredProof]"
                 lazy-rules
                 filled
-                v-model="MaintDtl.MaintenanceImageProof"
-                hint="Maintenance Proof"
+                v-model="MachineMaintenanceDetails.MaintenanceImageProof"
                 use-chips
                 dense
                 class="q-pa-sm q-mb-sm"
                 accept=".jpg, image/*"
-              />
+                label="Attach Maintenance Proof"
+              >
+                <template v-slot:prepend>
+                  <q-icon class="text-orange" name="attach_file" />
+                </template>
+              </q-file>
             </div>
           </div>
           <div class="row">
@@ -677,7 +674,7 @@
                 :rules="[this.required]"
                 lazy-rules
                 filled
-                v-model="MaintDtl.MaintenanceDesc"
+                v-model="MachineMaintenanceDetails.MaintenanceDesc"
                 label="Maintenance Description"
                 dense
                 class="q-pa-sm"
@@ -693,7 +690,12 @@
             label="Save"
             color="green-10"
             size="md"
-            @click="savehistory()"
+            @click="
+              NewMaintenanceHistory(
+                this.MachineDetails._id,
+                MachineMaintenanceDetails,
+              )
+            "
           />
         </q-card-actions>
       </q-card>
@@ -702,7 +704,6 @@
 </template>
 
 <script>
-import { ref } from "vue";
 import { useEquipmentInfo } from "../stores/EquipmentsStore";
 import { useLoginStore } from "src/stores/LoginStore";
 import * as XLSX from "xlsx";
@@ -710,6 +711,8 @@ import * as XLSX from "xlsx";
 export default {
   data() {
     return {
+      requiredProof: true,
+      secondDialog: false,
       MachineDetails: {},
       MachineMaintenanceDetails: {},
       MachineList: [],
@@ -718,6 +721,7 @@ export default {
       preview_img: null,
       dialogVisible: false,
       isEditMode: false,
+      hideSaveBtn: true,
       exitBtn: true,
       secondDialog: false,
       MaintenanceDialog: false,
@@ -726,33 +730,113 @@ export default {
       MachineDeleteHistory: false,
       viewUpdateId: false,
       selectedUpdate: {},
-      filters: "",
-
+      Machinefilters: "",
+      MachineMaintenancefilters: "",
+      required: true,
       options: ["Heavy", "Light"],
       itemtype: ["Machinery", "Vehicle"],
     };
   },
-  computed: {
-    maintenancedetailsOptions() {
-      if (this.editedItem.MaintenanceDtls) {
-        console.log(
-          "maintenancedetails=",
-          Object.values(this.editItem.MaintenanceDtls),
-        );
-        return Object.values(this.editedItem.MaintenanceDtls);
-      } else {
-        return {};
-      }
-    },
-  },
+  computed: {},
+
 
   methods: {
-    formatDate(val) {
-    if (!val) return "";
-    const d = new Date(val);
-    if (isNaN(d)) return "";
-    return d.toISOString().split("T")[0]; // → "2025-10-29"
+
+    unformatCost() {
+    if (!this.MachineDetails.Cost) return;
+
+    this.MachineDetails.Cost = this.MachineDetails.Cost
+      .toString()
+      .replace(/,/g, "")
+      .replace(/^₱/, ""); // in case prefix gets into v-model
   },
+
+    formatCost() {
+    let raw = this.MachineDetails.Cost;
+
+    if (!raw) {
+      this.MachineDetails.Cost = "";
+      return;
+    }
+
+    // Remove any commas or peso signs
+    raw = raw.toString().replace(/,/g, "").replace(/^₱/, "");
+
+    let num = parseFloat(raw);
+    if (isNaN(num)) num = 0;
+
+    // Format with commas and 2 decimals
+    this.MachineDetails.Cost = num.toLocaleString("en-US", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    });
+  },
+
+    async NewMaintenanceHistory(Equipment_id, payload) {
+      // console.log("Equipment_id:", Equipment_id);
+      // console.log("NewMaintenanceHistory payload:", payload);
+
+      const formData = new FormData();
+      const img = payload.MaintenanceImageProof;
+      formData.append("MaintenanceImageProof", img);
+      formData.append("MaintenanceType", payload.MaintenanceType);
+      formData.append("MaintenanceDate", payload.MaintenanceDate);
+      formData.append("MaintenanceDesc", payload.MaintenanceDesc);
+
+      await this.Equipmentstore.AddMaintenance(Equipment_id, formData);
+      await this.Equipmentstore.GetEquipmentmaintenanceDetails(Equipment_id);
+    },
+    async ShowSelectedMaintenance(Equipment_id, maintenance_id) {
+      console.log("Equipment_id:", Equipment_id);
+      console.log("maintenance_id:", maintenance_id);
+    },
+
+    showMaintenanceDetails(row) {
+      this.viewUpdateId = true;
+      console.log("showMaintenanceDetails row:", row);
+      this.MachineMaintenanceDetails = row;
+    },
+
+    removeMaintenance(props) {
+      this.MaintenanceDelete = true;
+      this.maintenanceIdToDelete = props._id;
+      // console.log("Maintenance ID to delete:", props._id);
+    },
+
+    async deleteMachineHistory() {
+      // console.log(
+      //   "Deleting maintenance with ID:",
+      //   this.MachineDetails._id,
+      //   "-------",
+      //   this.maintenanceIdToDelete,
+      // );
+      await this.Equipmentstore.DeleteMaintenance(
+        this.MachineDetails._id,
+        this.maintenanceIdToDelete,
+      );
+      await this.Equipmentstore.GetEquipmentmaintenanceDetails(
+        this.MachineDetails._id,
+      );
+      this.MachineMaintenanceList = this.Equipmentstore.equipmenthistory;
+    },
+
+    displayImage() {
+      if (this.MachineDetails.EquipmentImage instanceof File) {
+        return (this.preview_img = URL.createObjectURL(
+          this.MachineDetails.EquipmentImage,
+        ));
+      }
+      if (this.MachineDetails.EquipmentImage.startsWith("http")) {
+        return (this.preview_img = this.MachineDetails.EquipmentImage);
+      }
+    },
+
+    formatDate(val) {
+      if (!val) return "";
+      const d = new Date(val);
+      if (isNaN(d)) return "";
+      return d.toISOString().split("T")[0]; // → "2025-10-29"
+    },
     formatCost(val) {
       if (!val) return "₱0.00";
       const num = parseFloat(val.$numberDecimal || val);
@@ -764,12 +848,30 @@ export default {
       }).format(num);
     },
 
+    toggleEditMode() {
+      this.isEditMode = true;
+    },
+
     async ShowItem(payload) {
-      console.log("ShowItem payload:", payload);
+      this.dialogVisible = true;
+      this.maintenancehistory = true;
+      this.hideSaveBtn = false;
+
+      // console.log("ShowItem payload:", payload);
       try {
+        this.MachineDetails = {}; // Clear previous details
+        this.MachineMaintenanceList = []; // Clear previous maintenance list
+
         await this.Equipmentstore.GetEquipment(payload);
         this.MachineDetails = this.Equipmentstore.equipment;
-        console.log("MachineDetails:", this.MachineDetails);
+        await this.Equipmentstore.GetEquipmentmaintenanceDetails(payload);
+        this.MachineMaintenanceList = this.Equipmentstore.equipmenthistory;
+
+        // console.log("MachineDetails:", this.MachineDetails);
+        // console.log(
+        //   "MachineMaintenanceList:",
+        //   this.MachineMaintenanceList,
+        // );
       } catch (error) {
         console.error("Error showing item:", error);
         this.$q.notify({
@@ -780,6 +882,7 @@ export default {
     },
 
     ShowNewMachineDialog() {
+      // console.log("ShowNewMachineDialog called");
       this.dialogVisible = true;
     },
 
@@ -788,7 +891,7 @@ export default {
         await this.Equipmentstore.fetchEquipment();
         this.MachineList = this.Equipmentstore.equipments;
       } catch (error) {
-        console.error("Error fetching machine list:", error);
+        // console.error("Error fetching machine list:", error);
         this.$q.notify({
           type: "negative",
           message: "Failed to fetch machine list." + error.message,
@@ -838,6 +941,41 @@ export default {
 
       // Save the workbook as a .xlsx file
       XLSX.writeFile(wb, "Machine_Data.xlsx");
+    },
+
+    async SaveMachineDetails() {
+      // Implement the logic to save machine details
+      // This could involve calling an API or updating a store
+    },
+
+    async SaveMachineMaintenanceDetails() {
+      // Implement the logic to save machine maintenance details
+      // This could involve calling an API or updating a store
+    },
+
+    async UpdateMachineDetails(payload) {
+      const formData = new FormData();
+
+      for (const key in payload) {
+        if (key !== "EquipmentImage") {
+          formData.append(key, payload[key]);
+        }
+      }
+
+      const img = payload.EquipmentImage;
+      if (img instanceof File) {
+        formData.append("EquipmentImage", img); // ✅ real file upload
+      } else if (typeof img === "string" && img.startsWith("http://")) {
+        formData.append("EquipmentImage", img); // ✅ keep old path
+      } else {
+        formData.append("EquipmentImage", ""); // ✅ no image
+      }
+
+      // for (const [key, value] of formData.entries()) {
+      //   console.log(key, value);
+      // }
+      await this.Equipmentstore.UpdateEquipment(payload.id, formData);
+      await this.getMachineList();
     },
   },
 
@@ -896,6 +1034,11 @@ export default {
       update,
       create,
       columns: [
+        {
+          name: "index",
+          label: "No.",
+          align: "left",
+        },
         {
           name: "EquipmentCategory",
           label: "CATEGORY",

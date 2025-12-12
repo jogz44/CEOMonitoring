@@ -1,6 +1,9 @@
 import { defineStore } from "pinia";
 import axios from "axios";
 import { api } from "src/boot/axios";
+import { Notify } from "quasar";
+
+
 
 export const useEquipmentInfo = defineStore("equipmentinfo", {
   state: () => ({
@@ -14,6 +17,8 @@ export const useEquipmentInfo = defineStore("equipmentinfo", {
   }),
 
   actions: {
+
+
     async UploadImage(id, payload) {
       try {
         let response = await api.post(
@@ -32,6 +37,11 @@ export const useEquipmentInfo = defineStore("equipmentinfo", {
         const response = await api.post(
           "/api/Equipments/" + id + "/maintenance",
           payload,
+          {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
         );
         // this.equipment.push(response.data);
       } catch (error) {
@@ -84,6 +94,7 @@ export const useEquipmentInfo = defineStore("equipmentinfo", {
     },
 
     async UpdateEquipment(id, payload) {
+
       try {
         const response = await api.put(`/api/Equipments/` + id, payload,{
           headers: {
@@ -91,9 +102,18 @@ export const useEquipmentInfo = defineStore("equipmentinfo", {
           },
         });
         console.log("Equipment updatted");
+        Notify.create({
+          type: "positive",
+          message: "Equipment Updated Successfully!",}
+        );
 
       } catch (error) {
+        console.log("error=", error);
         console.log(`Cannot Update ${error}`);
+           Notify.create({
+        type: "negative",
+        message: "Error Updating Equipment!" + error.message,
+           })
       }
     },
     async DeleteEquipment(id, payload) {
@@ -112,7 +132,7 @@ export const useEquipmentInfo = defineStore("equipmentinfo", {
     // For the Machine Maintenance History
 
     async GetEquipment(id) {
-      console.log("getequipment=", id);
+      // console.log("getequipment=", id);
       try {
         const response = await api.get(`/api/Equipments/` + id);
         this.equipment = response.data;
@@ -136,12 +156,23 @@ export const useEquipmentInfo = defineStore("equipmentinfo", {
 
     async DeleteMaintenance(id, maintenanceid) {
       try {
-        let res = await api.put(
+       await api.put(
           `/api/Equipments/` + id + `/maintenance/remove/` + maintenanceid,
         );
         // console.log("res =", res.data);
+
+        Notify.create({
+          type: "positive",
+          message: "Maintenance Record Deleted Successfully!",
+          position: "middle",
+        });
       } catch (error) {
-        console.log(`Unable to Delete ${error}`);
+        // console.log(`Unable to Delete ${error}`);
+
+        Notify.create({
+          type: "negative",
+          message: "Error Deleting Maintenance Record!" + error.message,
+        });
 
         //64fe73740c41be33a4e5de58/maintenance/remove/64fe739d0c41be33a4e5de62
       }

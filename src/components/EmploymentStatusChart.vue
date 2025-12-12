@@ -34,7 +34,7 @@ export default {
         position: "bottom",
       },
       title: {
-        text: "Employment Status", // Your title text goes here
+        text: "Contract Status", // Your title text goes here
         align: "center",
         margin: 10,
         offsetX: 0,

@@ -101,14 +101,14 @@
                 >
               </q-item-section>
             </q-item>
-            <q-item clickable v-ripple @click="toggleSection('project')">
+            <!-- <q-item clickable v-ripple @click="toggleSection('project')">
               <q-item-section class="q-ml-sm">
                 <q-item-label>
                   <q-icon name="engineering" class="q-ml-md q-mr-md" />
                   Project</q-item-label
                 >
               </q-item-section>
-            </q-item>
+            </q-item> -->
           </q-expansion-item>
           <q-expansion-item label="SETTINGS" expand-separator icon="settings">
             <q-item clickable v-ripple @click="toggleSection('user')">
@@ -229,7 +229,7 @@ export default {
       this.showEmployee = section === "employee";
       this.showIt = section === "it";
       this.showMachine = section === "machine";
-      this.showProject = section === "project";
+      // this.showProject = section === "project";
       this.showUser = section === "user";
       this.DashboardView = section === "dashboard";
     },

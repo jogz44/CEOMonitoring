@@ -165,7 +165,7 @@
                 >
               </q-item-section>
             </q-item>
-              <q-item
+              <!-- <q-item
                 v-if="view('Project')"
                 clickable
                 v-ripple
@@ -184,7 +184,7 @@
                     Project</q-item-label
                   >
                 </q-item-section>
-              </q-item>
+              </q-item> -->
             </q-expansion-item>
 
             <q-expansion-item group="somegroup" v-model="settings">
@@ -272,9 +272,9 @@
       <q-page-container v-if="showMachine">
         <MachineTable />
       </q-page-container>
-      <q-page-container v-if="showProject">
+      <!-- <q-page-container v-if="showProject">
         <ProjectTable />
-      </q-page-container>
+      </q-page-container> -->
       <q-page-container v-if="showUser">
         <UserTable />
       </q-page-container>
@@ -399,7 +399,7 @@ export default defineComponent({
       this.showEmployee = section === "employee";
       this.showIt = section === "it";
       this.showMachine = section === "machine";
-      this.showProject = section === "project";
+      // this.showProject = section === "project";
       this.showUser = section === "user";
       this.showView = section === "view";
       this.DashboardView = section === "dashboard";

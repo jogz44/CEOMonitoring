@@ -41,7 +41,7 @@ export default {
             },
             title: {
               display: true,
-              text: "Employment Status ",
+              text: "Employment Status Category",
             },
           },
         },

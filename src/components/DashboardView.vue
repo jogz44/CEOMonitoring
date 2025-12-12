@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="row dashboard" v-if="menu">
+    <div class="row dashboard justify-evenly" v-if="menu">
       <div class="col-12 col-sm-6 col-md-3 col-lg-3">
         <q-card class="my-card" bordered>
           <q-card-section horizontal @click="CeoEmployee">
@@ -79,7 +79,7 @@
           </q-card-section>
         </q-card>
       </div>
-      <div class="col-12 col-sm-6 col-md-3 col-lg-3">
+      <!-- <div class="col-12 col-sm-6 col-md-3 col-lg-3">
         <q-card class="my-card" bordered>
           <q-card-section horizontal @click="CeoProjects">
             <q-item>
@@ -104,11 +104,11 @@
             </q-item>
           </q-card-section>
         </q-card>
-      </div>
+      </div> -->
     </div>
 
     <!-- dashboard -->
-    <div class="row chart">
+    <div class="row chart justify-evenly">
       <div class="col-12 col-sm-6 col-md-3 col-lg-3">
         <q-card class="my-card" bordered>
           <q-card-section>
@@ -236,7 +236,7 @@
           </q-card-section>
         </q-card>
       </div>
-      <div class="col-12 col-sm-6 col-md-3 col-lg-3">
+      <!-- <div class="col-12 col-sm-6 col-md-3 col-lg-3">
         <q-card class="my-card" bordered>
           <q-card-section>
             <q-card>
@@ -260,19 +260,37 @@
             </q-card>
           </q-card-section>
         </q-card>
-      </div>
+      </div> -->
     </div>
 
     <!-- chart viewing -->
-    <p class="text-h6 q-pa-xl" style="margin-bottom: -50px; color: green">
+    <p class="text-h6 q-ml-lg q-mb-md q-mt-lg text-green">
       CEO EMPLOYEES DASHBOARD
     </p>
-    <div class="row dashboard">
+    <div class="row dashboard  justify-evenly q-col-gutter-lg">
       <div class="col-12 col-sm-6 col-md-6 col-lg-3">
         <q-card class="my-card" bordered>
-          <!-- <q-card-section>
+          <q-card-section>
+            <employment-status-chart :chart-data="EmpStatusDatas()" />
+          </q-card-section>
+        </q-card>
+      </div>
+
+      <div class="col-12 col-sm-6 col-md-6 col-lg-3">
+        <q-card class="my-card" bordered>
+          <q-card-section>
+            <chart-two :chart-data="StatusDatas()" />
+          </q-card-section>
+        </q-card>
+      </div>
+    </div>
+
+    <!-- <div class="row dashboard justify-center q-col-gutter-lg">
+      <div class="col-12 col-sm-6 col-md-6 col-lg-3">
+        <q-card class="my-card" bordered>
+           <q-card-section>
             <pie-chart :chart-data="ChartDatas()" class="pie" />
-          </q-card-section> -->
+          </q-card-section>
           <q-card-section>
             <employment-status-chart  :chart-data="EmpStatusDatas()" />
           </q-card-section>
@@ -285,110 +303,106 @@
           </q-card-section>
 
         </q-card>
-      </div>
+      </div> -->
 
-      <div class="col-12 col-sm-12 col-md-12 col-lg-6">
-        <q-card class="my-card" bordered>
-          <q-card-section>
-            <q-card>
-              <q-card-section>
-                <p>
-                  <b style="font-size: 14px">Total Ongoing Projects Cost : </b>
-                </p>
-              </q-card-section>
-            </q-card>
+    <!-- <div class="col-12 col-sm-12 col-md-12 col-lg-6">
+                  <q-card class="my-card" bordered>
+                    <q-card-section>
+                      <q-card>
+                        <q-card-section>
+                          <p>
+                            <b style="font-size: 14px">Total Ongoing Projects Cost : </b>
+                          </p>
+                        </q-card-section>
+                      </q-card>
 
-            <q-card class="q-mt-sm">
-              <q-card-section>
-                <p>
-                  <b style="font-size: 20px; color: #057407">PHP </b>
-                  <br />
-                  <b
-                    style="color: #057407; text-align: center; display: block"
-                    class="responsive-text"
-                    >{{ formatProjectCost(storeProjectInfo.projectCost) }}</b
-                  >
-                </p>
-              </q-card-section>
-            </q-card>
+                      <q-card class="q-mt-sm">
+                        <q-card-section>
+                          <p>
+                            <b style="font-size: 20px; color: #057407">PHP </b>
+                            <br />
+                            <b
+                              style="color: #057407; text-align: center; display: block"
+                              class="responsive-text"
+                              >{{ formatProjectCost(storeProjectInfo.projectCost) }}</b
+                            >
+                          </p>
+                        </q-card-section>
+                      </q-card>
 
-            <div class="row">
-              <div class="col q-mr-sm">
-                <q-card class="q-mt-sm">
-                  <q-card-section>
-                    <p>
-                      <b style="font-size: 14px"
-                        >Total Projects for 2024 : <br />
-                        <p>
-                          <b
-                            style="
-                              font-size: 20px;
-                              color: #057407;
-                              text-align: center;
-                              display: block;
-                            "
-                            >{{ storeProjectInfo.projectsCount }}</b
-                          >
-                        </p></b
-                      >
-                    </p>
-                  </q-card-section>
-                </q-card>
-              </div>
-              <div class="col">
-                <q-card class="q-mt-sm">
-                  <q-card-section>
-                    <p>
-                      <b style="font-size: 14px"
-                        >Ongoing Projects : <br />
-                        <p>
-                          <b
-                            style="
-                              font-size: 20px;
-                              color: #057407;
-                              text-align: center;
-                              display: block;
-                            "
-                            >{{ storeProjectInfo.projectsCount }}</b
-                          >
-                        </p></b
-                      >
-                    </p>
-                  </q-card-section>
-                </q-card>
-              </div>
-              <div class="col q-ml-sm">
-                <q-card class="q-mt-sm">
-                  <q-card-section>
-                    <p>
-                      <b style="font-size: 14px"
-                        >Completed Projects : <br />
-                        <p>
-                          <b
-                            style="
-                              font-size: 20px;
-                              color: #057407;
-                              text-align: center;
-                              display: block;
-                            "
-                            >{{ storeProjectInfo.projectsCount }}</b
-                          >
-                        </p></b
-                      >
-                    </p>
-                  </q-card-section>
-                </q-card>
-              </div>
-            </div>
-          </q-card-section>
-        </q-card>
-      </div>
-    </div>
-
-    <p class="text-h6 q-pa-xl"  style="margin-bottom: -50px; color: green; margin-top: -30px;">
-      CEO PROJECT UDPATES
-    </p>
-
+                      <div class="row">
+                        <div class="col q-mr-sm">
+                          <q-card class="q-mt-sm">
+                            <q-card-section>
+                              <p>
+                                <b style="font-size: 14px"
+                                  >Total Projects for 2024 : <br />
+                                  <p>
+                                    <b
+                                      style="
+                                        font-size: 20px;
+                                        color: #057407;
+                                        text-align: center;
+                                        display: block;
+                                      "
+                                      >{{ storeProjectInfo.projectsCount }}</b
+                                    >
+                                  </p></b
+                                >
+                              </p>
+                            </q-card-section>
+                          </q-card>
+                        </div>
+                        <div class="col">
+                          <q-card class="q-mt-sm">
+                            <q-card-section>
+                              <p>
+                                <b style="font-size: 14px"
+                                  >Ongoing Projects : <br />
+                                  <p>
+                                    <b
+                                      style="
+                                        font-size: 20px;
+                                        color: #057407;
+                                        text-align: center;
+                                        display: block;
+                                      "
+                                      >{{ storeProjectInfo.projectsCount }}</b
+                                    >
+                                  </p></b
+                                >
+                              </p>
+                            </q-card-section>
+                          </q-card>
+                        </div>
+                        <div class="col q-ml-sm">
+                          <q-card class="q-mt-sm">
+                            <q-card-section>
+                              <p>
+                                <b style="font-size: 14px"
+                                  >Completed Projects : <br />
+                                  <p>
+                                    <b
+                                      style="
+                                        font-size: 20px;
+                                        color: #057407;
+                                        text-align: center;
+                                        display: block;
+                                      "
+                                      >{{ storeProjectInfo.projectsCount }}</b
+                                    >
+                                  </p></b
+                                >
+                              </p>
+                            </q-card-section>
+                          </q-card>
+                        </div>
+                      </div>
+                    </q-card-section>
+                  </q-card>
+                </div> -->
+    <!-- </div> -->
+    <!-- table viewing -->
     <div v-if="employee">
       <CenterTable />
     </div>
@@ -617,7 +631,7 @@ export default defineComponent({
 <style scoped>
 .dashboard {
   padding: 2%;
-  justify-content: space-between;
+  /* justify-content: space-between; */
   display: flex;
   flex-wrap: wrap;
 }
