@@ -102,6 +102,7 @@
                 filled
                 v-model="Password"
                 label="Password"
+                type="Password"
                 dense
                 class="q-pa-sm"
                 :disable="!isEditMode"
@@ -138,7 +139,9 @@ import { useLoginStore } from "../stores/LoginStore";
 export default {
   data() {
     return {
+      UserID: null,
       isEditMode: false,
+      UserInfo:{},
 
         id: null,
         Username: "",
@@ -214,15 +217,18 @@ export default {
           Office: "",
           isAdmin: false,
         };
-        store.fetchUser().then((res) => {
-          // this.closeDialog();
-        });
+        console.log(this.UserID)
+        // store.GetUser(this.UserID).then((res) => {
+        //   // this.closeDialog();
+        // });
       });
       console.log("Item Updated: ", editedItemCopy);
     },
   },
 
   created() {
+    this.UserID = this.$route.params.id;
+    console.log("UserID:", this.UserID);
     const loginstore = useLoginStore();
     this.LastName = loginstore.user.LastName;
     this.IdNo = loginstore.user.IdNo;

@@ -5,7 +5,7 @@ import { api } from "src/boot/axios";
 export const useStoreUserInfo = defineStore("userinfo", {
   state: () => ({
     users: [],
-    user: [],
+    user: {},
     usersCount: 0,
     creds: [],
   }),

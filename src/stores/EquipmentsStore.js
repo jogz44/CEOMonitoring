@@ -164,12 +164,13 @@ export const useEquipmentInfo = defineStore("equipmentinfo", {
         Notify.create({
           type: "positive",
           message: "Maintenance Record Deleted Successfully!",
-          position: "middle",
+          position: "center",
         });
       } catch (error) {
         // console.log(`Unable to Delete ${error}`);
 
         Notify.create({
+          position: "center",
           type: "negative",
           message: "Error Deleting Maintenance Record!" + error.message,
         });

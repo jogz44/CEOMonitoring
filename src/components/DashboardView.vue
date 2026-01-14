@@ -1,9 +1,9 @@
 <template>
   <div>
-    <div class="row dashboard justify-evenly" v-if="menu">
+    <div class="row dashboard justify-center" v-if="menu">
       <div class="col-12 col-sm-6 col-md-3 col-lg-3">
-        <q-card class="my-card" bordered>
-          <q-card-section horizontal @click="CeoEmployee">
+        <q-card class="my-card" bordered @click="GoToEmployee()">
+          <q-card-section horizontal >
             <q-item>
               <q-item-section avatar>
                 <q-avatar
@@ -28,8 +28,8 @@
         </q-card>
       </div>
       <div class="col-12 col-sm-6 col-md-3 col-lg-3">
-        <q-card class="my-card" bordered>
-          <q-card-section horizontal @click="MachineEquipment">
+        <q-card class="my-card" bordered  @click="GoToMachines()">
+          <q-card-section horizontal>
             <q-item>
               <q-item-section avatar>
                 <q-avatar
@@ -54,8 +54,8 @@
         </q-card>
       </div>
       <div class="col-12 col-sm-6 col-md-3 col-lg-3">
-        <q-card class="my-card" bordered>
-          <q-card-section horizontal @click="ItEquipment">
+        <q-card class="my-card" bordered  @click="GoToIT()">
+          <q-card-section horizontal >
             <q-item>
               <q-item-section avatar>
                 <q-avatar
@@ -79,36 +79,10 @@
           </q-card-section>
         </q-card>
       </div>
-      <!-- <div class="col-12 col-sm-6 col-md-3 col-lg-3">
-        <q-card class="my-card" bordered>
-          <q-card-section horizontal @click="CeoProjects">
-            <q-item>
-              <q-item-section avatar>
-                <q-avatar
-                  rounded
-                  style="background-color: #057407"
-                  text-color="white"
-                  icon="engineering"
-                >
-                </q-avatar>
-              </q-item-section>
-
-              <q-item-section>
-                <q-item-label><b>CEO PROJECTS</b></q-item-label>
-                <p>
-                  <b style="font-size: 20px; color: #057407">{{
-                    storeProjectInfo.projectsCount
-                  }}</b>
-                </p>
-              </q-item-section>
-            </q-item>
-          </q-card-section>
-        </q-card>
-      </div> -->
     </div>
 
     <!-- dashboard -->
-    <div class="row chart justify-evenly">
+    <div class="row chart justify-center">
       <div class="col-12 col-sm-6 col-md-3 col-lg-3">
         <q-card class="my-card" bordered>
           <q-card-section>
@@ -169,13 +143,7 @@
               </div>
             </div>
             <q-card>
-              <!-- <q-table
-                dense
-                :rows="store.designationtype"
-                :columns="personnelcolumns"
-                :rows-per-page-options="[5]"
-              >
-              </q-table> -->
+
             </q-card>
           </q-card-section>
         </q-card>
@@ -226,48 +194,23 @@
                 :columns="itcolumns"
                 :rows-per-page-options="[5]"
               >
-                <!-- <template v-slot:body-cell-ItemCount="{ row }">
-                  <q-td>
-                    {{ row.ItemCount }}
-                  </q-td>
-                </template> -->
+
               </q-table>
             </q-card>
           </q-card-section>
         </q-card>
       </div>
-      <!-- <div class="col-12 col-sm-6 col-md-3 col-lg-3">
-        <q-card class="my-card" bordered>
-          <q-card-section>
-            <q-card>
-              <p class="q-pa-md" style="text-align: center">
-                <b style="font-size: 18px; color: #057407">PROJECT NAMES </b>
-              </p>
-            </q-card>
-            <q-card>
-              <q-table
-                dense
-                :rows="latestProject"
-                :columns="columns"
-                :rows-per-page-options="[5]"
-              >
-                <template v-slot:body-cell-DateStarted="{ row }">
-                  <q-td>
-                    {{ formatDate(row.DateStarted) }}
-                  </q-td>
-                </template>
-              </q-table>
-            </q-card>
-          </q-card-section>
-        </q-card>
-      </div> -->
+
     </div>
 
     <!-- chart viewing -->
-    <p class="text-h6 q-ml-lg q-mb-md q-mt-lg text-green">
+     <div class=" row dashboard  justify-center q-col-gutter-xs">
+       <p class="text-h6 text-green">
       CEO EMPLOYEES DASHBOARD
-    </p>
-    <div class="row dashboard  justify-evenly q-col-gutter-lg">
+       </p>
+     </div>
+
+    <div class="row dashboard  justify-center q-col-gutter-xs">
       <div class="col-12 col-sm-6 col-md-6 col-lg-3">
         <q-card class="my-card" bordered>
           <q-card-section>
@@ -285,165 +228,28 @@
       </div>
     </div>
 
-    <!-- <div class="row dashboard justify-center q-col-gutter-lg">
-      <div class="col-12 col-sm-6 col-md-6 col-lg-3">
-        <q-card class="my-card" bordered>
-           <q-card-section>
-            <pie-chart :chart-data="ChartDatas()" class="pie" />
-          </q-card-section>
-          <q-card-section>
-            <employment-status-chart  :chart-data="EmpStatusDatas()" />
-          </q-card-section>
-        </q-card>
-      </div>
-      <div class="col-12 col-sm-6 col-md-6 col-lg-3">
-        <q-card class="my-card" bordered>
-          <q-card-section>
-            <chart-two :chart-data="StatusDatas()" />
-          </q-card-section>
-
-        </q-card>
-      </div> -->
-
-    <!-- <div class="col-12 col-sm-12 col-md-12 col-lg-6">
-                  <q-card class="my-card" bordered>
-                    <q-card-section>
-                      <q-card>
-                        <q-card-section>
-                          <p>
-                            <b style="font-size: 14px">Total Ongoing Projects Cost : </b>
-                          </p>
-                        </q-card-section>
-                      </q-card>
-
-                      <q-card class="q-mt-sm">
-                        <q-card-section>
-                          <p>
-                            <b style="font-size: 20px; color: #057407">PHP </b>
-                            <br />
-                            <b
-                              style="color: #057407; text-align: center; display: block"
-                              class="responsive-text"
-                              >{{ formatProjectCost(storeProjectInfo.projectCost) }}</b
-                            >
-                          </p>
-                        </q-card-section>
-                      </q-card>
-
-                      <div class="row">
-                        <div class="col q-mr-sm">
-                          <q-card class="q-mt-sm">
-                            <q-card-section>
-                              <p>
-                                <b style="font-size: 14px"
-                                  >Total Projects for 2024 : <br />
-                                  <p>
-                                    <b
-                                      style="
-                                        font-size: 20px;
-                                        color: #057407;
-                                        text-align: center;
-                                        display: block;
-                                      "
-                                      >{{ storeProjectInfo.projectsCount }}</b
-                                    >
-                                  </p></b
-                                >
-                              </p>
-                            </q-card-section>
-                          </q-card>
-                        </div>
-                        <div class="col">
-                          <q-card class="q-mt-sm">
-                            <q-card-section>
-                              <p>
-                                <b style="font-size: 14px"
-                                  >Ongoing Projects : <br />
-                                  <p>
-                                    <b
-                                      style="
-                                        font-size: 20px;
-                                        color: #057407;
-                                        text-align: center;
-                                        display: block;
-                                      "
-                                      >{{ storeProjectInfo.projectsCount }}</b
-                                    >
-                                  </p></b
-                                >
-                              </p>
-                            </q-card-section>
-                          </q-card>
-                        </div>
-                        <div class="col q-ml-sm">
-                          <q-card class="q-mt-sm">
-                            <q-card-section>
-                              <p>
-                                <b style="font-size: 14px"
-                                  >Completed Projects : <br />
-                                  <p>
-                                    <b
-                                      style="
-                                        font-size: 20px;
-                                        color: #057407;
-                                        text-align: center;
-                                        display: block;
-                                      "
-                                      >{{ storeProjectInfo.projectsCount }}</b
-                                    >
-                                  </p></b
-                                >
-                              </p>
-                            </q-card-section>
-                          </q-card>
-                        </div>
-                      </div>
-                    </q-card-section>
-                  </q-card>
-                </div> -->
-    <!-- </div> -->
-    <!-- table viewing -->
-    <div v-if="employee">
-      <CenterTable />
-    </div>
-    <div v-if="machine">
-      <MachineTable />
-    </div>
-    <div v-if="it">
-      <ItTable />
-    </div>
-    <div v-if="projects">
-      <ProjectTable />
+     <div >
+     <router-view />
     </div>
   </div>
 </template>
 
 <script>
 import ChartTwo from "../components/ChartTwo.vue";
-// import PieChart from "../components/PieChart.vue";
 import EmploymentStatusChart from "./EmploymentStatusChart.vue";
-// import StatusChart from "../components/StatusChart.vue";
 import { defineComponent } from "vue";
-import CenterTable from "./CenterTable.vue";
-import MachineTable from "./MachineTable.vue";
-import ItTable from "./ItTable.vue";
-import ProjectTable from "./ProjectTable.vue";
 import { useStorePersonnelInfo } from "../stores/personnelStore";
 import { useEquipmentInfo } from "../stores/EquipmentsStore";
 import { useITEquipmentInfo } from "../stores/ItStore";
 import { useStoreProjectInfo } from "../stores/ProjectStore";
 
+
+
 export default defineComponent({
   name: "DashboardView",
   components: {
     ChartTwo,
-    CenterTable,
-    ItTable,
-    ProjectTable,
-    MachineTable,
-    // PieChart,
     EmploymentStatusChart,
-    // StatusChart,
   },
   data() {
     return {
@@ -521,6 +327,17 @@ export default defineComponent({
     }, 2000);
   },
   methods: {
+
+    GoToEmployee() {
+      this.$router.push({ name: "employees" });
+    },
+    GoToMachines() {
+      this.$router.push({ name: "machines" });
+    },
+    GoToIT(){
+      this.$router.push({ name: "it" });
+    },
+
     StatusDatas() {
       const regular = this.store.regularCount;
       const casual = this.store.casualCount;
@@ -557,30 +374,6 @@ export default defineComponent({
       return chartData;
     },
 
-    CeoEmployee() {
-      this.employee = true;
-      this.machine = false;
-      this.it = false;
-      this.projects = false;
-    },
-    MachineEquipment() {
-      this.employee = false;
-      this.machine = true;
-      this.it = false;
-      this.projects = false;
-    },
-    ItEquipment() {
-      this.employee = false;
-      this.machine = false;
-      this.it = true;
-      this.projects = false;
-    },
-    CeoProjects() {
-      this.employee = false;
-      this.machine = false;
-      this.it = false;
-      this.projects = true;
-    },
     formatDate(value) {
       if (!value) return "";
 
@@ -638,7 +431,7 @@ export default defineComponent({
 .chart {
   padding-left: 2%;
   padding-right: 2%;
-  justify-content: space-between;
+  /* justify-content: space-between; */
   margin-top: -10px;
 }
 

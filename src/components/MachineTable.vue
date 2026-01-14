@@ -82,7 +82,10 @@
                 round
                 color="green-8"
                 style="margin-right: -10px"
-                @click="ShowItem(props.row._id)"
+                @click="
+                  (ShowItem(props.row._id),
+                  ShowMaintenanceHistory(props.row._id))
+                "
               >
               </q-btn>
               <q-btn
@@ -461,7 +464,13 @@
                 label="Add Maintenance"
                 size="x-small"
                 icon="add"
-                @click="secondDialog = true"
+                @click="
+                  () => {
+
+                    secondDialog = true;
+                    MachineMaintenanceDetails = {};
+                  }
+                "
                 color="green-10"
               ></q-btn>
             </template>
@@ -704,6 +713,7 @@
 </template>
 
 <script>
+import { Notify } from "quasar";
 import { useEquipmentInfo } from "../stores/EquipmentsStore";
 import { useLoginStore } from "src/stores/LoginStore";
 import * as XLSX from "xlsx";
@@ -739,38 +749,35 @@ export default {
   },
   computed: {},
 
-
   methods: {
-
     unformatCost() {
-    if (!this.MachineDetails.Cost) return;
+      if (!this.MachineDetails.Cost) return;
 
-    this.MachineDetails.Cost = this.MachineDetails.Cost
-      .toString()
-      .replace(/,/g, "")
-      .replace(/^₱/, ""); // in case prefix gets into v-model
-  },
+      this.MachineDetails.Cost = this.MachineDetails.Cost.toString()
+        .replace(/,/g, "")
+        .replace(/^₱/, ""); // in case prefix gets into v-model
+    },
 
     formatCost() {
-    let raw = this.MachineDetails.Cost;
+      let raw = this.MachineDetails.Cost;
 
-    if (!raw) {
-      this.MachineDetails.Cost = "";
-      return;
-    }
+      if (!raw) {
+        this.MachineDetails.Cost = "";
+        return;
+      }
 
-    // Remove any commas or peso signs
-    raw = raw.toString().replace(/,/g, "").replace(/^₱/, "");
+      // Remove any commas or peso signs
+      raw = raw.toString().replace(/,/g, "").replace(/^₱/, "");
 
-    let num = parseFloat(raw);
-    if (isNaN(num)) num = 0;
+      let num = parseFloat(raw);
+      if (isNaN(num)) num = 0;
 
-    // Format with commas and 2 decimals
-    this.MachineDetails.Cost = num.toLocaleString("en-US", {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2
-    });
-  },
+      // Format with commas and 2 decimals
+      this.MachineDetails.Cost = num.toLocaleString("en-US", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      });
+    },
 
     async NewMaintenanceHistory(Equipment_id, payload) {
       // console.log("Equipment_id:", Equipment_id);
@@ -785,10 +792,24 @@ export default {
 
       await this.Equipmentstore.AddMaintenance(Equipment_id, formData);
       await this.Equipmentstore.GetEquipmentmaintenanceDetails(Equipment_id);
+      this.MachineMaintenanceList = this.Equipmentstore.equipmenthistory;
+      this.secondDialog = false;
     },
     async ShowSelectedMaintenance(Equipment_id, maintenance_id) {
       console.log("Equipment_id:", Equipment_id);
       console.log("maintenance_id:", maintenance_id);
+    },
+
+    async ShowMaintenanceHistory(Equipment_id) {
+      try {
+        await this.Equipmentstore.GetEquipmentmaintenanceDetails(Equipment_id);
+        this.MachineMaintenanceList = this.Equipmentstore.equipmenthistory;
+      } catch (error) {
+        Notify.create({
+          type: "negative",
+          message: "Failed to fetch maintenance history." + error.message,
+        });
+      }
     },
 
     showMaintenanceDetails(row) {
@@ -804,16 +825,11 @@ export default {
     },
 
     async deleteMachineHistory() {
-      // console.log(
-      //   "Deleting maintenance with ID:",
-      //   this.MachineDetails._id,
-      //   "-------",
-      //   this.maintenanceIdToDelete,
-      // );
       await this.Equipmentstore.DeleteMaintenance(
         this.MachineDetails._id,
         this.maintenanceIdToDelete,
       );
+
       await this.Equipmentstore.GetEquipmentmaintenanceDetails(
         this.MachineDetails._id,
       );
@@ -893,6 +909,7 @@ export default {
       } catch (error) {
         // console.error("Error fetching machine list:", error);
         this.$q.notify({
+          position: "center",
           type: "negative",
           message: "Failed to fetch machine list." + error.message,
         });

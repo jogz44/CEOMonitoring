@@ -23,18 +23,13 @@
                   <q-item
                     clickable
                     v-ripple
-                    @click="toggleSection('view')"
-                    :class="{ 'active-item': selectedSection === 'view' }"
+                    @click="GoToUser()"
+
                   >
                     <q-item-section>
                       <q-item-label>
                         <q-icon
-                          :style="{
-                            color:
-                              selectedSection === 'view'
-                                ? '#006400'
-                                : 'inherit',
-                          }"
+
                           name="person"
                           class="q-mr-md"
                         />
@@ -65,8 +60,8 @@
             <q-item
               clickable
               v-ripple
-              @click="handleItemClick"
-              :class="{ 'active-item': selectedSection === 'dashboard' }"
+              @click="GotoDashboard()"
+
             >
               <q-item-section avatar>
                 <q-avatar
@@ -109,7 +104,7 @@
                 v-if="view('Employee')"
                 clickable
                 v-ripple
-                @click="toggleSection('employee')"
+                @click="GoToEmployee()"
                 :class="{ 'active-item': selectedSection === 'employee' }"
               >
                 <q-item-section class="q-ml-sm">
@@ -132,7 +127,7 @@
                 v-if="view('Machine Equipment')"
                 clickable
                 v-ripple
-                @click="toggleSection('machine')"
+                @click="GoToMachines()"
               >
                 <q-item-section class="q-ml-sm">
                   <q-item-label>
@@ -148,43 +143,23 @@
                 </q-item-section>
               </q-item>
               <q-item
-              v-if="view('IT Equipment')"
-              clickable
-              v-ripple
-              @click="toggleSection('it')"
-            >
-              <q-item-section class="q-ml-sm">
-                <q-item-label>
-                  <q-icon
-                    :style="{
-                      color: selectedSection === 'it' ? '#006400' : 'inherit',
-                    }"
-                    name="devices_other"
-                    class="q-ml-md q-mr-md"
-                  />IT Equipment</q-item-label
-                >
-              </q-item-section>
-            </q-item>
-              <!-- <q-item
-                v-if="view('Project')"
+                v-if="view('IT Equipment')"
                 clickable
                 v-ripple
-                @click="toggleSection('project')"
+                @click="GoToIT()"
               >
                 <q-item-section class="q-ml-sm">
                   <q-item-label>
                     <q-icon
                       :style="{
-                        color:
-                          selectedSection === 'project' ? '#006400' : 'inherit',
+                        color: selectedSection === 'it' ? '#006400' : 'inherit',
                       }"
-                      name="engineering"
+                      name="devices_other"
                       class="q-ml-md q-mr-md"
-                    />
-                    Project</q-item-label
+                    />IT Equipment</q-item-label
                   >
                 </q-item-section>
-              </q-item> -->
+              </q-item>
             </q-expansion-item>
 
             <q-expansion-item group="somegroup" v-model="settings">
@@ -209,7 +184,7 @@
                 v-if="store.user.isAdmin == true"
                 clickable
                 v-ripple
-                @click="toggleSection('user')"
+                @click="GoToUsers()"
                 :class="{ 'active-item': selectedSection === 'user' }"
               >
                 <q-item-section class="q-ml-sm">
@@ -226,44 +201,15 @@
                   >
                 </q-item-section>
               </q-item>
-              <!-- <q-item
-              clickable
-              v-ripple
-              @click="toggleSection('view')"
-              :class="{ 'active-item': selectedSection === 'view' }"
-            >
-              <q-item-section class="q-ml-sm">
-                <q-item-label>
-                  <q-icon
-                    :style="{
-                      color: selectedSection === 'view' ? '#006400' : 'inherit',
-                    }"
-                    name="people"
-                    class="q-ml-md q-mr-md"
-                  />
-                  User View</q-item-label
-                >
-              </q-item-section>
-            </q-item>
-
-            <q-item clickable v-ripple @click="logout()">
-              <q-item-section class="q-ml-sm">
-                <q-item-label>
-                  <q-icon name="logout" class="q-ml-md q-mr-md" />
-                  Logout</q-item-label
-                >
-              </q-item-section>
-            </q-item> -->
             </q-expansion-item>
           </q-list>
         </q-scroll-area>
       </q-drawer>
 
-      <q-page-container v-if="DashboardView">
+      <!-- <q-page-container v-if="DashboardView">
         <DashboardView />
       </q-page-container>
       <q-page-container v-if="showEmployee">
-        <!-- <router-view /> -->
         <CenterTable />
       </q-page-container>
       <q-page-container v-if="showIt">
@@ -272,14 +218,14 @@
       <q-page-container v-if="showMachine">
         <MachineTable />
       </q-page-container>
-      <!-- <q-page-container v-if="showProject">
-        <ProjectTable />
-      </q-page-container> -->
       <q-page-container v-if="showUser">
         <UserTable />
       </q-page-container>
       <q-page-container v-if="showView">
         <UserView />
+      </q-page-container> -->
+      <q-page-container>
+        <router-view />
       </q-page-container>
     </q-layout>
   </div>
@@ -289,42 +235,19 @@
 import { defineComponent, ref } from "vue";
 import { useLoginStore } from "../stores/LoginStore";
 // import EssentialLink from "components/EssentialLink.vue";
-import CenterTable from "components/CenterTable.vue";
-import MachineTable from "components/MachineTable.vue";
-import ItTable from "components/ItTable.vue";
-import ProjectTable from "components/ProjectTable.vue";
-import UserTable from "components/UserTable.vue";
-import UserView from "components/UserView.vue";
-import DashboardView from "src/components/DashboardView.vue";
-
-const linksList = [
-  {
-    title: "Admin",
-    // caption: 'quasar.dev',
-    caption: "",
-    icon: "home",
-    link: "https://quasar.dev",
-  },
-  {
-    title: "Github",
-    caption: "github.com/quasarframework",
-    icon: "code",
-    link: "https://github.com/quasarframework",
-  },
-];
+// import CenterTable from "components/CenterTable.vue";
+// import MachineTable from "components/MachineTable.vue";
+// import ItTable from "components/ItTable.vue";
+// import ProjectTable from "components/ProjectTable.vue";
+// import UserTable from "components/UserTable.vue";
+// import UserView from "components/UserView.vue";
+// import DashboardView from "src/components/DashboardView.vue";
 
 export default defineComponent({
   name: "MainLayout",
 
   components: {
     // EssentialLink,
-    CenterTable,
-    MachineTable,
-    ProjectTable,
-    UserTable,
-    UserView,
-    ItTable,
-    DashboardView,
   },
 
   setup() {
@@ -334,7 +257,7 @@ export default defineComponent({
     function view(module) {
       const userCredentials = store.user.Credentials;
       const moduleCredentials = userCredentials.find(
-        (cred) => cred.Module === module
+        (cred) => cred.Module === module,
       );
       // console.log("credentials=", moduleCredentials);
       if (moduleCredentials) {
@@ -351,7 +274,7 @@ export default defineComponent({
     return {
       view,
       store,
-      essentialLinks: linksList,
+
       leftDrawerOpen,
       toggleLeftDrawer() {
         leftDrawerOpen.value = !leftDrawerOpen.value;
@@ -360,18 +283,10 @@ export default defineComponent({
   },
   data() {
     return {
-      drawer: "",
-      selectedSection: "dashboard",
-      submenuOpen: false,
-      showEmployee: false,
-      showMachine: false,
-      showProject: false,
-      showUser: false,
-      showIt: false,
-      showView: false,
-      DashboardView: true,
       management: false,
+      selectedSection: "",
       settings: false,
+      drawer: "",
     };
   },
 
@@ -385,8 +300,11 @@ export default defineComponent({
     },
 
     handleItemClick() {
-      // Call both functions here
-      this.toggleSection("dashboard");
+      this.$router.push({ name: "mainLayout" });
+    },
+    GotoDashboard() {
+      this.selectedSection="dashboard"
+      this.$router.push({ name: "dashboard" });
     },
     toggleSubMenu() {
       this.submenuOpen = !this.submenuOpen;
@@ -395,25 +313,35 @@ export default defineComponent({
     closeSubMenu() {
       this.submenuOpen = false;
     },
-    toggleSection(section) {
-      this.showEmployee = section === "employee";
-      this.showIt = section === "it";
-      this.showMachine = section === "machine";
-      // this.showProject = section === "project";
-      this.showUser = section === "user";
-      this.showView = section === "view";
-      this.DashboardView = section === "dashboard";
-      if (section === "dashboard") {
-        this.management = false; // Close management expansion item
-        this.settings = false; // Close settings expansion item
+
+    GoToEmployee() {
+
+      this.selectedSection="employee"
+      this.$router.push({ name: "employees" });
+    },
+    GoToMachines() {
+       this.selectedSection="machine"
+      this.$router.push({ name: "machines" });
+    },
+    GoToIT() {
+       this.selectedSection="it"
+      this.$router.push({ name: "it" });
+    },
+    GoToUsers() {
+      this.selectedSection="user"
+      this.$router.push({ name: "users" });
+    },
+    GoToUser() {
+       this.selectedSection="user"
+      const loginStore = JSON.parse(localStorage.getItem("LoginStore"));
+
+      if (loginStore && loginStore.user && loginStore.user._id) {
+        this.$router.push({
+          name: "profile",
+          params: { id: loginStore.user._id },
+        });
       } else {
-      }
-      if (this.selectedSection === section) {
-        // If the clicked section is already open, close it
-        this.selectedSection = null;
-      } else {
-        this.selectedSection = null;
-        this.selectedSection = section;
+        console.error("Invalid LoginStore data");
       }
     },
   },

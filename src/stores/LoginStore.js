@@ -17,8 +17,9 @@ export const useLoginStore = defineStore("LoginStore", {
 
         return res;
       } catch (error) {
+          console.error("Error:", error);
         return 0;
-        console.error("Error:", error);
+
         // Handle the error as needed
       }
     },

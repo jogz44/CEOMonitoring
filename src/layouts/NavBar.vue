@@ -20,7 +20,7 @@
           <img
             src="https://img.icons8.com/?size=50&id=fX3mLjrxmRp3&format=png"
           />
-          <span class="q-ml-xs" style="font-size: 15px">ENGINEERING</span>
+          <span class="q-ml-xs" style="font-size: 15px">ENGINEERINGS</span>
         </q-toolbar-title>
 
         <q-space />
