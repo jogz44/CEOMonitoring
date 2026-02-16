@@ -713,16 +713,16 @@ export default {
         },
         {
           name: "PropertyCustodian",
-          label: "PROPERTY CUSTODIAN",
+          label: "PROPERTY ASSIGNED",
           field: "PropertyCustodian",
           align: "left",
         },
-        {
-          name: "SerialNo",
-          align: "left",
-          label: "SERIAL NUMBER",
-          field: "SerialNo",
-        },
+        // {
+        //   name: "SerialNo",
+        //   align: "left",
+        //   label: "SERIAL NUMBER",
+        //   field: "SerialNo",
+        // },
         {
           name: "MaintenanceDate",
           align: "left",
@@ -730,13 +730,13 @@ export default {
           field: "row.MaintenanceDtls.MaintenanceDate",
           sortable: true,
         },
-        {
-          name: "MaintenanceType",
-          align: "left",
-          label: "MAINTENANCE TYPE",
-          field: "row.MaintenanceDtls.MaintenanceType",
-          sortable: true,
-        },
+        // {
+        //   name: "MaintenanceType",
+        //   align: "left",
+        //   label: "MAINTENANCE TYPE",
+        //   field: "row.MaintenanceDtls.MaintenanceType",
+        //   sortable: true,
+        // },
         {
           name: "actions",
           label: "ACTIONS",

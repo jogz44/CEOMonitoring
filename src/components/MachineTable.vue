@@ -13,7 +13,7 @@
       flat
       class="q-mb-sm"
       style="color: green"
-      @click="exportToExcel"
+      @click="exportToExcel()"
     ></q-btn>
 
     <q-table
@@ -161,26 +161,10 @@
           />
         </q-toolbar>
 
-        <!-- <q-card-section>
-          <div class="row">
-            <div class="col-11 text-h6">MACHINE DETAILS</div>
-            <div class="col-1">
-              <q-btn
-                flat
-                round
-                color="orange"
-                icon="close"
-                v-close-popup
-                @click="this.isEditMode = false"
-                v-show="exitBtn"
-              />
-            </div>
-          </div>
-        </q-card-section> -->
         <q-separator />
 
         <q-card-section style="max-height: 70vh" class="scroll">
-          <q-form>
+          <q-form @submit="SaveMachineDetails">
             <div class="row">
               <div class="col-12">
                 <q-select
@@ -193,17 +177,6 @@
                   class="q-pa-sm q-mb-sm"
                   :options="itemtype"
                 ></q-select>
-                <!-- <q-input
-                  ref="machinename"
-                  :rules="[this.required]"
-                  lazy-rules
-                  filled
-                  v-model="editedItem.MachineName"
-                  :disable="maintenancehistory === !isEditMode"
-                  label="Machine Name"
-                  dense
-                  class="q-pa-sm q-mb-sm"
-                /> -->
               </div>
               <div class="col-12">
                 <div class="q-gutter-md">
@@ -466,7 +439,6 @@
                 icon="add"
                 @click="
                   () => {
-
                     secondDialog = true;
                     MachineMaintenanceDetails = {};
                   }
@@ -628,9 +600,20 @@
         <q-separator />
 
         <q-card-section>
-          <div class="row">
-            <div class="col-6 col-xs-12 col-sm-6">
-              <q-input
+          <q-form>
+            <div class="row">
+              <div class="col-6 col-xs-12 col-sm-6">
+                <q-select
+                  filled
+                  label="Maintenance Type"
+                  v-model="MachineMaintenanceDetails.MaintenanceType"
+                  :options="maintenanceTypes"
+                  ref="maintenanceType"
+                  :rules="[this.required]"
+                  dense
+                  class="q-pa-sm q-mb-sm"
+                />
+                <!-- <q-input
                 ref="maintenanceType"
                 :rules="[this.required]"
                 lazy-rules
@@ -639,58 +622,59 @@
                 label="Maintenance Title"
                 dense
                 class="q-pa-sm q-mb-sm"
-              />
+              /> -->
+              </div>
+              <div class="col-6 col-xs-12 col-sm-6">
+                <q-input
+                  ref="maintenanceDate"
+                  :rules="[this.required]"
+                  lazy-rules
+                  filled
+                  v-model="MachineMaintenanceDetails.MaintenanceDate"
+                  label="Maintenance Date"
+                  dense
+                  class="q-pa-sm"
+                  type="date"
+                />
+              </div>
             </div>
-            <div class="col-6 col-xs-12 col-sm-6">
-              <q-input
-                ref="maintenanceDate"
-                :rules="[this.required]"
-                lazy-rules
-                filled
-                v-model="MachineMaintenanceDetails.MaintenanceDate"
-                label="Maintenance Date"
-                dense
-                class="q-pa-sm"
-                type="date"
-              />
+            <!-- image for update/edit -->
+            <div class="row">
+              <div class="col">
+                <q-file
+                  ref="maintenanceProof"
+                  :rules="[this.requiredProof]"
+                  lazy-rules
+                  filled
+                  v-model="MachineMaintenanceDetails.MaintenanceImageProof"
+                  use-chips
+                  dense
+                  class="q-pa-sm q-mb-sm"
+                  accept=".jpg, image/*"
+                  label="Attach Maintenance Proof"
+                >
+                  <template v-slot:prepend>
+                    <q-icon class="text-orange" name="attach_file" />
+                  </template>
+                </q-file>
+              </div>
             </div>
-          </div>
-          <!-- image for update/edit -->
-          <div class="row">
-            <div class="col">
-              <q-file
-                ref="maintenanceProof"
-                :rules="[this.requiredProof]"
-                lazy-rules
-                filled
-                v-model="MachineMaintenanceDetails.MaintenanceImageProof"
-                use-chips
-                dense
-                class="q-pa-sm q-mb-sm"
-                accept=".jpg, image/*"
-                label="Attach Maintenance Proof"
-              >
-                <template v-slot:prepend>
-                  <q-icon class="text-orange" name="attach_file" />
-                </template>
-              </q-file>
+            <div class="row">
+              <div class="col">
+                <q-input
+                  ref="maintenanceDesc"
+                  :rules="[this.required]"
+                  lazy-rules
+                  filled
+                  v-model="MachineMaintenanceDetails.MaintenanceDesc"
+                  label="Maintenance Description"
+                  dense
+                  class="q-pa-sm"
+                  type="textarea"
+                />
+              </div>
             </div>
-          </div>
-          <div class="row">
-            <div class="col">
-              <q-input
-                ref="maintenanceDesc"
-                :rules="[this.required]"
-                lazy-rules
-                filled
-                v-model="MachineMaintenanceDetails.MaintenanceDesc"
-                label="Maintenance Description"
-                dense
-                class="q-pa-sm"
-                type="textarea"
-              />
-            </div>
-          </div>
+          </q-form>
         </q-card-section>
 
         <q-card-actions align="right">
@@ -721,6 +705,14 @@ import * as XLSX from "xlsx";
 export default {
   data() {
     return {
+      maintenanceTypes: [
+        "Emergency Repair",
+        "Scheduled Servicing",
+        "Overhaul",
+        "Calibration",
+        "Lubrication",
+        "Parts Replacement",
+      ],
       requiredProof: true,
       secondDialog: false,
       MachineDetails: {},
@@ -783,6 +775,28 @@ export default {
       // console.log("Equipment_id:", Equipment_id);
       // console.log("NewMaintenanceHistory payload:", payload);
 
+      if (
+        !payload.MaintenanceType ||
+        !payload.MaintenanceDate ||
+        !payload.MaintenanceDesc
+      ) {
+        Notify.create({
+          type: "negative",
+          position: "center",
+          message: "Please fill in all required maintenance details.",
+        });
+        return;
+      }
+
+      if (!payload.MaintenanceImageProof) {
+        Notify.create({
+          type: "negative",
+          position: "center",
+          message: "Please attach a maintenance proof image.",
+        });
+        return;
+      }
+
       const formData = new FormData();
       const img = payload.MaintenanceImageProof;
       formData.append("MaintenanceImageProof", img);
@@ -795,6 +809,7 @@ export default {
       this.MachineMaintenanceList = this.Equipmentstore.equipmenthistory;
       this.secondDialog = false;
     },
+
     async ShowSelectedMaintenance(Equipment_id, maintenance_id) {
       console.log("Equipment_id:", Equipment_id);
       console.log("maintenance_id:", maintenance_id);
@@ -899,6 +914,10 @@ export default {
 
     ShowNewMachineDialog() {
       // console.log("ShowNewMachineDialog called");
+      this.MachineDetails = {};
+      this.MachineMaintenanceList = [];
+      this.hideSaveBtn = true;
+      this.isEditMode = false;
       this.dialogVisible = true;
     },
 
