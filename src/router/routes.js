@@ -36,6 +36,11 @@ const routes = [
         name: "profile",
         component: () => import("components/UserView.vue")
       },
+          {
+        path: "library",
+        name: "library",
+        component: () => import("components/LibraryModule.vue")
+      },
     ],
   },
   {
