@@ -138,7 +138,7 @@
                       }"
                       name="precision_manufacturing"
                       class="q-ml-md q-mr-md"
-                    />Machine Equipment</q-item-label
+                    />Machineries</q-item-label
                   >
                 </q-item-section>
               </q-item>
@@ -198,6 +198,27 @@
                       class="q-ml-md q-mr-md"
                     />
                     User List</q-item-label
+                  >
+                </q-item-section>
+              </q-item>
+               <q-item
+                v-if="store.user.isAdmin == true"
+                clickable
+                v-ripple
+                @click="GoToLibrary()"
+                :class="{ 'active-item': selectedSection === 'library' }"
+              >
+                <q-item-section class="q-ml-sm">
+                  <q-item-label>
+                    <q-icon
+                      :style="{
+                        color:
+                          selectedSection === 'library' ? '#006400' : 'inherit',
+                      }"
+                      name="book"
+                      class="q-ml-md q-mr-md"
+                    />
+                    Library</q-item-label
                   >
                 </q-item-section>
               </q-item>
@@ -330,6 +351,10 @@ export default defineComponent({
     GoToUsers() {
       this.selectedSection="user"
       this.$router.push({ name: "users" });
+    },
+    GoToLibrary() {
+      this.selectedSection="library"
+      this.$router.push({ name: "library" });
     },
     GoToUser() {
        this.selectedSection="user"

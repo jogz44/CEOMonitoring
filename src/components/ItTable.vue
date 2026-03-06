@@ -207,7 +207,7 @@
                   filled
                   v-model="editedItem.SerialNo"
                   :disable="maintenancehistory === !isEditMode"
-                  label="Serial Number"
+                  label="Property Number"
                   dense
                   class="q-pa-sm q-mb-sm"
                 />
@@ -697,7 +697,7 @@ export default {
         {
           name: "MachineName",
           required: true,
-          label: "MACHINE NAME",
+          label: "EQUIPMENT NAME",
           align: "left",
           field: (row) => row.MachineName,
           format: (val) => `${val}`,
@@ -706,7 +706,7 @@ export default {
 
         {
           name: "EquipmentType",
-          label: "EQUIPMENT TYPE",
+          label: "TYPE",
           field: "EquipmentType",
           align: "left",
           sortable: true,
@@ -717,12 +717,12 @@ export default {
           field: "PropertyCustodian",
           align: "left",
         },
-        // {
-        //   name: "SerialNo",
-        //   align: "left",
-        //   label: "SERIAL NUMBER",
-        //   field: "SerialNo",
-        // },
+        {
+          name: "SerialNo",
+          align: "left",
+          label: "PROPERTY #",
+          field: "SerialNo",
+        },
         {
           name: "MaintenanceDate",
           align: "left",

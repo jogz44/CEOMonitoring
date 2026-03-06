@@ -61,18 +61,18 @@
           <q-td key="PlateNo" style="font-size: 11px" align="left">
             {{ props.row.PlateNo }}
           </q-td>
-          <q-td key="SerialNo" style="font-size: 11px" align="left">
+          <!-- <q-td key="SerialNo" style="font-size: 11px" align="left">
             {{ props.row.SerialNo }}
-          </q-td>
+          </q-td> -->
           <q-td key="Operator" style="font-size: 11px" align="left">
             {{ props.row.Operator }}
           </q-td>
           <q-td key="DateAquired" style="font-size: 11px" align="left">
             {{ formatDate(props.row.DateAquired) }}
           </q-td>
-          <q-td key="Cost" style="font-size: 11px" align="left">
+          <!-- <q-td key="Cost" style="font-size: 11px" align="left">
             {{ formatCost(props.row.Cost) }}
-          </q-td>
+          </q-td> -->
           <q-td key="actions" style="font-size: 11px" align="left">
             <div class="actionsbtn">
               <q-btn
@@ -1101,12 +1101,12 @@ export default {
           label: "PLATE #",
           field: "PlateNo",
         },
-        {
-          name: "SerialNo",
-          align: "left",
-          label: "SERIAL #",
-          field: "SerialNo",
-        },
+        // {
+        //   name: "SerialNo",
+        //   align: "left",
+        //   label: "SERIAL #",
+        //   field: "SerialNo",
+        // },
         {
           name: "Operator",
           label: "OPERATOR",
@@ -1125,21 +1125,21 @@ export default {
             return d.toLocaleDateString(); // valid -> formatted (change as needed)
           },
         },
-        {
-          name: "Cost",
-          label: "COST",
-          field: "Cost",
-          align: "left",
-          format: (val) => {
-            const num = parseFloat(val); // safely convert string -> number
-            if (isNaN(num)) return "₱0.00"; // handle invalid or null values
-            return new Intl.NumberFormat("en-PH", {
-              style: "currency",
-              currency: "PHP",
-              minimumFractionDigits: 2,
-            }).format(num);
-          },
-        },
+        // {
+        //   name: "Cost",
+        //   label: "COST",
+        //   field: "Cost",
+        //   align: "left",
+        //   format: (val) => {
+        //     const num = parseFloat(val); // safely convert string -> number
+        //     if (isNaN(num)) return "₱0.00"; // handle invalid or null values
+        //     return new Intl.NumberFormat("en-PH", {
+        //       style: "currency",
+        //       currency: "PHP",
+        //       minimumFractionDigits: 2,
+        //     }).format(num);
+        //   },
+        // },
         {
           name: "actions",
           label: "ACTIONS",

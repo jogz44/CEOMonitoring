@@ -445,7 +445,7 @@ export default {
         },
       ],
 
-      options: ["Employee", "Machine Equipment", "IT Equipment", "Project"],
+      options: ["Employee", "Machine Equipment", "IT Equipment", "Project","Library"],
 
       // defaultCreds: {
       //   Module: "",

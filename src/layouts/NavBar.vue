@@ -89,7 +89,7 @@
                   <q-icon
                     name="precision_manufacturing"
                     class="q-ml-md q-mr-md"
-                  />Machine Equipment</q-item-label
+                  />Machineries</q-item-label
                 >
               </q-item-section>
             </q-item>
@@ -116,6 +116,14 @@
                 <q-item-label>
                   <q-icon name="people" class="q-ml-md q-mr-md" />
                   User</q-item-label
+                >
+              </q-item-section>
+            </q-item>
+            <q-item clickable v-ripple @click="toggleSection('library')">
+              <q-item-section class="q-ml-sm">
+                <q-item-label>
+                  <q-icon name="book" class="q-ml-md q-mr-md" />
+                  Libraries</q-item-label
                 >
               </q-item-section>
             </q-item>
@@ -146,6 +154,9 @@
     <q-page-container v-if="showUser">
       <UserTable />
     </q-page-container>
+    <q-page-container v-if="showLibrary">
+      <libraries />
+    </q-page-container>
   </q-layout>
 </template>
 
@@ -159,6 +170,7 @@ import ItTable from "components/ItTable.vue";
 import ProjectTable from "components/ProjectTable.vue";
 import UserTable from "components/UserTable.vue";
 import DashboardView from "src/components/DashboardView.vue";
+import libraries from "src/components/LibraryModule.vue";
 
 export default {
   name: "NavBar",
@@ -205,6 +217,7 @@ export default {
       showUser: false,
       showIt: false,
       DashboardView: false,
+      showLibrary: false,
     };
   },
   // created(){
@@ -232,6 +245,7 @@ export default {
       // this.showProject = section === "project";
       this.showUser = section === "user";
       this.DashboardView = section === "dashboard";
+      this.showLibrary = section === "library";
     },
   },
 };
