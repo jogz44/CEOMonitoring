@@ -3,6 +3,16 @@
     <q-card-section>
       <div>
         <q-table :columns="cols" :rows="row" row-key="id" :filter="findData">
+         <template #body="props">
+           <q-tr :v-bind="props">
+             <q-td key="_id">
+                {{ props.row._id }}
+             </q-td>
+              <q-td key="Description">
+                  {{ props.row.Description }}
+              </q-td>
+           </q-tr>
+         </template>
         </q-table>
       </div>
     </q-card-section>
@@ -11,7 +21,7 @@
 
     <q-card-section>
       <div class="q-pa-md">
-        <component :is="module + 'Table'"></component>
+
       </div>
     </q-card-section>
   </q-card>
@@ -25,16 +35,24 @@ export default {
       type:String,
       required:true,
     },
+    DataHolder:{
+      type:Array,
+      required:true,
+    }
   },
   setup() {
     // Your setup code here
   return {
     cols: [
       {
-        name: "name",
+        name: "_id",
         align: "left",
-        label: "NAME",
-        field: "name",
+        label: "#",
+      },
+      {
+        name: "Description",
+        align: "left",
+        label: "Description",
       }
     ],
     row: [],
@@ -55,6 +73,8 @@ export default {
   },
   mounted() {
     // Lifecycle hook
+    this.row = []
+    this.row = this.DataHolder;
   },
 };
 </script>
