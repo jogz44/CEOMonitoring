@@ -13,7 +13,7 @@ export const useEmployeeStatusStore = defineStore("employeeStatusStore", {
     async fetchStatusList() {
       try {
         const response = await api.get("/api/library/employee/status/list");
-        if (response.status === 200) {
+        if (response) {
           this.statusList = response.data;
           console.log("status List = ", this.statusList);
         }
@@ -34,7 +34,7 @@ export const useEmployeeStatusStore = defineStore("employeeStatusStore", {
         );
 
         console.log("status List = ", this.statusList);
-        if (response.status === 201) {
+        if (response) {
           this.fetchStatusList();
           Notify.create({
             type: "positive",

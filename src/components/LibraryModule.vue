@@ -22,8 +22,8 @@
           <q-tab-panel name="employee">
             <!-- Employee content goes here -->
             <q-card>
-              <q-card-section  >
-                <div class="row" >
+              <q-card-section>
+                <div class="row">
                   <div class="col-6 q-mt-md">
                     <q-btn
                       class="q-mt-md"
@@ -75,12 +75,12 @@
                 </div>
                 <div class="row">
                   <div class="col-6 q-mt-md">
-
                     <q-btn
                       class="q-mt-md"
                       align="right"
                       color="green"
                       label="New Machine Type"
+                      @click="TypeListClicked"
                     >
                       <q-tooltip class="text-subtitle2">
                         Show Type list in the library
@@ -97,47 +97,16 @@
               <q-card-section>
                 <div class="row">
                   <div class="col-6 q-mt-md">
-                    <q-input filled label="Designation Types">
-                      <template v-slot:append>
-                        <q-btn flat icon="library_books" class="cursor-pointer">
-                          <q-tooltip class="text-subtitle2">
-                            Show position list in the library
-                          </q-tooltip>
-                        </q-btn>
-                      </template>
-                    </q-input>
                     <q-btn
                       class="q-mt-md"
                       align="right"
                       color="green"
-                      label="Add Position Type"
+                      label="New Equipment Type"
+                      @click="ITTypeListClicked"
                     >
-                      <!-- <q-tooltip class="text-subtitle2">
-                        Add new position type to the library
-                      </q-tooltip> -->
-                    </q-btn>
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="col-6 q-mt-md">
-                    <q-input filled label="Status Types">
-                      <template v-slot:append>
-                        <q-btn flat icon="library_books" class="cursor-pointer">
-                          <q-tooltip class="text-subtitle2">
-                            Show status list in the library
-                          </q-tooltip>
-                        </q-btn>
-                      </template>
-                    </q-input>
-                    <q-btn
-                      class="q-mt-md"
-                      align="right"
-                      color="green"
-                      label="Add Status Type"
-                    >
-                      <!-- <q-tooltip class="text-subtitle2">
-                        Show status list in the library
-                      </q-tooltip> -->
+                      <q-tooltip class="text-subtitle2">
+                        Show IT Equipment Type list in the library
+                      </q-tooltip>
                     </q-btn>
                   </div>
                 </div>
@@ -234,7 +203,7 @@
   <!-- END OF DESIGNATION TYPES -->
 
   <!-- STATUS Types -->
-   <q-dialog v-model="showEmployeeStatusDialog" persistent>
+  <q-dialog v-model="showEmployeeStatusDialog" persistent>
     <q-card style="max-width: 1280px; width: 90vw; max-height: 90vh" flat>
       <q-card-section align="center" class="q-pa-sm q-pa-md-md">
         <q-input
@@ -317,8 +286,8 @@
   </q-dialog>
   <!-- END OF STATUS TYPES -->
 
-     <!-- MACHINE CATEGORY Types -->
-   <q-dialog v-model="showMachineCategoryDialog" persistent>
+  <!-- MACHINE CATEGORY -->
+  <q-dialog v-model="showMachineCategoryDialog" persistent>
     <q-card style="max-width: 1280px; width: 90vw; max-height: 90vh" flat>
       <q-card-section align="center" class="q-pa-sm q-pa-md-md">
         <q-input
@@ -331,7 +300,7 @@
             <q-btn
               flat
               icon="save"
-              @click="insert_status(status)"
+              @click="insert_MachinceCategory(machineCategory)"
               class="cursor-pointer text-green-8"
             >
               <q-tooltip class="text-subtitle2">
@@ -382,7 +351,7 @@
                   flat
                   icon="delete"
                   color="red"
-                  @click="remove_status(props.row._id)"
+                  @click="remove_MachineCategory(props.row._id)"
                 />
               </q-td>
             </q-tr>
@@ -400,12 +369,182 @@
     </q-card>
   </q-dialog>
   <!-- END OF category TYPES -->
+
+  <!-- MACHINE Type -->
+  <q-dialog v-model="showMachineTypeDialog" persistent>
+    <q-card style="max-width: 1280px; width: 90vw; max-height: 90vh" flat>
+      <q-card-section align="center" class="q-pa-sm q-pa-md-md">
+        <q-input
+          filled
+          v-model="machineType"
+          label="Machine Category"
+          class="text-caption q-pb-md"
+        >
+          <template v-slot:append>
+            <q-btn
+              flat
+              icon="save"
+              @click="insert_MachinceType(machineType)"
+              class="cursor-pointer text-green-8"
+            >
+              <q-tooltip class="text-subtitle2">
+                save new Category type to the library
+              </q-tooltip>
+            </q-btn>
+          </template>
+        </q-input>
+        <q-table
+          :filter="machineType"
+          no-data-label="No Data Available as of the moment"
+          style="height: 60vh; width: 100%"
+          :rows-per-page-options="[0]"
+          virtual-scroll
+          class="my-sticky-header-table q-pa-md full-width"
+          table-header-class="text-white"
+          :rows="TypeList"
+          :columns="[
+            {
+              name: 'id',
+              label: 'No.',
+              align: 'left',
+            },
+            {
+              name: 'MachineType',
+              label: 'Machine Type Description',
+              field: 'MachineType',
+              align: 'center',
+            },
+            {
+              name: 'actions',
+              label: 'Actions',
+              field: 'actions',
+              align: 'center',
+            },
+          ]"
+        >
+          <template #body="props">
+            <q-tr :props="props" class="text-caption text-weight-regular">
+              <q-td key="id">
+                {{ props.rowIndex + 1 }}
+              </q-td>
+              <q-td key="category">
+                {{ props.row.MachineType }}
+              </q-td>
+              <q-td key="actions" align="center">
+                <q-btn
+                  flat
+                  icon="delete"
+                  color="red"
+                  @click="remove_MachineType(props.row._id)"
+                />
+              </q-td>
+            </q-tr>
+          </template>
+        </q-table>
+      </q-card-section>
+      <q-card-actions align="right">
+        <q-btn
+          class="q-mr-md"
+          label="Close"
+          color="red"
+          @click="showMachineTypeDialog = false"
+        />
+      </q-card-actions>
+    </q-card>
+  </q-dialog>
+  <!-- END OF TYPES -->
+
+  <!-- IT EQUIPMENT Type -->
+  <q-dialog v-model="showITTypeDialog" persistent>
+    <q-card style="max-width: 1280px; width: 90vw; max-height: 90vh" flat>
+      <q-card-section align="center" class="q-pa-sm q-pa-md-md">
+        <q-input
+          filled
+          v-model="ITequipmentType"
+          label="Machine Category"
+          class="text-caption q-pb-md"
+        >
+          <template v-slot:append>
+            <q-btn
+              flat
+              icon="save"
+              @click="insert_ITType(ITequipmentType)"
+              class="cursor-pointer text-green-8"
+            >
+              <q-tooltip class="text-subtitle2">
+                save new Category type to the library
+              </q-tooltip>
+            </q-btn>
+          </template>
+        </q-input>
+        <q-table
+          :filter="ITequipmentType"
+          no-data-label="No Data Available as of the moment"
+          style="height: 60vh; width: 100%"
+          :rows-per-page-options="[0]"
+          virtual-scroll
+          class="my-sticky-header-table q-pa-md full-width"
+          table-header-class="text-white"
+          :rows="ITequipmentTypeList"
+          :columns="[
+            {
+              name: 'id',
+              label: 'No.',
+              align: 'left',
+            },
+            {
+              name: 'equipment',
+              label: 'Equipment Type',
+              field: 'equipment',
+              align: 'center',
+            },
+            {
+              name: 'actions',
+              label: 'Actions',
+              field: 'actions',
+              align: 'center',
+            },
+          ]"
+        >
+          <template #body="props">
+            <q-tr :props="props" class="text-caption text-weight-regular">
+              <q-td key="id">
+                {{ props.rowIndex + 1 }}
+              </q-td>
+              <q-td key="category">
+                {{ props.row.equipment }}
+              </q-td>
+              <q-td key="actions" align="center">
+                <q-btn
+                  flat
+                  icon="delete"
+                  color="red"
+                  @click="remove_ITType(props.row._id)"
+                />
+              </q-td>
+            </q-tr>
+          </template>
+        </q-table>
+      </q-card-section>
+      <q-card-actions align="right">
+        <q-btn
+          class="q-mr-md"
+          label="Close"
+          color="red"
+          @click="showITTypeDialog = false"
+        />
+      </q-card-actions>
+    </q-card>
+  </q-dialog>
+  <!-- END OF IT EQUIPMENT TYPES -->
 </template>
 
 <script>
 import { useDesignationStore } from "src/stores/designationStore";
 import { useEmployeeStatusStore } from "src/stores/EmployeeStatusStore";
 import { useMachineCategoryStore } from "src/stores/MachineryCategoryStore";
+import { useMachineTypeStore } from "src/stores/MachineTypeStore";
+import { useITTypeStore } from "src/stores/ITEquipmentTypeStore";
 import { Notify } from "quasar";
 
 export default {
@@ -415,11 +554,15 @@ export default {
     const designationStore = useDesignationStore();
     const employeeStatusStore = useEmployeeStatusStore();
     const machineCategoryStore = useMachineCategoryStore();
+    const machineTypeStore = useMachineTypeStore();
+    const equipmentTypeStore = useITTypeStore();
     // Add setup logic here
     return {
       designationStore,
       employeeStatusStore,
-      machineCategoryStore
+      machineCategoryStore,
+      machineTypeStore,
+      equipmentTypeStore,
     };
   },
   data() {
@@ -429,28 +572,109 @@ export default {
       showEmployeeDesignationDialog: false,
       showEmployeeStatusDialog: false,
       showMachineCategoryDialog: false,
-      showITDialog: false,
+      showMachineTypeDialog: false,
+      showITTypeDialog: false,
 
       designation: null,
       status: null,
       machineCategory: null,
-      machineType: {},
-      ITequipmentType: {},
-
-      designationList: [],
-      statusList: [],
-      machineCategoryList: [],
-      machineTypeList: [],
-      ITequipmentTypeList: [],
-
+      machineType: null,
+      ITequipmentType: null,
       tab: "employee", // Default active tab
     };
   },
 
   methods: {
+    async insert_ITType(payload) {
+      try {
+        if (!payload?.trim()) {
+          Notify.create({
+            type: "warning",
+            message: "Please enter a Equipment type .",
+            position: "center",
+            timeout: 1000,
+          });
+          return;
+        }
+        console.log("Saving new Equipment type with payload:", {
+          equipment: payload,
+        });
+        await this.equipmentTypeStore.NewITType({ equipment: payload });
+        this.ITequipmentType = null; // Clear the input after adding
+      } catch (error) {
+        console.error("Error adding new machine type:", error.message);
+      }
+    },
 
-    async insert_status(payload){
-          try {
+    async remove_ITType(id) {
+      try {
+        console.log("Deleting IT type with id:", id);
+        await this.equipmentTypeStore.DeleteITType(id);
+      } catch (error) {
+        console.error("Error deleting machine type:", error.message);
+      }
+    },
+
+    async insert_MachinceType(payload) {
+      try {
+        if (!payload?.trim()) {
+          Notify.create({
+            type: "warning",
+            message: "Please enter a machine type Name.",
+            position: "center",
+          });
+          return;
+        }
+        console.log("Saving new machine type with payload:", {
+          MachineType: payload,
+        });
+        await this.machineTypeStore.NewType({ MachineType: payload });
+        this.machineType = null; // Clear the input after adding
+      } catch (error) {
+        console.error("Error adding new machine type:", error.message);
+      }
+    },
+
+    async insert_MachinceCategory(payload) {
+      try {
+        if (!payload?.trim()) {
+          Notify.create({
+            type: "warning",
+            message: "Please enter a Category Name.",
+            position: "center",
+          });
+          return;
+        }
+        console.log("Saving new category with payload:", {
+          category: payload,
+        });
+        await this.machineCategoryStore.NewCategory({ category: payload });
+        this.machineCategory = null; // Clear the input after adding
+      } catch (error) {
+        console.error("Error adding new category:", error.message);
+      }
+    },
+
+    async remove_MachineType(id) {
+      try {
+        console.log("Deleting machine type with id:", id);
+        await this.machineTypeStore.DeleteType(id);
+      } catch (error) {
+        console.error("Error deleting machine type:", error.message);
+      }
+    },
+
+    async remove_MachineCategory(id) {
+      try {
+        console.log("Deleting category with id:", id);
+        await this.machineCategoryStore.DeleteCategory(id);
+      } catch (error) {
+        console.error("Error deleting category:", error.message);
+      }
+    },
+
+    async insert_status(payload) {
+      try {
         if (!payload?.trim()) {
           Notify.create({
             type: "warning",
@@ -469,7 +693,7 @@ export default {
       }
     },
 
-     async remove_status(id) {
+    async remove_status(id) {
       try {
         console.log("Deleting status with id:", id);
         await this.employeeStatusStore.DeleteStatus(id);
@@ -511,41 +735,65 @@ export default {
       this.showEmployeeDesignationDialog = true;
     },
 
-     StatusClicked() {
+    StatusClicked() {
       this.getStatusList();
       this.showEmployeeStatusDialog = true;
     },
 
-    CategoryClicked(){
+    CategoryClicked() {
       this.getMachineCategoryList();
       this.showMachineCategoryDialog = true;
     },
 
+    TypeListClicked() {
+      this.getMachineTypeList();
+      this.showMachineTypeDialog = true;
+    },
 
-    // async getMachineCategoryList(){
-    //    try {
-    //     await this.machineCategoryStore.MachineCategoryList();
-    //   } catch (error) {
-    //     console.error("Error fetching Machine Category:", error);
-    //   }
+    ITTypeListClicked() {
+      this.getITTypeList();
+      this.showITTypeDialog = true;
+    },
 
-    // },
+    async getITTypeList() {
+      try {
+        await this.equipmentTypeStore.fetchITTypeList();
+      } catch (error) {
+        console.error("Error fetching Machine Category:", error);
+      }
+    },
 
-    // async getDesignationList() {
-    //   try {
-    //     await this.designationStore.fetchDesignation();
-    //   } catch (error) {
-    //     console.error("Error fetching designations:", error);
-    //   }
-    // },
+    async getMachineTypeList() {
+      try {
+        await this.machineTypeStore.fetchTypeList();
+      } catch (error) {
+        console.error("Error fetching Machine Category:", error);
+      }
+    },
 
-    //  async getStatusList() {
-    //   try {
-    //     await this.employeeStatusStore.fetchStatusList();
-    //   } catch (error) {
-    //     console.error("Error fetching statuses:", error);
-    //   }
-    // },
+    async getMachineCategoryList() {
+      try {
+        await this.machineCategoryStore.fetchCategoryList();
+      } catch (error) {
+        console.error("Error fetching Machine Category:", error);
+      }
+    },
+
+    async getDesignationList() {
+      try {
+        await this.designationStore.fetchDesignation();
+      } catch (error) {
+        console.error("Error fetching designations:", error);
+      }
+    },
+
+    async getStatusList() {
+      try {
+        await this.employeeStatusStore.fetchStatusList();
+      } catch (error) {
+        console.error("Error fetching statuses:", error);
+      }
+    },
   },
 
   computed: {
@@ -555,13 +803,19 @@ export default {
       return this.designationStore.designationList;
     },
 
-    StatusList(){
+    StatusList() {
       return this.employeeStatusStore.statusList;
     },
 
-    CategoryList(){
+    CategoryList() {
       return this.machineCategoryStore.MachineCategoryList;
-    }
+    },
+    TypeList() {
+      return this.machineTypeStore.MachineTypeList;
+    },
+    ITequipmentTypeList() {
+      return this.equipmentTypeStore.ITTypeList;
+    },
   },
 };
 </script>

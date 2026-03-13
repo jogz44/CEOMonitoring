@@ -175,7 +175,9 @@
                   :disable="maintenancehistory === !isEditMode"
                   label="Equipment Category"
                   class="q-pa-sm q-mb-sm"
-                  :options="itemtype"
+                  :options="categoryList"
+                  option-value="category"
+                  option-label="category"
                 ></q-select>
               </div>
               <div class="col-12">
@@ -189,8 +191,10 @@
                     :disable="maintenancehistory === !isEditMode"
                     dense
                     class="q-pa-sm q-mb-sm"
-                    :options="options"
+                    :options="typeList"
                     label="Equipment Type"
+                    option-label="MachineType"
+                    option-value="MachineType"
                   />
                 </div>
               </div>
@@ -699,6 +703,8 @@
 <script>
 import { Notify } from "quasar";
 import { useEquipmentInfo } from "../stores/EquipmentsStore";
+import { useMachineCategoryStore } from "src/stores/MachineryCategoryStore";
+import { useMachineTypeStore } from "src/stores/MachineTypeStore";
 import { useLoginStore } from "src/stores/LoginStore";
 import * as XLSX from "xlsx";
 
@@ -739,7 +745,14 @@ export default {
       itemtype: ["Machinery", "Vehicle"],
     };
   },
-  computed: {},
+  computed: {
+    categoryList(){
+      return this.machineCategoryStore.MachineCategoryList;
+    },
+    typeList(){
+      return this.machineTypeStore.MachineTypeList;
+    }
+  },
 
   methods: {
     unformatCost() {
@@ -1022,6 +1035,11 @@ export default {
   setup() {
     const Equipmentstore = useEquipmentInfo();
     const loginstore = useLoginStore();
+    const machineCategoryStore = useMachineCategoryStore();
+    const machineTypeStore = useMachineTypeStore();
+
+    machineCategoryStore.fetchCategoryList();
+    machineTypeStore.fetchTypeList();
 
     //REMOVE FUNCTION
     function remove(module) {
@@ -1064,6 +1082,8 @@ export default {
     }
 
     return {
+      machineCategoryStore,
+      machineTypeStore,
       Equipmentstore,
       loginstore,
       remove,

@@ -177,7 +177,11 @@
                     dense
                     use-input
                     class="q-pa-sm q-mb-sm"
-                    :options="options"
+                    :options="itTypeList"
+                    option-value="equipment"
+                    option-label="equipment"
+                    emit-value
+                    map-options
                     label="Equipment Type"
                   />
                 </div>
@@ -616,6 +620,7 @@
 import { ref } from "vue";
 import { useITEquipmentInfo } from "../stores/ItStore";
 import { useLoginStore } from "src/stores/LoginStore";
+import { useITTypeStore } from "src/stores/ITEquipmentTypeStore";
 import * as XLSX from "xlsx";
 
 export default {
@@ -777,6 +782,9 @@ export default {
     };
   },
   computed: {
+    itTypeList(){
+      return this.ITtypeStore.ITTypeList;
+    },
     maintenancedetailsOptions() {
       if (this.editedItem.MaintenanceDtls) {
         // console.log("maintenancedetails=",Object.values(this.editItem.MaintenanceDtls))
@@ -1128,6 +1136,8 @@ export default {
     const store = useITEquipmentInfo();
     store.fetchITEquipment();
     const loginstore = useLoginStore();
+    const ITtypeStore = useITTypeStore();
+    ITtypeStore.fetchITTypeList();
 
     //REMOVE FUNCTION
     function remove(module) {
@@ -1175,6 +1185,8 @@ export default {
       create,
       store,
       model: ref(null),
+      ITtypeStore,
+
     };
   },
 };

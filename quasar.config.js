@@ -31,7 +31,7 @@ export default configure(() => {
 
     devServer: {
       open: true,
-      host: '192.168.8.11',
+      host: '192.168.50.98',
       port: 9001,
       https: false,
     },

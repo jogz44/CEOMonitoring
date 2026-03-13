@@ -3,40 +3,40 @@ import axios from "axios";
 import { api } from "src/boot/axios";
 import { Notify } from "quasar";
 
-export const useMachineCategoryStore = defineStore("machineCategoryStore", {
+export const useMachineTypeStore = defineStore("machineTypeStore", {
   state: () => ({
-    MachineCategoryDescription: "",
-    MachineCategoryList: [],
+    MachineTypeDescription: "",
+    MachineTypeList: [],
   }),
 
   actions: {
-    async fetchCategoryList() {
+    async fetchTypeList() {
       try {
-        const response = await api.get("/api/library/machine/category/list");
+        const response = await api.get("/api/library/machine/type/list");
         if (response) {
-          this.MachineCategoryList = response.data;
+          this.MachineTypeList = response.data;
         }
       } catch (error) {
         console.log(`Error fetching tasks: ${error}`);
         Notify.create({
           type: "negative",
-          message: "Failed to add Category!" + error.message.error,
+          message: "Failed to add Machine Type!" + error.message.error,
         });
       }
     },
 
-    async NewCategory(payload) {
+    async NewType(payload) {
       try {
         const response = await api.post(
-          "/api/library/machine/category/new",
+          "/api/library/machine/type/new",
           payload,
         );
 
         if (response) {
-          this.fetchCategoryList();
+          this.fetchTypeList();
           Notify.create({
             type: "positive",
-            message: "Category added successfully!",
+            message: "Machine Type added successfully!",
             position: "center",
           });
         }
@@ -46,31 +46,31 @@ export const useMachineCategoryStore = defineStore("machineCategoryStore", {
         );
         Notify.create({
           type: "negative",
-          message: "Failed to add Category!" + error.message.error,
+          message: "Failed to add Machine Type!" + error.message.error,
           position: "center",
         });
       }
     },
 
-    async DeleteCategory(payload) {
-      console.log("Payload for removing Category:", payload);
+    async DeleteType(payload) {
+      console.log("Payload for removing Machine Type:", payload);
       try {
         const response = await api.delete(
-          "/api/library/machine/category/remove/" + payload,
+          "/api/library/machine/type/remove/" + payload,
         );
         if (response.status == 200) {
-          this.fetchCategoryList();
+          this.fetchTypeList();
           Notify.create({
             type: "positive",
-            message: "Category removed successfully!",
+            message: "Machine Type removed successfully!",
             position: "center",
           });
         }
       } catch (error) {
-        console.log(`Error Deleting Category: ${error}`);
+        console.log(`Error Deleting Machine Type: ${error}`);
         Notify.create({
           type: "negative",
-          message: "Failed to remove Category! " + error.message,
+          message: "Failed to remove Machine Type! " + error.message,
           position: "center",
         });
       }
