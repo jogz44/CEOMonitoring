@@ -156,7 +156,7 @@
             icon="close"
             v-close-popup
             color="orange"
-            @click="this.isEditMode = false"
+            @click="isEditMode = false"
             v-show="exitBtn"
           />
         </q-toolbar>
@@ -166,6 +166,28 @@
         <q-card-section style="max-height: 70vh" class="scroll">
           <q-form @submit="SaveMachineDetails">
             <div class="row">
+              <div
+                class="col-12"
+                v-if="
+                  MachineDetails.EquipmentImage &&
+                  MachineDetails.EquipmentImage.length
+                "
+              >
+                <div class="row q-gutter-sm flex-center">
+                  <div
+                    v-for="(img, index) in MachineDetails.EquipmentImage"
+                    :key="index"
+                    class="col-auto"
+                  >
+                    <q-img
+                      :src="img"
+                      style="width: 120px; height: 120px"
+                      fit="cover"
+                      class="rounded-borders"
+                    />
+                  </div>
+                </div>
+              </div>
               <div class="col-12">
                 <q-select
                   ref="equipmentCategory"
@@ -178,6 +200,8 @@
                   :options="categoryList"
                   option-value="category"
                   option-label="category"
+                  emit-value
+                  map-options
                 ></q-select>
               </div>
               <div class="col-12">
@@ -195,6 +219,8 @@
                     label="Equipment Type"
                     option-label="MachineType"
                     option-value="MachineType"
+                    emit-value
+                    map-options
                   />
                 </div>
               </div>
@@ -219,7 +245,6 @@
                 <q-input
                   v-model="MachineDetails.BodyNo"
                   ref="bodyno"
-                  :rules="[this.required]"
                   lazy-rules
                   filled
                   :disable="maintenancehistory === !isEditMode"
@@ -236,7 +261,7 @@
                   lazy-rules
                   filled
                   :disable="maintenancehistory === !isEditMode"
-                  label="Serial No."
+                  label="Property No."
                   dense
                   class="q-pa-sm q-mb-sm"
                 />
@@ -244,7 +269,6 @@
               <div class="col">
                 <q-input
                   ref="plateno"
-                  :rules="[this.required]"
                   lazy-rules
                   filled
                   v-model="MachineDetails.PlateNo"
@@ -336,11 +360,14 @@
               <div class="col-12">
                 <q-file
                   filled
-                  ref="MachineImg"
-                  v-model="file_input"
+                  ref="itImg"
+                  v-model="preview_img"
                   @update:model-value="onImageSelected"
                   :disable="maintenancehistory === !isEditMode"
-                  label="Attach Equipment Image"
+                  label="Attach Machinery Equipment Image"
+                  multiple
+                  use-chips
+                  accept=".jpg, image/*"
                   dense
                   class="q-pa-sm"
                 >
@@ -348,16 +375,38 @@
                     <q-icon class="text-orange" name="attach_file" />
                   </template>
                 </q-file>
+
+                <div
+                  v-if="equipmentPreviewUrls.length"
+                  class="row q-mt-sm q-px-sm q-gutter-sm"
+                >
+                  <div
+                    v-for="(url, index) in equipmentPreviewUrls"
+                    :key="index"
+                    class="col-auto"
+                  >
+                    <q-img
+                      :src="url"
+                      style="width: 120px; height: 120px"
+                      fit="cover"
+                      class="rounded-borders"
+                    >
+                      <div class="absolute-top-right q-pa-xs">
+                        <q-btn
+                          round
+                          dense
+                          flat
+                          color="white"
+                          icon="close"
+                          size="xs"
+                          @click="removeEquipmentImage(index)"
+                        />
+                      </div>
+                    </q-img>
+                  </div>
+                </div>
               </div>
-              <div class="col-12">
-                <q-img
-                  v-if="MachineDetails.EquipmentImage"
-                  :src="displayImage()"
-                  style="max-width: 300px; max-height: 300px"
-                  class="q-ma-sm q-mb-sm"
-                  fit="scale-down"
-                />
-              </div>
+              <div class="col-12"></div>
             </div>
           </q-form>
         </q-card-section>
@@ -647,7 +696,6 @@
               <div class="col">
                 <q-file
                   ref="maintenanceProof"
-                  :rules="[this.requiredProof]"
                   lazy-rules
                   filled
                   v-model="MachineMaintenanceDetails.MaintenanceImageProof"
@@ -711,6 +759,7 @@ import * as XLSX from "xlsx";
 export default {
   data() {
     return {
+      equipmentPreviewUrls: [],
       maintenanceTypes: [
         "Emergency Repair",
         "Scheduled Servicing",
@@ -746,12 +795,12 @@ export default {
     };
   },
   computed: {
-    categoryList(){
+    categoryList() {
       return this.machineCategoryStore.MachineCategoryList;
     },
-    typeList(){
+    typeList() {
       return this.machineTypeStore.MachineTypeList;
-    }
+    },
   },
 
   methods: {
@@ -948,19 +997,34 @@ export default {
       }
     },
 
-    onImageSelected(file) {
-      // when user uploads a new file
-      if (file && file instanceof File) {
-        this.preview_img = URL.createObjectURL(file);
-        //console.log("preview_img:", this.preview_img);
-        // create a preview URL
-        this.MachineDetails.EquipmentImage = file;
-        // console.log("file selected:",  this.editedItem.EquipmentImage);
-      } else if (!file) {
-        this.preview_img = "";
-        // if cleared, remove image
-        this.MachineDetails.EquipmentImage = "";
+    onImageSelected(files) {
+      // if (file && file instanceof File) {
+      //   this.preview_img = URL.createObjectURL(file);
+      //   this.MachineDetails.EquipmentImage = file;
+      // } else if (!file) {
+      //   this.preview_img = "";
+      //   this.MachineDetails.EquipmentImage = "";
+      // }
+
+      this.equipmentPreviewUrls.forEach((url) => URL.revokeObjectURL(url));
+
+      if (!files || files.length === 0) {
+        this.equipmentPreviewUrls = [];
+        return;
       }
+
+      this.equipmentPreviewUrls = Array.from(files).map((file) =>
+        URL.createObjectURL(file),
+      );
+    },
+
+    removeEquipmentImage(index) {
+      URL.revokeObjectURL(this.equipmentPreviewUrls[index]);
+      this.equipmentPreviewUrls.splice(index, 1);
+
+      const updatedFiles = Array.from(this.preview_img);
+      updatedFiles.splice(index, 1);
+      this.preview_img = updatedFiles.length ? updatedFiles : null;
     },
 
     exportToExcel() {
@@ -993,38 +1057,77 @@ export default {
     },
 
     async SaveMachineDetails() {
-      // Implement the logic to save machine details
-      // This could involve calling an API or updating a store
-    },
+      try {
+        const frmData = new FormData();
+        const d = this.MachineDetails;
 
-    async SaveMachineMaintenanceDetails() {
-      // Implement the logic to save machine maintenance details
-      // This could involve calling an API or updating a store
+        // Append only primitive/string fields explicitly
+        frmData.append("EquipmentCategory", d.EquipmentCategory ?? "");
+        frmData.append("EquipmentType", d.EquipmentType ?? "");
+        frmData.append("MachineName", d.MachineName ?? "");
+        frmData.append("BodyNo", d.BodyNo ?? "");
+        frmData.append("SerialNo", d.SerialNo ?? "");
+        frmData.append("PlateNo", d.PlateNo ?? "");
+        frmData.append("PropertyCustodian", d.PropertyCustodian ?? "");
+        frmData.append("Operator", d.Operator ?? "");
+        frmData.append("DateAquired", d.DateAquired ?? "");
+        frmData.append("Cost", d.Cost ?? "");
+        frmData.append("Remarks", d.Remarks ?? "");
+        frmData.append("IsDeleted", false);
+
+        // Append each image file
+        if (this.preview_img && this.preview_img.length) {
+          Array.from(this.preview_img).forEach((file) => {
+            frmData.append("EquipmentImage", file);
+          });
+        }
+
+        await this.Equipmentstore.AddEquipment(frmData);
+        await this.getMachineList();
+
+        // Reset
+        this.MachineDetails = {};
+        this.preview_img = null;
+        this.equipmentPreviewUrls.forEach((url) => URL.revokeObjectURL(url));
+        this.equipmentPreviewUrls = [];
+        this.dialogVisible = false;
+      } catch (error) {
+        console.log(error.message);
+      }
     },
 
     async UpdateMachineDetails(payload) {
       const formData = new FormData();
 
-      for (const key in payload) {
-        if (key !== "EquipmentImage") {
-          formData.append(key, payload[key]);
-        }
+      // Append only primitive/string fields explicitly
+      formData.append("EquipmentCategory", payload.EquipmentCategory ?? "");
+      formData.append("EquipmentType", payload.EquipmentType ?? "");
+      formData.append("MachineName", payload.MachineName ?? "");
+      formData.append("BodyNo", payload.BodyNo ?? "");
+      formData.append("SerialNo", payload.SerialNo ?? "");
+      formData.append("PlateNo", payload.PlateNo ?? "");
+      formData.append("PropertyCustodian", payload.PropertyCustodian ?? "");
+      formData.append("Operator", payload.Operator ?? "");
+      formData.append("DateAquired", payload.DateAquired ?? "");
+      formData.append("Cost", payload.Cost ?? "");
+      formData.append("Remarks", payload.Remarks ?? "");
+      formData.append("IsDeleted", payload.IsDeleted ?? false);
+
+      // Append new images if selected, otherwise backend keeps existing
+      if (this.preview_img && this.preview_img.length) {
+        Array.from(this.preview_img).forEach((file) => {
+          formData.append("EquipmentImage", file);
+        });
       }
 
-      const img = payload.EquipmentImage;
-      if (img instanceof File) {
-        formData.append("EquipmentImage", img); // ✅ real file upload
-      } else if (typeof img === "string" && img.startsWith("http://")) {
-        formData.append("EquipmentImage", img); // ✅ keep old path
-      } else {
-        formData.append("EquipmentImage", ""); // ✅ no image
-      }
-
-      // for (const [key, value] of formData.entries()) {
-      //   console.log(key, value);
-      // }
-      await this.Equipmentstore.UpdateEquipment(payload.id, formData);
+      await this.Equipmentstore.UpdateEquipment(payload._id, formData); // ← _id not id
       await this.getMachineList();
+
+      // Reset preview
+      this.preview_img = null;
+      this.equipmentPreviewUrls.forEach((url) => URL.revokeObjectURL(url));
+      this.equipmentPreviewUrls = [];
+      this.isEditMode = false;
     },
   },
 

@@ -118,11 +118,6 @@ export const useITEquipmentInfo = defineStore("itequipmentinfo", {
     async fetchDashboard() {
       try {
         const response = await api.get("/api/ITEquipments/dashboard");
-
-        // this.itequipments = response.data;
-        // this.itequipmentsCount = response.data.length;
-        // console.log("resItEquipment=", this.itequipments);
-        // console.log("resEquipment=", response.data);
         this.itequipmenttype = response.data;
       } catch (error) {
         console.log(`Error fetching tasks: ${error}`);

@@ -145,12 +145,37 @@
         <q-card-section style="max-height: 80vh" class="scroll">
           <q-form>
             <div class="row">
-              <div class="col-12" v-if="editedItem.ITEquipmentImage">
+              <!-- <div class="col-12" v-if="editedItem.ITEquipmentImage">
                 <q-img
                   style="height: 200px; max-width: 100%"
                   :src="editedItem.ITEquipmentImage"
                   fit="scale-down"
                 />
+              </div> -->
+
+              <!-- Show existing saved images (from DB) -->
+              <div
+                class="col-12 "
+                v-if="
+                  editedItem.ITEquipmentImage &&
+                  editedItem.ITEquipmentImage.length
+                "
+              >
+                <div class="row q-gutter-sm flex-center" >
+                  <div
+                    v-for="(img, index) in editedItem.ITEquipmentImage"
+                    :key="index"
+                    class="col-auto"
+                  >
+                    <q-img
+                      :src="img"
+                      style="width: 120px; height: 120px"
+                      fit="cover"
+                      class="rounded-borders"
+                      @click="showImageClicked(img)"
+                    />
+                  </div>
+                </div>
               </div>
               <div class="col-12">
                 <q-input
@@ -228,8 +253,7 @@
               </div>
 
               <div class="col-12">
-                <q-file
-
+                <!-- <q-file
                   filled
                   ref="itImg"
                   v-model="preview_img"
@@ -242,7 +266,56 @@
                   <template v-slot:prepend>
                     <q-icon class="text-orange" name="attach_file" />
                   </template>
+                </q-file> -->
+
+                <q-file
+                  filled
+                  ref="itImg"
+                  v-model="preview_img"
+                  @update:model-value="onImageSelected"
+                  :disable="maintenancehistory === !isEditMode"
+                  label="Attach IT Equipment Image"
+                  multiple
+                  use-chips
+                  accept=".jpg, image/*"
+                  dense
+                  class="q-pa-sm"
+                >
+                  <template v-slot:prepend>
+                    <q-icon class="text-orange" name="attach_file" />
+                  </template>
                 </q-file>
+
+                <!-- Image Previews -->
+                <div
+                  v-if="equipmentPreviewUrls.length"
+                  class="row q-mt-sm q-px-sm q-gutter-sm"
+                >
+                  <div
+                    v-for="(url, index) in equipmentPreviewUrls"
+                    :key="index"
+                    class="col-auto"
+                  >
+                    <q-img
+                      :src="url"
+                      style="width: 120px; height: 120px"
+                      fit="cover"
+                      class="rounded-borders"
+                    >
+                      <div class="absolute-top-right q-pa-xs">
+                        <q-btn
+                          round
+                          dense
+                          flat
+                          color="white"
+                          icon="close"
+                          size="xs"
+                          @click="removeEquipmentImage(index)"
+                        />
+                      </div>
+                    </q-img>
+                  </div>
+                </div>
               </div>
             </div>
           </q-form>
@@ -613,7 +686,23 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
+    <q-dialog v-model="showClickedImageDialog" persistent >
+      <q-card class="q-pa-md" style="width: 500px; max-width: 90vw;">
+        <q-card-section align="center">
+          <q-img
+          :src="ClickedImage"
+           style="width: 100%; height: 100%;"
+           fit="contain"
+          >
+          </q-img>
+        </q-card-section>
+        <q-card-actions align="center">
+          <q-btn  round  icon="close" color="grey" @click="showClickedImageDialog = false"></q-btn>
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </div>
+
 </template>
 
 <script>
@@ -622,10 +711,14 @@ import { useITEquipmentInfo } from "../stores/ItStore";
 import { useLoginStore } from "src/stores/LoginStore";
 import { useITTypeStore } from "src/stores/ITEquipmentTypeStore";
 import * as XLSX from "xlsx";
+import { Notify } from "quasar";
 
 export default {
   data() {
     return {
+      showClickedImageDialog:false,
+      ClickedImage: null,
+      equipmentPreviewUrls: [],
       preview_img: null,
       selectedID: ref(""),
       MachineDeleteHistory: false,
@@ -782,7 +875,7 @@ export default {
     };
   },
   computed: {
-    itTypeList(){
+    itTypeList() {
       return this.ITtypeStore.ITTypeList;
     },
     maintenancedetailsOptions() {
@@ -832,15 +925,33 @@ export default {
   },
   watch: {},
   methods: {
-    onImageSelected(file) {
-      // when user uploads a new file
-      if (file && file instanceof File) {
-        // create a preview URL
-        this.editedItem.ITEquipmentImage = URL.createObjectURL(file);
-      } else if (!file) {
-        // if cleared, remove image
-        this.editedItem.ITEquipmentImage = "";
+
+    showImageClicked(path){
+      this.ClickedImage = path
+      this.showClickedImageDialog = true
+
+    },
+
+    onImageSelected(files) {
+      this.equipmentPreviewUrls.forEach((url) => URL.revokeObjectURL(url));
+
+      if (!files || files.length === 0) {
+        this.equipmentPreviewUrls = [];
+        return;
       }
+
+      this.equipmentPreviewUrls = Array.from(files).map((file) =>
+        URL.createObjectURL(file),
+      );
+    },
+
+    removeEquipmentImage(index) {
+      URL.revokeObjectURL(this.equipmentPreviewUrls[index]);
+      this.equipmentPreviewUrls.splice(index, 1);
+
+      const updatedFiles = Array.from(this.preview_img);
+      updatedFiles.splice(index, 1);
+      this.preview_img = updatedFiles.length ? updatedFiles : null;
     },
     // MaintenanceDelete1(id){
     //   this.MaintenanceDelete=true;
@@ -1002,11 +1113,32 @@ export default {
       ) {
         const store = useITEquipmentInfo();
         const editedItemCopy = { ...this.editedItem };
+
+        // Build FormData here — outside of if/else
+        const formData = new FormData();
+        formData.append("MachineName", editedItemCopy.MachineName || "");
+        formData.append("EquipmentType", editedItemCopy.EquipmentType || "");
+        formData.append(
+          "PropertyCustodian",
+          editedItemCopy.PropertyCustodian || "",
+        );
+        formData.append("SerialNo", editedItemCopy.SerialNo || "");
+        formData.append("Remarks", editedItemCopy.Remarks || "");
+        formData.append("IsDeleted", editedItemCopy.IsDeleted || false);
+
+        // Append each selected image file
+        if (this.preview_img && this.preview_img.length) {
+          Array.from(this.preview_img).forEach((file) => {
+            formData.append("ITEquipmentImage", file);
+          });
+        }
+
         console.log("edited item =>", editedItemCopy);
 
         if (editedItemCopy._id) {
           store
-            .UpdateITEquipment(editedItemCopy._id, editedItemCopy)
+            // .UpdateITEquipment(editedItemCopy._id, editedItemCopy)
+            .UpdateITEquipment(editedItemCopy._id, formData)
             .then((res) => {
               this.closeDialog();
               this.editedItem = {
@@ -1025,7 +1157,9 @@ export default {
           this.preview_img = null;
           console.log("Item Updated: ", editedItemCopy);
         } else {
-          store.AddITEquipment(editedItemCopy).then((res) => {
+          // store.AddITEquipment(editedItemCopy).then((res) => {
+            console.log("Data: " + formData)
+           store.AddITEquipment(formData).then((res) => {
             this.closeDialog();
             this.editedItem = {
               id: null,
@@ -1037,6 +1171,7 @@ export default {
               IsDeleted: false,
               Remarks: "",
             };
+            this.equipmentPreviewUrls = [];
             store.fetchITEquipment().then((res) => {
               this.preview_img = null;
             });
@@ -1186,7 +1321,6 @@ export default {
       store,
       model: ref(null),
       ITtypeStore,
-
     };
   },
 };
