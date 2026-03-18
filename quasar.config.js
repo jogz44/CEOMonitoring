@@ -22,6 +22,7 @@ export default configure(() => {
     ],
 
     build: {
+      
       target: {
         browser: ['es2019', 'edge88', 'firefox78', 'chrome87', 'safari13.1'],
         node: 'node16'
@@ -32,9 +33,9 @@ export default configure(() => {
     devServer: {
       open: true,
       // host: '192.168.50.98', //HOME
-       host: '192.168.8.11', //OFFICE
-      port: 9001,
-      https: false,
+      //  host: '192.168.8.11', //OFFICE
+      // port: 9001,
+      // https: false,
     },
 
     framework: {
