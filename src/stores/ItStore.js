@@ -1,6 +1,8 @@
 import { defineStore } from "pinia";
 import axios from "axios";
 import { api } from "src/boot/axios";
+import { Notify } from "quasar";
+import { timeout } from "workbox-core/_private";
 
 export const useITEquipmentInfo = defineStore("itequipmentinfo", {
   state: () => ({
@@ -33,7 +35,15 @@ export const useITEquipmentInfo = defineStore("itequipmentinfo", {
 
         this.itequipments.push(response.data);
       } catch (error) {
+        Notify.create(
+          {
+            type: 'negative',
+            message: error.message,
+            position: 'center'
+          }
+        )
         console.log(`Error fetching tasks: ${error}`);
+
       }
     },
     async UpdateITEquipment(id, payload) {

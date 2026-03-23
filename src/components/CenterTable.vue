@@ -239,7 +239,7 @@
             icon="close"
             v-close-popup
             color="orange"
-            @click="this.isEditMode = false"
+            @click="isEditMode = false"
             v-show="exitBtn"
           />
         </q-toolbar>
@@ -619,7 +619,11 @@
             <div class="col-6 col-xs-12 col-sm-6">
               <q-select
                 ref="employeeStatus"
-                :rules="[val => val !== null && val !== '' || 'Employee Status is required']"
+                :rules="[
+                  (val) =>
+                    (val !== null && val !== '') ||
+                    'Employee Status is required',
+                ]"
                 lazy-rules
                 filled
                 v-model="EmpDtl.EmpStatus"
@@ -1584,7 +1588,7 @@ export default {
       this.$refs.charges.validate();
       this.$refs.employeeStatus.validate();
       this.$refs.salaryRate.validate();
-      console.log("edited=", this.EmpDtl);
+      // console.log("edited=", this.EmpDtl);
       if (
         !this.$refs.dateStarted.hasError &&
         !this.$refs.dateEnded.hasError &&
@@ -1595,6 +1599,22 @@ export default {
       ) {
         const store = useStorePersonnelInfo();
         let editedItemCopy = { ...this.EmpDtl };
+
+        // ✅ Extract string value from the designation object
+        if (
+          editedItemCopy.Designation &&
+          typeof editedItemCopy.Designation === "object"
+        ) {
+          editedItemCopy.Designation = editedItemCopy.Designation.Designation;
+        }
+
+        // ✅ Extract string value from EmpStatus object if needed
+        if (
+          editedItemCopy.EmpStatus &&
+          typeof editedItemCopy.EmpStatus === "object"
+        ) {
+          editedItemCopy.EmpStatus = editedItemCopy.EmpStatus.status;
+        }
 
         // Remarks to be 1900 if cancelled or returned
         if (
@@ -1616,6 +1636,27 @@ export default {
         //   this.EmpDtl.DteEnded = "1900-01-01";
         // } else {
         // }
+
+
+
+        // ✅ Extract string value from the designation object
+        if (
+          this.EmpDtl.Designation &&
+          typeof this.EmpDtl.Designation === "object"
+        ) {
+          this.EmpDtl.Designation = this.EmpDtl.Designation.Designation;
+        }
+
+        // ✅ Extract string value from EmpStatus object if needed
+        if (
+          this.EmpDtl.EmpStatus &&
+          typeof this.EmpDtl.EmpStatus === "object"
+        ) {
+          this.EmpDtl.EmpStatus = this.EmpDtl.EmpStatus.status;
+        }
+
+
+        // console.log('This Employee Detail : ',this.EmpDtl)
 
         if (editedItemCopy._id) {
           store
