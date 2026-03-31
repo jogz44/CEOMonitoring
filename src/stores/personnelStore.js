@@ -22,19 +22,32 @@ export const useStorePersonnelInfo = defineStore("personnelinfo", {
   getters: {
     //Count Active Employees
     ActiveCount() {
+      // return this.personnels.reduce((p, c) => {
+      //   if (
+      //     c.employmentDtl[c.employmentDtl.length - 1] &&
+      //     c.employmentDtl[c.employmentDtl.length - 1].DteEnded
+      //   ) {
+      //     return new Date(
+      //       c.employmentDtl[c.employmentDtl.length - 1].DteEnded,
+      //     ) >= new Date()
+      //       ? p + 1
+      //       : p;
+      //   } else {
+      //     return p;
+      //   }
+      // }, 0);
       return this.personnels.reduce((p, c) => {
-        if (
-          c.employmentDtl[c.employmentDtl.length - 1] &&
-          c.employmentDtl[c.employmentDtl.length - 1].DteEnded
-        ) {
-          return new Date(
-            c.employmentDtl[c.employmentDtl.length - 1].DteEnded,
-          ) >= new Date()
-            ? p + 1
-            : p;
-        } else {
-          return p;
+        const lastEmployment = c.employmentDtl[c.employmentDtl.length - 1];
+
+        if (!lastEmployment) return p; // No employment record at all
+
+        // If DteEnded is set, only count if the end date is in the future
+        if (lastEmployment.DteEnded) {
+          return new Date(lastEmployment.DteEnded) >= new Date() ? p + 1 : p;
         }
+
+        // No DteEnded means still actively employed — count them
+        return p + 1;
       }, 0);
     },
     //Display All Active Employees
@@ -89,6 +102,54 @@ export const useStorePersonnelInfo = defineStore("personnelinfo", {
 
   actions: {
     //Fetch All Personnel with Details
+    // async fetchPersonnel() {
+    //   try {
+    //     const response = await api.get("/api/Personnels/");
+
+    //     this.personnels = response.data;
+    //     this.personnelsCount = response.data.length;
+
+    //     this.filteredStatus = response.data.filter(
+    //       (personnel) =>
+    //         personnel.employmentDtl.length !== 0 &&
+    //         new Date(
+    //           personnel.employmentDtl[
+    //             personnel.employmentDtl.length - 1
+    //           ].DteEnded,
+    //         ) >= new Date(),
+    //     );
+    //     this.regularCount = this.filteredStatus.filter(
+    //       (personnel) =>
+    //         personnel.employmentDtl[
+    //           personnel.employmentDtl.length - 1
+    //         ].EmpStatus.toLowerCase() == "regular",
+    //     ).length;
+
+    //     this.casualCount = this.filteredStatus.filter(
+    //       (personnel) =>
+    //         personnel.employmentDtl[
+    //           personnel.employmentDtl.length - 1
+    //         ].EmpStatus.toLowerCase() == "casual",
+    //     ).length;
+
+    //     this.programCount = this.filteredStatus.filter(
+    //       (personnel) =>
+    //         personnel.employmentDtl[
+    //           personnel.employmentDtl.length - 1
+    //         ].EmpStatus.toLowerCase() == "job order (program-based)" || "jo-program based",
+    //     ).length;
+    //     // console.log("program=", this.filteredStatus);
+    //     this.projectCount = this.filteredStatus.filter(
+    //       (personnel) =>
+    //         personnel.employmentDtl[
+    //           personnel.employmentDtl.length - 1
+    //         ].EmpStatus.toLowerCase() == "job order (project-based)" || "jo-project based",
+    //     ).length;
+    //   } catch (error) {
+    //     console.log(`Error fetching tasks: ${error}`);
+    //   }
+    // },
+
     async fetchPersonnel() {
       try {
         const response = await api.get("/api/Personnels/");
@@ -96,44 +157,43 @@ export const useStorePersonnelInfo = defineStore("personnelinfo", {
         this.personnels = response.data;
         this.personnelsCount = response.data.length;
 
-        this.filteredStatus = response.data.filter(
-          (personnel) =>
-            personnel.employmentDtl.length !== 0 &&
-            new Date(
-              personnel.employmentDtl[
-                personnel.employmentDtl.length - 1
-              ].DteEnded,
-            ) >= new Date(),
-        );
+        // Filter active personnel (no DteEnded OR future DteEnded)
+        this.filteredStatus = response.data.filter((personnel) => {
+          const lastEmployment =
+            personnel.employmentDtl[personnel.employmentDtl.length - 1];
+
+          if (!lastEmployment) return false;
+          if (!lastEmployment.DteEnded) return true; // No end date = active
+          return new Date(lastEmployment.DteEnded) >= new Date(); // Future end date = active
+        });
+
+        // Helper to get last employment status
+        const getLastStatus = (personnel) =>
+          personnel.employmentDtl[
+            personnel.employmentDtl.length - 1
+          ].EmpStatus.toLowerCase().trim();
+
         this.regularCount = this.filteredStatus.filter(
-          (personnel) =>
-            personnel.employmentDtl[
-              personnel.employmentDtl.length - 1
-            ].EmpStatus.toLowerCase() == "regular",
+          (personnel) => getLastStatus(personnel) === "regular",
         ).length;
 
         this.casualCount = this.filteredStatus.filter(
-          (personnel) =>
-            personnel.employmentDtl[
-              personnel.employmentDtl.length - 1
-            ].EmpStatus.toLowerCase() == "casual",
+          (personnel) => getLastStatus(personnel) === "casual",
         ).length;
 
         this.programCount = this.filteredStatus.filter(
           (personnel) =>
-            personnel.employmentDtl[
-              personnel.employmentDtl.length - 1
-            ].EmpStatus.toLowerCase() == "job order (program-based)",
+            getLastStatus(personnel) === "job order (program-based)" ||
+            getLastStatus(personnel) === "jo-program based", // ✅ correctly checks both values
         ).length;
-        // console.log("program=", this.filteredStatus);
+
         this.projectCount = this.filteredStatus.filter(
           (personnel) =>
-            personnel.employmentDtl[
-              personnel.employmentDtl.length - 1
-            ].EmpStatus.toLowerCase() == "job order (project-based)",
+            getLastStatus(personnel) === "job order (project-based)" ||
+            getLastStatus(personnel) === "jo-project based", // ✅ correctly checks both values
         ).length;
       } catch (error) {
-        console.log(`Error fetching tasks: ${error}`);
+        console.error(`Error fetching personnel: ${error}`);
       }
     },
 
@@ -264,7 +324,7 @@ export const useStorePersonnelInfo = defineStore("personnelinfo", {
       try {
         const response = await api.get("/api/library/designation");
         this.EmpDesignation = response.data;
-         console.log("Empppp", this.EmpDesignation);
+        console.log("Empppp", this.EmpDesignation);
       } catch (error) {
         console.log(`Error fetching tasks: ${error}`);
       }
