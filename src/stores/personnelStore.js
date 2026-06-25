@@ -168,10 +168,18 @@ export const useStorePersonnelInfo = defineStore("personnelinfo", {
         });
 
         // Helper to get last employment status
+        // const getLastStatus = (personnel) =>
+        //   personnel.employmentDtl[
+        //     personnel.employmentDtl.length - 1
+        //   ].EmpStatus.toLowerCase().trim();
+
         const getLastStatus = (personnel) =>
-          personnel.employmentDtl[
-            personnel.employmentDtl.length - 1
-          ].EmpStatus.toLowerCase().trim();
+          (
+            personnel.employmentDtl[personnel.employmentDtl.length - 1]
+              ?.EmpStatus ?? ""
+          )
+            .toLowerCase()
+            .trim();
 
         this.regularCount = this.filteredStatus.filter(
           (personnel) => getLastStatus(personnel) === "regular",

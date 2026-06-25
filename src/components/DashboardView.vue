@@ -321,10 +321,22 @@ export default defineComponent({
       return sortedProjects.slice(0, 3);
     },
   },
+mounted(){
+     this.store.fetchPersonnel();
+    this.store.fetchDashboard();
+    this.storeEquipment.fetchEquipment();
+    this.storeITEquipment.fetchDashboard();
+    this.storeITEquipment.fetchITEquipment();
+    this.storeProjectInfo.fetchProject();
+},
+
   created() {
     setTimeout(() => {
       this.StatusDatas(true);
     }, 2000);
+
+
+
   },
   methods: {
 
@@ -404,12 +416,7 @@ export default defineComponent({
     const storeITEquipment = useITEquipmentInfo();
     const storeProjectInfo = useStoreProjectInfo();
 
-    store.fetchPersonnel();
-    store.fetchDashboard();
-    storeEquipment.fetchEquipment();
-    storeITEquipment.fetchDashboard();
-    storeITEquipment.fetchITEquipment();
-    storeProjectInfo.fetchProject();
+ 
 
     return {
       store,
